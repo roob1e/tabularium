@@ -1,9 +1,10 @@
 package com.roobie.backend.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
-import java.util.List;
-import java.util.ArrayList;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "groups")
@@ -13,17 +14,9 @@ import java.util.ArrayList;
 @Builder
 public class Group {
     @Id
-    @Column(name = "name")
+    @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(name = "amount")
-    private Integer amount;
-
-    @Column(name = "gpa")
-    private Double gpa;
-
-    @OneToMany(mappedBy = "group", cascade = CascadeType.ALL)
-    @ToString.Exclude
-    @EqualsAndHashCode.Exclude
-    private List<Student> students = new ArrayList<>();
+    @Column(name = "amount", nullable = false)
+    private int amount;
 }
