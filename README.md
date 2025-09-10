@@ -192,6 +192,6 @@ Content-Type: application/json
 ```
 ### 🚦 Project status
 
-Current version: 0.9.0 (Beta)  
+Current version: 0.0.1 (Beta)  
 
 Status: Active development
