@@ -10,11 +10,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class StudentService {
     @Autowired private StudentRepository studentRepository;
-    @Autowired GroupRepository groupRepository;
+    @Autowired private GroupRepository groupRepository;
 
     public Student createStudent(CreateStudentRequest request) {
         Group group = groupRepository.findByName(request.getGroupName())
@@ -32,16 +33,14 @@ public class StudentService {
     }
 
     public void deleteStudent(Student student) {
-        System.out.println(student.toString());
         studentRepository.delete(student);
     }
 
     public List<Student> getStudents() {
-        System.out.println(studentRepository.findAll());
         return studentRepository.findAll();
     }
 
     public Student GetStudent(int id) {
-        return studentRepository.findById(id).get();
+        return studentRepository.findById(id).isPresent() ? studentRepository.findById(id).get() : null;
     }
 }
