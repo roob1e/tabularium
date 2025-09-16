@@ -2,16 +2,12 @@ package com.roobie.backend.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.ToString;
+import lombok.Data;
 
 import java.time.LocalDate;
 
-@AllArgsConstructor
-@Getter
-@ToString
-public class CreateStudentRequest {
+@Data
+public class UpdateStudentRequest {
     @NotBlank(message = "Full name is required")
     @Size(min = 2, max = 100, message = "Full name should be from 2 to 100 symbols")
     private String fullname;
@@ -27,8 +23,9 @@ public class CreateStudentRequest {
     )
     private String phone;
 
+
     @NotBlank(message = "Birthdate is required")
-    @JsonFormat(pattern = "yyyy-MM-dd") // например "2005-03-15"
+    @JsonFormat(pattern = "dd.MM.yyyy")
     private LocalDate birthdate;
 
     @NotBlank(message = "Group is required")

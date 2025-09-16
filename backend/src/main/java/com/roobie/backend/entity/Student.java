@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
+
 @Entity
 @Table(name = "students")
 @Data
@@ -28,7 +30,7 @@ public class Student {
     private String phone;
 
     @Column(name = "birthdate")
-    private String birthdate;
+    private LocalDate birthdate;
 
     @ManyToOne
     @JoinColumn(name = "group_name", nullable = false)

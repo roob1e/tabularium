@@ -1,9 +1,12 @@
 package com.roobie.backend.controller;
 
 import com.roobie.backend.dto.CreateStudentRequest;
+import com.roobie.backend.dto.UpdateStudentRequest;
 import com.roobie.backend.entity.Student;
+import com.roobie.backend.exceptions.StudentNotFoundException;
 import com.roobie.backend.service.StudentService;
 
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,10 +37,10 @@ public class StudentController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Student> getStudentById(@PathVariable int id) {
+    public ResponseEntity<Student> getStudentById(@PathVariable Long id) {
         try {
             log.info("Fetching student with id {}", id);
-            var students = studentService.GetStudent(id);
+            var students = studentService.getStudent(id);
             return ResponseEntity.ok(students);
         } catch (Exception e) {
             log.info("Student with id {} not found", id);
@@ -58,14 +61,25 @@ public class StudentController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Student> deleteStudent(@PathVariable int id) {
+    public ResponseEntity<Void> deleteStudent(@PathVariable Long id) {
+        log.info("Deleting student with id {}", id);
+        boolean deleted = studentService.deleteStudent(id);
+        return deleted ? ResponseEntity.noContent().build()
+                : ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Student> updateStudent(@PathVariable Long id, @Valid @RequestBody UpdateStudentRequest request) {
         try {
-            log.info("Deleting student with id {}", id);
-            studentService.deleteStudent(studentService.GetStudent(id));
-            return ResponseEntity.status(HttpStatus.OK).build();
+            log.info("Обновление студента с id: {}", id);
+            Student updatedStudent = studentService.updateStudent(id, request);
+            return ResponseEntity.ok(updatedStudent);
+        } catch (StudentNotFoundException e) {
+            log.error("Студент не найден с ID: {}", id);
+            return ResponseEntity.notFound().build();
         } catch (Exception e) {
-            log.error("GOT AN ERROR WHEN DELETING STUDENT: {}", e.getMessage(), e);
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+            log.error("GOT AN ERROR WHEN UPDATING STUDENT: {}", e.getMessage(), e);
+            return ResponseEntity.internalServerError().build();
         }
     }
 }

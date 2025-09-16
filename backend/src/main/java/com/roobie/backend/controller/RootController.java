@@ -13,6 +13,6 @@ public class RootController {
     @GetMapping
     public ResponseEntity<String> root() {
         log.info("Someone triggered the root controller :)");
-        return ResponseEntity.ok("Uwu your back is working!!!!!!!!!!!!!");
+        return ResponseEntity.ok("Server is up");
     }
 }
