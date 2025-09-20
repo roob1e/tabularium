@@ -1,74 +1,50 @@
-import React, { useState } from 'react';
-import { Layout, Menu, Table, Button, Modal, Form, Input, message } from 'antd';
-import { DatabaseOutlined, TableOutlined } from '@ant-design/icons';
+import React, { useState, useEffect, useRef } from "react";
+import { Layout, Menu } from "antd";
+import StudentsTable from "./components/StudentsTable";
+import GroupsTable from "./components/GroupsTable";
+import { TableOutlined, DatabaseOutlined } from "@ant-design/icons";
 
 const { Header, Sider, Content } = Layout;
 
-interface Student {
-    id: number;
-    name: string;
-    group: string;
-}
-
 const App: React.FC = () => {
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const [students, setStudents] = useState<Student[]>([
-        { id: 1, name: 'Иван Петров', group: '10А' },
-        { id: 2, name: 'Мария Сидорова', group: '11Б' },
-    ]);
+    const [selectedKey, setSelectedKey] = useState("1");
+    const contentRef = useRef<HTMLDivElement>(null);
+    const [tableHeight, setTableHeight] = useState<number>(0);
 
-    const columns = [
-        { title: 'ID', dataIndex: 'id', key: 'id' },
-        { title: 'ФИО', dataIndex: 'name', key: 'name' },
-        { title: 'Класс', dataIndex: 'group', key: 'group' },
-        { title: 'Действия', key: 'actions', render: () => <Button danger>Удалить</Button> },
-    ];
-
-    const showModal = () => setIsModalOpen(true);
-    const handleCancel = () => setIsModalOpen(false);
-
-    const onFinish = (values: any) => {
-        const newStudent: Student = {
-            id: students.length + 1,
-            name: values.name,
-            group: values.group,
+    // Вычисляем высоту таблицы после рендера
+    useEffect(() => {
+        const updateHeight = () => {
+            if (contentRef.current) {
+                const padding = 20 * 2; // сверху и снизу
+                setTableHeight(contentRef.current.clientHeight - padding);
+            }
         };
-        setStudents([...students, newStudent]);
-        message.success('Ученик добавлен!');
-        setIsModalOpen(false);
-    };
+        updateHeight();
+        window.addEventListener("resize", updateHeight);
+        return () => window.removeEventListener("resize", updateHeight);
+    }, []);
 
     return (
-        <Layout style={{ height: '100vh' }}>
-            <Header style={{ color: 'white', display: 'flex', alignItems: 'center' }}>
-                Админка Базы Данных Учеников
-            </Header>
-            <Layout>
-                <Sider width={200}>
-                    <Menu mode="inline" defaultSelectedKeys={['1']}>
-                        <Menu.Item key="1" icon={<TableOutlined />}>Ученики</Menu.Item>
-                        <Menu.Item key="2" icon={<DatabaseOutlined />}>Классы</Menu.Item>
-                    </Menu>
+        <Layout style={{ height: "100vh" }}>
+            <Header style={{ color: "white" }}>Tabularium</Header>
+            <Layout style={{ height: "100%" }}>
+                <Sider width={200} style={{ height: "100%" }}>
+                    <Menu
+                        mode="vertical"
+                        defaultSelectedKeys={["1"]}
+                        onClick={(e) => setSelectedKey(e.key)}
+                        items={[
+                            { key: "1", icon: <TableOutlined />, label: "Учащиеся" },
+                            { key: "2", icon: <DatabaseOutlined />, label: "Группы" },
+                        ]}
+                    />
                 </Sider>
-                <Content style={{ padding: '20px' }}>
-                    <Button type="primary" onClick={showModal} style={{ marginBottom: 16 }}>
-                        Добавить ученика
-                    </Button>
-                    <Table dataSource={students} columns={columns} rowKey="id" />
-
-                    <Modal title="Добавить ученика" open={isModalOpen} onCancel={handleCancel} footer={null}>
-                        <Form onFinish={onFinish} layout="vertical">
-                            <Form.Item name="name" label="ФИО" rules={[{ required: true }]}>
-                                <Input />
-                            </Form.Item>
-                            <Form.Item name="group" label="Класс" rules={[{ required: true }]}>
-                                <Input />
-                            </Form.Item>
-                            <Form.Item>
-                                <Button type="primary" htmlType="submit">Сохранить</Button>
-                            </Form.Item>
-                        </Form>
-                    </Modal>
+                <Content
+                    ref={contentRef}
+                    style={{ padding: 20, height: "100%", overflow: "hidden" }}
+                >
+                    {selectedKey === "1" && <StudentsTable tableHeight={tableHeight} />}
+                    {selectedKey === "2" && <GroupsTable tableHeight={tableHeight} />}
                 </Content>
             </Layout>
         </Layout>

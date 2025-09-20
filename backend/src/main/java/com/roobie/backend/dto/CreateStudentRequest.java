@@ -27,7 +27,7 @@ public class CreateStudentRequest {
     )
     private String phone;
 
-    @NotBlank(message = "Birthdate is required")
+    @NotNull(message = "Birthdate is required")
     @JsonFormat(pattern = "yyyy-MM-dd") // например "2005-03-15"
     private LocalDate birthdate;
 

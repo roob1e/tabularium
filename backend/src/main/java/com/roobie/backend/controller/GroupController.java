@@ -17,7 +17,7 @@ public class GroupController {
     @Autowired
     private GroupService groupService;
 
-    @GetMapping()
+    @GetMapping
     public ResponseEntity<List<Group>> getAllGroups() {
         try {
             log.info("Fetching all groups");
