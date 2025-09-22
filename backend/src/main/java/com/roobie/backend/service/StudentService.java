@@ -37,16 +37,22 @@ public class StudentService {
                 .group(group)
                 .build();
 
-        return studentRepository.save(student);
+        Student saved = studentRepository.save(student);
+        updateGroupAmount(group);
+        return saved;
     }
 
     public boolean deleteStudent(Long id) {
         return studentRepository.findById(id)
                 .map(student -> {
+                    Group group = student.getGroup();
                     studentRepository.delete(student);
+                    updateGroupAmount(group);
                     return true;
                 })
                 .orElse(false);
+
+
     }
 
     public List<Student> getStudents() {
@@ -58,12 +64,11 @@ public class StudentService {
     }
 
     public Student updateStudent(Long id, UpdateStudentRequest dto) {
-        Optional<Student> optionalStudent = studentRepository.findById(id);
-        if (optionalStudent.isEmpty()) {
-            throw new RuntimeException("Студент с id " + id + " не найден");
-        }
+        Student student = studentRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Студент с id " + id + " не найден"));
 
-        Student student = optionalStudent.get();
+        Group oldGroup = student.getGroup();
+
 
         // Обновляем поля
         student.setFullname(dto.getFullname());
@@ -72,13 +77,25 @@ public class StudentService {
         student.setBirthdate(dto.getBirthdate());
 
         // Обновляем группу (группа не меняет имя, только присваиваем объект)
-        Group group = groupService.getGroup(dto.getGroupName());
-        if (group == null) {
+        Group newGroup = groupService.getGroup(dto.getGroupName());
+        if (newGroup == null) {
             throw new RuntimeException("Группа " + dto.getGroupName() + " не найдена");
         }
-        student.setGroup(group);
+        student.setGroup(newGroup);
 
         // Сохраняем в базе
-        return studentRepository.save(student);
+        Student updated = studentRepository.save(student);
+
+        if(!oldGroup.equals(newGroup)) {
+            updateGroupAmount(oldGroup);
+        }
+        updateGroupAmount(newGroup);
+        return updated;
+    }
+
+    private void updateGroupAmount(Group group) {
+        long count = studentRepository.countByGroup(group);
+        group.setAmount((int) count);
+        groupRepository.save(group);
     }
 }
