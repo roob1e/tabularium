@@ -14,6 +14,20 @@ const GroupsTable: React.FC<GroupsTableProps> = ({ tableHeight }) => {
     const [form] = Form.useForm();
     const containerRef = useRef<HTMLDivElement>(null);
 
+
+    // Shortcuts
+    useEffect(() => {
+        const handleShortcut = (event: KeyboardEvent) => {
+            if (event.shiftKey && ["n", "т"].includes(event.key.toLowerCase())) {
+                event.preventDefault();
+                setIsModalOpen(true);
+            }
+        }
+
+        window.addEventListener("keydown", handleShortcut);
+        return () => window.removeEventListener("keydown", handleShortcut);
+    })
+
     const loadGroups = async () => {
         setLoading(true);
         try {
@@ -99,7 +113,7 @@ const GroupsTable: React.FC<GroupsTableProps> = ({ tableHeight }) => {
                     onClick={() => setIsModalOpen(true)}
                     style={{ marginLeft: 8 }}
                 >
-                    Добавить группу
+                    Добавить группу (Shift + N)
                 </Button>
             </div>
 

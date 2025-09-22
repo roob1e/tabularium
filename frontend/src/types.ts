@@ -5,7 +5,7 @@ export interface Student {
     age: number;
     phone: string;
     birthdate: string;
-    group: { name: string };
+    groupName: string;
 }
 
 export interface Group {
