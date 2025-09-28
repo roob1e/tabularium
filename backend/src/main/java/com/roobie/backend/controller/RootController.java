@@ -10,9 +10,10 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/")
 public class RootController {
+    // GET: return server status;
     @GetMapping
     public ResponseEntity<String> root() {
-        log.info("Someone triggered the root controller :)");
-        return ResponseEntity.ok("Server is up");
+        log.info("Root controller called");
+        return ResponseEntity.ok("SERVER IS RUNNING");
     }
 }

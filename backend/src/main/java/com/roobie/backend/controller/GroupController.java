@@ -17,6 +17,7 @@ public class GroupController {
     @Autowired
     private GroupService groupService;
 
+    // GET: get all, get by name;
     @GetMapping
     public ResponseEntity<List<Group>> getAllGroups() {
         try {
@@ -36,6 +37,7 @@ public class GroupController {
         return group != null ? ResponseEntity.ok(group) : ResponseEntity.notFound().build();
     }
 
+    // POST: create;
     @PostMapping()
     public ResponseEntity<Group> createGroup(@RequestBody Group group) {
         try {
@@ -48,6 +50,7 @@ public class GroupController {
         }
     }
 
+    // DELETE: delete;
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteGroup(@PathVariable String id) {
         log.info("Deleting group with id {}", id);

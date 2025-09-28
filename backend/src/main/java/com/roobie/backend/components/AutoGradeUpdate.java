@@ -1,4 +1,4 @@
-package com.roobie.backend.funcs;
+package com.roobie.backend.components;
 
 import com.roobie.backend.entity.Group;
 import com.roobie.backend.entity.Student;

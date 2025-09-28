@@ -11,8 +11,10 @@ import com.roobie.backend.repository.StudentRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
+/**
+ * @author assxmblxr
+ */
 @Service
 public class StudentService {
     private final StudentRepository studentRepository;
@@ -25,6 +27,12 @@ public class StudentService {
         this.groupRepository = groupRepository;
     }
 
+    /**
+     * Создаёт запись в таблице students, используя DTO; обновляет параметр amount в соответствующей группе.
+     * @param request данные для создания объекта студента: { String fullname, int age, String phone, LocalDate birthdate, Group group }.
+     * @return Созданный объект студента.
+     * @exception GroupNotFoundException указано название несуществующей группы в запросе.
+     */
     public Student createStudent(CreateStudentRequest request) {
         Group group = groupRepository.findByName(request.getGroupName())
                 .orElseThrow(() -> new GroupNotFoundException("Group not found: " + request.getGroupName()));
@@ -42,6 +50,11 @@ public class StudentService {
         return saved;
     }
 
+    /**
+     * Удаляет студента из БД по его ID.
+     * @param id ID студента.
+     * @return true, если студент найден и удалён, иначе false.
+     */
     public boolean deleteStudent(Long id) {
         return studentRepository.findById(id)
                 .map(student -> {
@@ -51,24 +64,37 @@ public class StudentService {
                     return true;
                 })
                 .orElse(false);
-
-
     }
 
+    /**
+     * Возвращает список из всех студентов.
+     * @return список всех студентов.
+     */
     public List<Student> getStudents() {
         return studentRepository.findAll();
     }
 
+    /**
+     * Ищет студента в БД по его ID.
+     * @param id ID искомого студента.
+     * @return объект студента, если найден, иначе null.
+     */
     public Student getStudent(Long id) {
         return studentRepository.findById(id).orElse(null);
     }
 
+    /**
+     * Обновляет параметры студента; обновляет значения amount в затронутых записях таблицы groups, если группа студента изменилась.
+     * @param id ID студента, чьи параметры будут изменены.
+     * @param dto новые значения параметров студента.
+     * @return обновлённый объект студента
+     * @exception RuntimeException указан несуществующий ID
+     */
     public Student updateStudent(Long id, UpdateStudentRequest dto) {
         Student student = studentRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Студент с id " + id + " не найден"));
 
         Group oldGroup = student.getGroup();
-
 
         // Обновляем поля
         student.setFullname(dto.getFullname());

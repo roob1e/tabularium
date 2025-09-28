@@ -24,6 +24,7 @@ public class StudentController {
     @Autowired
     private StudentService studentService;
 
+    // GET: get all, get by ID;
     @GetMapping
     public ResponseEntity<List<Student>> getAllStudents() {
         try {
@@ -37,7 +38,9 @@ public class StudentController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Student> getStudentById(@PathVariable Long id) {
+    public ResponseEntity<Student> getStudentById(
+            @PathVariable Long id
+    ) {
         try {
             log.info("Fetching student with id {}", id);
             var students = studentService.getStudent(id);
@@ -48,8 +51,11 @@ public class StudentController {
         }
     }
 
+    // POST: create;
     @PostMapping
-    public ResponseEntity<Student> createStudent(@RequestBody CreateStudentRequest request) {
+    public ResponseEntity<Student> createStudent(
+            @RequestBody CreateStudentRequest request
+    ) {
         try {
             log.info("Creating student {}", request.toString());
             Student createdStudent = studentService.createStudent(request);
@@ -60,16 +66,23 @@ public class StudentController {
         }
     }
 
+    // DELETE: delete;
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteStudent(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteStudent(
+            @PathVariable Long id
+    ) {
         log.info("Deleting student with id {}", id);
         boolean deleted = studentService.deleteStudent(id);
         return deleted ? ResponseEntity.noContent().build()
                 : ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
 
+    // PUT: update;
     @PutMapping("/{id}")
-    public ResponseEntity<Student> updateStudent(@PathVariable Long id, @Valid @RequestBody UpdateStudentRequest request) {
+    public ResponseEntity<Student> updateStudent(
+            @PathVariable Long id,
+            @Valid @RequestBody UpdateStudentRequest request
+    ) {
         try {
             log.info("Обновление студента с id: {}", id);
             Student updatedStudent = studentService.updateStudent(id, request);
