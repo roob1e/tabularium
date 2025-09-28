@@ -3,13 +3,9 @@ import { Table, Button, Modal, Form, Input, message, AutoComplete } from "antd";
 import { Student, Group } from "../types.ts";
 import { fetchStudents, createStudent, deleteStudent, updateStudent } from "../api/studentsApi.ts";
 import { getAllGroups } from "../api/groupApi.ts";
-import {SortOrder} from "antd/es/table/interface";
+import { SortOrder } from "antd/es/table/interface";
 
-interface TableProps {
-    tableHeight: number;
-}
-
-const StudentsTable: React.FC<TableProps> = ({ tableHeight }) => {
+const StudentsTable: React.FC = () => {
     const [students, setStudents] = useState<Student[]>([]);
     const [groups, setGroups] = useState<Group[]>([]);
     const [loading, setLoading] = useState(false);
@@ -18,10 +14,11 @@ const StudentsTable: React.FC<TableProps> = ({ tableHeight }) => {
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [editingStudent, setEditingStudent] = useState<Student | null>(null);
 
+    const [tableScrollY, setTableScrollY] = useState<number>(0);
+    const containerRef = useRef<HTMLDivElement>(null);
+
     const [form] = Form.useForm();
     const [editForm] = Form.useForm();
-
-    const containerRef = useRef<HTMLDivElement>(null);
 
     // Горячие клавиши
     useEffect(() => {
@@ -35,16 +32,12 @@ const StudentsTable: React.FC<TableProps> = ({ tableHeight }) => {
         return () => window.removeEventListener("keydown", handleShortcut);
     }, []);
 
-    // Загрузка студентов
+    // Загрузка данных
     const loadStudents = async () => {
         setLoading(true);
         try {
             const data = await fetchStudents();
-            const formatted: Student[] = data.map((s: any) => ({
-                ...s,
-                groupName: s.groupName || s.group?.name || "",
-            }));
-            setStudents(formatted);
+            setStudents(data.map((s: any) => ({ ...s, groupName: s.groupName || s.group?.name || "" })));
         } catch (err: any) {
             message.error(err.message);
         } finally {
@@ -52,7 +45,6 @@ const StudentsTable: React.FC<TableProps> = ({ tableHeight }) => {
         }
     };
 
-    // Загрузка групп
     const loadGroups = async () => {
         try {
             const data = await getAllGroups();
@@ -67,7 +59,25 @@ const StudentsTable: React.FC<TableProps> = ({ tableHeight }) => {
         loadGroups();
     }, []);
 
-    // Добавление
+    // Вычисляем высоту таблицы
+    useEffect(() => {
+        const updateHeight = () => {
+            if (containerRef.current) {
+                const containerHeight = containerRef.current.clientHeight;
+                const topBlock = containerRef.current.querySelector("div");
+                const topBlockHeight = topBlock ? (topBlock as HTMLElement).clientHeight + 8 : 0;
+                // +8 = нижний отступ под кнопкой
+
+                const bottomOffset = Math.max(window.innerHeight * 0.05, 24);
+                setTableScrollY(containerHeight - topBlockHeight - bottomOffset);
+            }
+        };
+
+        updateHeight();
+        window.addEventListener("resize", updateHeight);
+        return () => window.removeEventListener("resize", updateHeight);
+    }, []);
+
     const onFinish = async (values: any) => {
         try {
             await createStudent(values);
@@ -80,7 +90,6 @@ const StudentsTable: React.FC<TableProps> = ({ tableHeight }) => {
         }
     };
 
-    // Редактирование
     const openEditModal = (student: Student) => {
         setEditingStudent(student);
         setIsEditModalOpen(true);
@@ -119,13 +128,7 @@ const StudentsTable: React.FC<TableProps> = ({ tableHeight }) => {
     };
 
     const columns = [
-        {
-            title: "ID",
-            dataIndex: "id",
-            key: "id",
-            sorter: (a: Student, b: Student) => a.id - b.id, // добавляем сортировщик
-            defaultSortOrder: "ascend" as SortOrder,
-        },
+        { title: "ID", dataIndex: "id", key: "id", sorter: (a: Student, b: Student) => a.id - b.id, defaultSortOrder: "ascend" as SortOrder },
         { title: "ФИО", dataIndex: "fullname", key: "fullname" },
         { title: "Возраст", dataIndex: "age", key: "age" },
         { title: "Телефон", dataIndex: "phone", key: "phone" },
@@ -136,94 +139,80 @@ const StudentsTable: React.FC<TableProps> = ({ tableHeight }) => {
             key: "actions",
             render: (_: any, record: Student) => (
                 <>
-                    <Button type="link" onClick={() => openEditModal(record)} style={{ marginRight: 8 }}>
+                    <Button className="edit-btn" onClick={() => openEditModal(record)} style={{ marginRight: 8 }}>
                         Изменить
                     </Button>
-                    <Button danger onClick={() => handleDelete(record.id)}>
+                    <Button className="delete-btn" onClick={() => handleDelete(record.id)}>
                         Удалить
                     </Button>
                 </>
             ),
-        },
+        }
     ];
 
     return (
-        <div ref={containerRef} style={{ padding: 20, height: tableHeight, display: "flex", flexDirection: "column" }}>
+        <div ref={containerRef} style={{
+            display: "flex",
+            flexDirection: "column",
+            flex: 1,
+            minHeight: 0,
+            padding: "10px 10px 0 10px"
+        }}>
+            {/* Верхний блок с кнопкой */}
             <div style={{ marginBottom: 8 }}>
                 <Button type="primary" onClick={() => setIsModalOpen(true)}>
                     Добавить ученика (Shift + N)
                 </Button>
             </div>
 
-            <div style={{ flex: 1, overflowY: "auto" }}>
-                <Table dataSource={students} columns={columns} rowKey="id" loading={loading} pagination={false} />
+            {/* Таблица с прокруткой только внутри */}
+            <div style={{ flex: 1, minHeight: 0 }}>
+                <Table
+                    dataSource={students}
+                    columns={columns}
+                    rowKey="id"
+                    pagination={false}
+                    loading={loading}
+                    scroll={{ y: tableScrollY }}
+                />
             </div>
 
-            {/* Модалка добавить */}
+            {/* Модалки */}
             <Modal title="Добавить ученика" open={isModalOpen} onCancel={() => setIsModalOpen(false)} footer={null}>
                 <Form form={form} onFinish={onFinish} layout="vertical">
-                    <Form.Item name="fullname" label="ФИО" rules={[{ required: true }]}>
-                        <Input />
-                    </Form.Item>
-                    <Form.Item name="age" label="Возраст" rules={[{ required: true }]}>
-                        <Input type="number" />
-                    </Form.Item>
-                    <Form.Item name="phone" label="Телефон" rules={[{ required: true }]}>
-                        <Input />
-                    </Form.Item>
-                    <Form.Item name="birthdate" label="Дата рождения" rules={[{ required: true }]}>
-                        <Input type="date" />
-                    </Form.Item>
+                    <Form.Item name="fullname" label="ФИО" rules={[{ required: true }]}><Input /></Form.Item>
+                    <Form.Item name="age" label="Возраст" rules={[{ required: true }]}><Input type="number" /></Form.Item>
+                    <Form.Item name="phone" label="Телефон" rules={[{ required: true }]}><Input /></Form.Item>
+                    <Form.Item name="birthdate" label="Дата рождения" rules={[{ required: true }]}><Input type="date" /></Form.Item>
                     <Form.Item name="groupName" label="Класс" rules={[{ required: true }]}>
                         <AutoComplete
                             options={groups.map((g) => ({ value: g.name }))}
                             onChange={(value) => form.setFieldsValue({ groupName: value })}
-                            filterOption={(inputValue, option) =>
-                                option!.value.toLowerCase().includes(inputValue.toLowerCase())
-                            }
+                            filterOption={(inputValue, option) => option!.value.toLowerCase().includes(inputValue.toLowerCase())}
                         >
                             <Input placeholder="Выберите или введите группу" />
                         </AutoComplete>
                     </Form.Item>
-                    <Form.Item>
-                        <Button type="primary" htmlType="submit" block>
-                            Сохранить
-                        </Button>
-                    </Form.Item>
+                    <Form.Item><Button type="primary" htmlType="submit" block>Сохранить</Button></Form.Item>
                 </Form>
             </Modal>
 
-            {/* Модалка редактировать */}
             <Modal title="Изменить ученика" open={isEditModalOpen} onCancel={() => setIsEditModalOpen(false)} footer={null}>
                 <Form form={editForm} onFinish={onEditFinish} layout="vertical">
-                    <Form.Item name="fullname" label="ФИО" rules={[{ required: true }]}>
-                        <Input />
-                    </Form.Item>
-                    <Form.Item name="age" label="Возраст" rules={[{ required: true }]}>
-                        <Input type="number" />
-                    </Form.Item>
-                    <Form.Item name="phone" label="Телефон" rules={[{ required: true }]}>
-                        <Input />
-                    </Form.Item>
-                    <Form.Item name="birthdate" label="Дата рождения" rules={[{ required: true }]}>
-                        <Input type="date" />
-                    </Form.Item>
+                    <Form.Item name="fullname" label="ФИО" rules={[{ required: true }]}><Input /></Form.Item>
+                    <Form.Item name="age" label="Возраст" rules={[{ required: true }]}><Input type="number" /></Form.Item>
+                    <Form.Item name="phone" label="Телефон" rules={[{ required: true }]}><Input /></Form.Item>
+                    <Form.Item name="birthdate" label="Дата рождения" rules={[{ required: true }]}><Input type="date" /></Form.Item>
                     <Form.Item name="groupName" label="Класс" rules={[{ required: true }]}>
                         <AutoComplete
                             options={groups.map((g) => ({ value: g.name }))}
                             onChange={(value) => editForm.setFieldsValue({ groupName: value })}
-                            filterOption={(inputValue, option) =>
-                                option!.value.toLowerCase().includes(inputValue.toLowerCase())
-                            }
+                            filterOption={(inputValue, option) => option!.value.toLowerCase().includes(inputValue.toLowerCase())}
                         >
                             <Input placeholder="Выберите или введите группу" />
                         </AutoComplete>
                     </Form.Item>
-                    <Form.Item>
-                        <Button type="primary" htmlType="submit" block>
-                            Сохранить изменения
-                        </Button>
-                    </Form.Item>
+                    <Form.Item><Button type="primary" htmlType="submit" block>Сохранить изменения</Button></Form.Item>
                 </Form>
             </Modal>
         </div>

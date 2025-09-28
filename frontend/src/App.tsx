@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useRef} from "react";
 import { Layout, Menu } from "antd";
 import StudentsTable from "./components/StudentsTable";
 import GroupsTable from "./components/GroupsTable";
@@ -9,20 +9,6 @@ const { Header, Sider, Content } = Layout;
 const App: React.FC = () => {
     const [selectedKey, setSelectedKey] = useState("1");
     const contentRef = useRef<HTMLDivElement>(null);
-    const [tableHeight, setTableHeight] = useState<number>(0);
-
-    // Вычисляем высоту таблицы после рендера
-    useEffect(() => {
-        const updateHeight = () => {
-            if (contentRef.current) {
-                const padding = 20 * 2; // сверху и снизу
-                setTableHeight(contentRef.current.clientHeight - padding);
-            }
-        };
-        updateHeight();
-        window.addEventListener("resize", updateHeight);
-        return () => window.removeEventListener("resize", updateHeight);
-    }, []);
 
     return (
         <Layout style={{ height: "100vh" }}>
@@ -41,10 +27,16 @@ const App: React.FC = () => {
                 </Sider>
                 <Content
                     ref={contentRef}
-                    style={{ padding: 20, height: "100%", overflow: "hidden" }}
+                    style={{
+                        display: "flex",
+                        flexDirection: "column",
+                        minHeight: 0,
+                        padding: "0px 20px 40px",
+                        overflow: "hidden",
+                    }}
                 >
-                    {selectedKey === "1" && <StudentsTable tableHeight={tableHeight} />}
-                    {selectedKey === "2" && <GroupsTable tableHeight={tableHeight} />}
+                    {selectedKey === "1" && <StudentsTable />}
+                    {selectedKey === "2" && <GroupsTable />}
                 </Content>
             </Layout>
         </Layout>

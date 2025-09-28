@@ -3,17 +3,14 @@ import { Table, Modal, Button, Form, Input, message } from "antd";
 import { Group } from "../types.ts";
 import { createGroup, deleteGroup, getAllGroups } from "../api/groupApi.ts";
 
-interface GroupsTableProps {
-    tableHeight: number; // принимаем высоту из App
-}
-
-const GroupsTable: React.FC<GroupsTableProps> = ({ tableHeight }) => {
+const GroupsTable: React.FC = () => {
     const [groups, setGroups] = useState<Group[]>([]);
     const [loading, setLoading] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [tableScrollY, setTableScrollY] = useState<number>(0);
+
     const [form] = Form.useForm();
     const containerRef = useRef<HTMLDivElement>(null);
-
 
     // Shortcuts
     useEffect(() => {
@@ -22,11 +19,11 @@ const GroupsTable: React.FC<GroupsTableProps> = ({ tableHeight }) => {
                 event.preventDefault();
                 setIsModalOpen(true);
             }
-        }
+        };
 
         window.addEventListener("keydown", handleShortcut);
         return () => window.removeEventListener("keydown", handleShortcut);
-    })
+    }, []);
 
     const loadGroups = async () => {
         setLoading(true);
@@ -34,7 +31,7 @@ const GroupsTable: React.FC<GroupsTableProps> = ({ tableHeight }) => {
             const data = await getAllGroups();
             setGroups(data);
         } catch (err: any) {
-            message.error(err.message);
+            message.error(err.message || "Ошибка при загрузке групп");
         } finally {
             setLoading(false);
         }
@@ -51,10 +48,9 @@ const GroupsTable: React.FC<GroupsTableProps> = ({ tableHeight }) => {
             message.success("Группа добавлена!");
             setIsModalOpen(false);
             form.resetFields();
+            await loadGroups();
         } catch (err: any) {
             message.error(err.message || "Ошибка при добавлении группы");
-        } finally {
-            await loadGroups();
         }
     };
 
@@ -86,46 +82,59 @@ const GroupsTable: React.FC<GroupsTableProps> = ({ tableHeight }) => {
             title: "Действия",
             key: "actions",
             render: (_: any, record: Group) => (
-                <Button danger onClick={() => handleDelete(record.name)}>
+                <Button className="delete-btn" onClick={() => handleDelete(record.name)}>
                     Удалить
                 </Button>
             ),
         },
     ];
 
+    // вычисляем высоту таблицы
+    useEffect(() => {
+        const updateHeight = () => {
+            if (containerRef.current) {
+                const containerHeight = containerRef.current.clientHeight;
+                const topBlock = containerRef.current.querySelector("div");
+                const topBlockHeight = topBlock ? (topBlock as HTMLElement).clientHeight + 8 : 0;
+
+                // адаптивный отступ снизу: 5% экрана, но минимум 24px
+                const bottomOffset = Math.max(window.innerHeight * 0.05, 24);
+
+                setTableScrollY(containerHeight - topBlockHeight - bottomOffset);
+            }
+        };
+        updateHeight();
+        window.addEventListener("resize", updateHeight);
+        return () => window.removeEventListener("resize", updateHeight);
+    }, []);
+
     return (
         <div
             ref={containerRef}
             style={{
-                paddingLeft: 20,
-                paddingRight: 20,
-                paddingTop: 8,
-                paddingBottom: 20,
-                height: tableHeight,
                 display: "flex",
                 flexDirection: "column",
+                flex: 1,
+                minHeight: 0,
+                padding: "10px 10px 0 10px",
             }}
         >
-            {/* Закреплённая кнопка с внутренними паддингами и левым margin */}
-            <div style={{ background: "transparent", padding: "4px 0", zIndex: 1 }}>
-                <Button
-                    type="primary"
-                    onClick={() => setIsModalOpen(true)}
-                    style={{ marginLeft: 8 }}
-                >
+            {/* Кнопка добавления группы */}
+            <div style={{ marginBottom: 8 }}>
+                <Button type="primary" onClick={() => setIsModalOpen(true)}>
                     Добавить группу (Shift + N)
                 </Button>
             </div>
 
-            {/* Таблица с прокруткой */}
-            <div style={{ flex: 1, overflowY: "auto", marginTop: 8 }}>
+            {/* Таблица */}
+            <div style={{ flex: 1, minHeight: 0, paddingBottom: 40 }}>
                 <Table
                     dataSource={groups}
                     columns={columns}
                     rowKey="name"
                     loading={loading}
                     pagination={false}
-                    style={{ minWidth: "100%" }}
+                    scroll={{ y: tableScrollY }}
                 />
             </div>
 
