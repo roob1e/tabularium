@@ -29,7 +29,7 @@ public class GroupService {
      */
     public Group getGroup(Long id) {
         return groupRepository.findById(id)
-                .orElseThrow(() -> new GroupNotFoundException("Группа с id " + id + " не найдена"));
+                .orElseThrow(() -> new GroupNotFoundException("Группа не найдена", id));
     }
 
     /**

@@ -36,7 +36,7 @@ public class StudentService {
     @Transactional
     public Student createStudent(CreateStudentRequest request) {
         Group group = groupRepository.findById(request.getGroupId())
-                .orElseThrow(() -> new GroupNotFoundException("Группа не найдена"));
+                .orElseThrow(() -> new GroupNotFoundException("Группа не найдена", request.getGroupId()));
 
         Student student = Student.builder()
                 .fullname(request.getFullname())
@@ -105,7 +105,7 @@ public class StudentService {
         student.setBirthdate(dto.getBirthdate());
 
         Group newGroup = groupRepository.findById(dto.getGroupId())
-                .orElseThrow(() -> new GroupNotFoundException("Группа не найдена"));
+                .orElseThrow(() -> new GroupNotFoundException("Группа не найдена", dto.getGroupId()));
         student.setGroup(newGroup);
 
         if (!oldGroup.getId().equals(newGroup.getId())) {
