@@ -8,7 +8,6 @@ import com.roobie.backend.service.StudentService;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -61,7 +60,6 @@ public class AutoGradeUpdate {
      * и, если такая группа существует, обновляет его через StudentService.
      */
     @Transactional
-    @Scheduled(cron = "0 0 0 30 7 *") // TODO: сделать настройку даты через интерфейс
     public void updateAllStudents() {
         List<Student> students = studentService.getStudents();
 
@@ -81,6 +79,8 @@ public class AutoGradeUpdate {
                 studentService.updateStudent(student.getId(), dto);
 
                 log.info("Студент '{}' перемещён в группу '{}'", student.getFullname(), newGradeName);
+            } else {
+                log.info("Студен '{}' - выпускник, группы '{}' не существует", student.getFullname(), newGradeName);
             }
         }
     }
