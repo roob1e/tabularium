@@ -29,5 +29,5 @@ public class UpdateStudentRequest {
     private LocalDate birthdate;
 
     @NotBlank(message = "Group is required")
-    private String groupName;
+    private Long groupId;
 }

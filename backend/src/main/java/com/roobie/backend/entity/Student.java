@@ -33,6 +33,6 @@ public class Student {
     private LocalDate birthdate;
 
     @ManyToOne
-    @JoinColumn(name = "group_name", nullable = false)
+    @JoinColumn(name = "group_id", nullable = false)
     private Group group;
 }

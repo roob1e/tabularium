@@ -31,7 +31,7 @@ public class GroupController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Group> getGroupById(@PathVariable String id) {
+    public ResponseEntity<Group> getGroupById(@PathVariable Long id) {
         log.info("Fetching group by id {}", id);
         var group = groupService.getGroup(id);
         return group != null ? ResponseEntity.ok(group) : ResponseEntity.notFound().build();
@@ -52,7 +52,7 @@ public class GroupController {
 
     // DELETE: delete;
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteGroup(@PathVariable String id) {
+    public ResponseEntity<Void> deleteGroup(@PathVariable Long id) {
         log.info("Deleting group with id {}", id);
         boolean deleted = groupService.deleteGroup(id);
         return deleted ? ResponseEntity.noContent().build()

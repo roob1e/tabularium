@@ -7,22 +7,24 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Set;
+
 @Entity
-@Table(name = "groups")
+@Table(name = "subjects")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Group {
+public class Subject {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
 
     @NotBlank
-    @Column(name = "name", nullable = false)
+    @Column(name = "name")
     private String name;
 
-    @Column(name = "amount", nullable = false)
-    private int amount;
+    @ManyToMany(mappedBy = "subjects")
+    private Set<Teacher> teachers;
 }
