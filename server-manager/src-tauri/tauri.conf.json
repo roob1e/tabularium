@@ -5,16 +5,14 @@
   "identifier": "com.tauri.dev",
   "build": {
     "frontendDist": "../build",
-    "devUrl": "http://localhost:3000",
-    "beforeDevCommand": "pnpm dev",
-    "beforeBuildCommand": "pnpm build"
+    "devUrl": "http://localhost:5173",
+    "beforeDevCommand": "npm run dev",
+    "beforeBuildCommand": "npm run build"
   },
   "app": {
     "windows": [
       {
-        "title": "Менеджер сервера",
-        "width": 800,
-        "height": 600,
+        "title": "server-manager",
         "resizable": true,
         "fullscreen": false
       }
@@ -35,4 +33,3 @@
     ]
   }
 }
-
