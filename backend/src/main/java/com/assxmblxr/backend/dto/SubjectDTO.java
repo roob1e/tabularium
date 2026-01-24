@@ -13,10 +13,10 @@ import java.util.Set;
 @NoArgsConstructor
 @Builder
 public class SubjectDTO {
-    private Long id;
+  private Long id;
 
-    @NotBlank(message = "name is required")
-    private String name;
+  @NotBlank(message = "name is required")
+  private String name;
 
-    private Set<Long> teacherIds;
+  private Set<Long> teacherIds;
 }

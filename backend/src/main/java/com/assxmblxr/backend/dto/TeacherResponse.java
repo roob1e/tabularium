@@ -6,8 +6,8 @@ import java.util.Set;
 
 @Data
 public class TeacherResponse {
-    private Long id;
-    private String fullname;
-    private String phone;
-    private Set<Long> subjectIds;
+  private Long id;
+  private String fullname;
+  private String phone;
+  private Set<Long> subjectIds;
 }

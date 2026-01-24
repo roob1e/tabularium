@@ -16,32 +16,32 @@ import java.time.Period;
 @AllArgsConstructor
 @Builder
 public class Student {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
-    private Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Column(name = "id")
+  private Long id;
 
-    @Column(name = "fullname", nullable = false)
-    private String fullname;
+  @Column(name = "fullname", nullable = false)
+  private String fullname;
 
-    @Column(name = "age", nullable = false)
-    private Integer age;
+  @Column(name = "age", nullable = false)
+  private Integer age;
 
-    @Column(name = "phone", nullable = false)
-    private String phone;
+  @Column(name = "phone", nullable = false)
+  private String phone;
 
-    @Column(name = "birthdate")
-    private LocalDate birthdate;
+  @Column(name = "birthdate")
+  private LocalDate birthdate;
 
-    @ManyToOne
-    @JoinColumn(name = "group_id", nullable = false)
-    private Group group;
+  @ManyToOne
+  @JoinColumn(name = "group_id", nullable = false)
+  private Group group;
 
-    public void recalcAge() {
-        if (birthdate != null) {
-            this.age = Period.between(birthdate, LocalDate.now()).getYears();
-        } else {
-            this.age = 0; // или null, если nullable
-        }
+  public void recalcAge() {
+    if (birthdate != null) {
+      this.age = Period.between(birthdate, LocalDate.now()).getYears();
+    } else {
+      this.age = 0; // или null, если nullable
     }
+  }
 }

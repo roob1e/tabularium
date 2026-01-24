@@ -14,15 +14,15 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class Group {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
-    private Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Column(name = "id")
+  private Long id;
 
-    @NotBlank
-    @Column(name = "name", nullable = false, unique = true)
-    private String name;
+  @NotBlank
+  @Column(name = "name", nullable = false, unique = true)
+  private String name;
 
-    @Column(name = "amount", nullable = false)
-    private int amount;
+  @Column(name = "amount", nullable = false)
+  private int amount;
 }

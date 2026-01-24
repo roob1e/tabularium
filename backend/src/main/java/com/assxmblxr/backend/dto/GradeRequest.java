@@ -10,16 +10,16 @@ import lombok.Data;
  */
 @Data
 public class GradeRequest {
-    @NotNull(message = "Ссылка на студента обязательна")
-    private Long studentId;
+  @NotNull(message = "Ссылка на студента обязательна")
+  private Long studentId;
 
-    @NotNull(message = "Ссылка на предмет обязательна")
-    private Long subjectId;
+  @NotNull(message = "Ссылка на предмет обязательна")
+  private Long subjectId;
 
-    @NotNull(message = "Ссылка на учителя обязательна")
-    private Long teacherId;
+  @NotNull(message = "Ссылка на учителя обязательна")
+  private Long teacherId;
 
-    @NotNull(message = "Оценка обязательна")
-    @Max(10)
-    private int grade;
+  @NotNull(message = "Оценка обязательна")
+  @Max(10)
+  private int grade;
 }

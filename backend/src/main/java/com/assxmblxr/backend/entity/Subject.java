@@ -16,15 +16,15 @@ import java.util.Set;
 @AllArgsConstructor
 @Builder
 public class Subject {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
-    private Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Column(name = "id")
+  private Long id;
 
-    @NotBlank
-    @Column(name = "name")
-    private String name;
+  @NotBlank
+  @Column(name = "name")
+  private String name;
 
-    @ManyToMany(mappedBy = "subjects")
-    private Set<Teacher> teachers;
+  @ManyToMany(mappedBy = "subjects")
+  private Set<Teacher> teachers;
 }

@@ -15,20 +15,20 @@ import javax.sql.DataSource;
 @Configuration
 public class DataSourceConfig {
 
-    @Bean
-    @Primary
-    public DataSource dataSource(
-            @Value("${spring.datasource.url}") String url,
-            @Value("${spring.datasource.username}") String username,
-            @Value("${spring.datasource.password}") String password
-    ) {
-        HikariDataSource dataSource = new HikariDataSource();
-        dataSource.setJdbcUrl(url);
-        dataSource.setUsername(username);
-        dataSource.setPassword(password);
-        dataSource.setDriverClassName("org.postgresql.Driver"); // драйвер фиксируем
+  @Bean
+  @Primary
+  public DataSource dataSource(
+          @Value("${spring.datasource.url}") String url,
+          @Value("${spring.datasource.username}") String username,
+          @Value("${spring.datasource.password}") String password
+  ) {
+    HikariDataSource dataSource = new HikariDataSource();
+    dataSource.setJdbcUrl(url);
+    dataSource.setUsername(username);
+    dataSource.setPassword(password);
+    dataSource.setDriverClassName("org.postgresql.Driver"); // драйвер фиксируем
 
-        log.info("application.yml is configured");
-        return dataSource;
-    }
+    log.info("application.yml is configured");
+    return dataSource;
+  }
 }
