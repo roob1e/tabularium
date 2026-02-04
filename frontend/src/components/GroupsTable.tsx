@@ -12,7 +12,7 @@ const GroupsTable: React.FC = () => {
     const [form] = Form.useForm();
     const containerRef = useRef<HTMLDivElement>(null);
 
-    // Shortcuts
+    // Горячие клавиши
     useEffect(() => {
         const handleShortcut = (event: KeyboardEvent) => {
             if (event.shiftKey && ["n", "т"].includes(event.key.toLowerCase())) {
