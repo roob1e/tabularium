@@ -4,14 +4,62 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="e10879a7-47f4-4320-9078-b17d97f958b6" name="Changes" comment="Im so fuckin scared 3">
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/assxmblxr/backend/entity/RefreshToken.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/assxmblxr/backend/entity/User.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/assxmblxr/backend/repository/RefreshTokenRepository.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/assxmblxr/backend/repository/UserRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/67ed9073-2dbe-4926-ae04-439505e96e9b/storage_v2/_src_/database/students_db.haRijA/schema/public.abK9xQ.meta" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/67ed9073-2dbe-4926-ae04-439505e96e9b/storage_v2/_src_/database/students_db.haRijA/schema/public.abK9xQ.meta" afterDir="false" />
+    <list default="true" id="e10879a7-47f4-4320-9078-b17d97f958b6" name="Changes" comment="New User and RefreshToken tables and repositories">
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/assxmblxr/backend/config/SecurityConfig.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/assxmblxr/backend/service/TokenService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/assxmblxr/backend/service/UserService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/assxmblxr/backend/dto/StudentRequest.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/assxmblxr/backend/dto/StudentRequest.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/assxmblxr/backend/controller/GradeController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/assxmblxr/backend/controller/GradeController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/assxmblxr/backend/BackendApplication.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/assxmblxr/backend/components/AutoGradeUpdate.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/assxmblxr/backend/config/CorsConfig$1.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/assxmblxr/backend/config/CorsConfig.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/assxmblxr/backend/config/DataSourceConfig.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/assxmblxr/backend/config/DatasourceLogger.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/assxmblxr/backend/config/TaskSchedulerConfig.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/assxmblxr/backend/controller/GradeController.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/assxmblxr/backend/controller/GroupController.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/assxmblxr/backend/controller/RootController.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/assxmblxr/backend/controller/SchedulerController.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/assxmblxr/backend/controller/StudentController.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/assxmblxr/backend/controller/SubjectController.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/assxmblxr/backend/controller/TeacherController.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/assxmblxr/backend/dto/GradeRequest.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/assxmblxr/backend/dto/GradeResponse.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/assxmblxr/backend/dto/StudentRequest.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/assxmblxr/backend/dto/StudentResponse.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/assxmblxr/backend/dto/SubjectDTO$SubjectDTOBuilder.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/assxmblxr/backend/dto/SubjectDTO.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/assxmblxr/backend/dto/TeacherRequest.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/assxmblxr/backend/dto/TeacherResponse.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/assxmblxr/backend/entity/Grade$GradeBuilder.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/assxmblxr/backend/entity/Grade.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/assxmblxr/backend/entity/Group$GroupBuilder.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/assxmblxr/backend/entity/Group.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/assxmblxr/backend/entity/Student$StudentBuilder.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/assxmblxr/backend/entity/Student.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/assxmblxr/backend/entity/Subject$SubjectBuilder.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/assxmblxr/backend/entity/Subject.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/assxmblxr/backend/entity/Teacher$TeacherBuilder.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/assxmblxr/backend/entity/Teacher.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/assxmblxr/backend/exceptions/GradeNotFoundException.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/assxmblxr/backend/exceptions/GroupNotFoundException.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/assxmblxr/backend/exceptions/StudentNotFoundException.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/assxmblxr/backend/exceptions/SubjectNotFoundException.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/assxmblxr/backend/exceptions/TeacherNotFoundException.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/assxmblxr/backend/repository/GradeRepository.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/assxmblxr/backend/repository/GroupRepository.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/assxmblxr/backend/repository/StudentRepository.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/assxmblxr/backend/repository/SubjectRepository.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/assxmblxr/backend/repository/TeacherRepository.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/assxmblxr/backend/service/GradeService.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/assxmblxr/backend/service/GroupService.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/assxmblxr/backend/service/SchedulerService.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/assxmblxr/backend/service/StudentService.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/assxmblxr/backend/service/SubjectService.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/assxmblxr/backend/service/TeacherService.class" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -79,6 +127,8 @@
     "HTTP Request.generated-requests | #2.executor": "Run",
     "JUnit.AutoGradeUpdateTest.executor": "Run",
     "Maven.backend [clean,compile,exec:java...].executor": "Run",
+    "Maven.backend [clean,install].executor": "Run",
+    "Maven.backend [clean].executor": "Run",
     "Maven.backend [mvn,clean,compile,exec:java...].executor": "Run",
     "ModuleVcsDetector.initialDetectionPerformed": "true",
     "RequestMappingsPanelOrder0": "0",
@@ -111,6 +161,8 @@
     <option name="myCommands">
       <command value="mvn mvn clean compile exec:java -Dexec.mainClass=&quot;com.assxmblxr.backend.BackendApplication&quot;" />
       <command value="mvn clean compile exec:java -Dexec.mainClass=&quot;com.assxmblxr.backend.BackendApplication&quot;" />
+      <command value="mvn clean" />
+      <command value="mvn clean install" />
     </option>
   </component>
   <component name="RunManager">
@@ -157,7 +209,7 @@
       <workItem from="1771422977206" duration="294000" />
       <workItem from="1771423272954" duration="33000" />
       <workItem from="1771423313084" duration="592000" />
-      <workItem from="1771435833164" duration="5271000" />
+      <workItem from="1771435833164" duration="7971000" />
     </task>
     <task id="LOCAL-00001" summary="Fixed DTOs">
       <option name="closed" value="true" />
@@ -223,7 +275,23 @@
       <option name="project" value="LOCAL" />
       <updated>1771437134970</updated>
     </task>
-    <option name="localTasksCounter" value="9" />
+    <task id="LOCAL-00009" summary="Reindent with 2 indents">
+      <option name="closed" value="true" />
+      <created>1771441583969</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1771441583969</updated>
+    </task>
+    <task id="LOCAL-00010" summary="New User and RefreshToken tables and repositories">
+      <option name="closed" value="true" />
+      <created>1771441627442</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1771441627442</updated>
+    </task>
+    <option name="localTasksCounter" value="11" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -271,6 +339,8 @@
     <MESSAGE value="Im so fuckin scared" />
     <MESSAGE value="Im so fuckin scared 2" />
     <MESSAGE value="Im so fuckin scared 3" />
-    <option name="LAST_COMMIT_MESSAGE" value="Im so fuckin scared 3" />
+    <MESSAGE value="Reindent with 2 indents" />
+    <MESSAGE value="New User and RefreshToken tables and repositories" />
+    <option name="LAST_COMMIT_MESSAGE" value="New User and RefreshToken tables and repositories" />
   </component>
 </project>

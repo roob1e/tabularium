@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@SuppressWarnings("LoggingSimilarMessage")
 @Slf4j
 @AllArgsConstructor
 @RestController
