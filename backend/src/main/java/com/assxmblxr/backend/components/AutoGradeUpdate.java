@@ -1,6 +1,5 @@
 package com.assxmblxr.backend.components;
 
-import com.assxmblxr.backend.dto.UpdateStudentRequest;
 import com.assxmblxr.backend.entity.Group;
 import com.assxmblxr.backend.entity.Student;
 import com.assxmblxr.backend.service.GroupService;

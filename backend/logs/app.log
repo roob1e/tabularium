@@ -1,0 +1,227 @@
+2026-02-18 14:02:26.139 [background-preinit] INFO  o.h.validator.internal.util.Version - HV000001: Hibernate Validator 8.0.3.Final
+2026-02-18 14:02:26.150 [main] INFO  c.a.backend.BackendApplication - Starting BackendApplication using Java 25.0.2 with PID 2912 (/Users/assxmblxr/IT/tabularium/backend/target/classes started by assxmblxr in /Users/assxmblxr/IT/tabularium/backend)
+2026-02-18 14:02:26.150 [main] DEBUG c.a.backend.BackendApplication - Running with Spring Boot v3.5.5, Spring v6.2.10
+2026-02-18 14:02:26.150 [main] INFO  c.a.backend.BackendApplication - No active profile set, falling back to 1 default profile: "default"
+2026-02-18 14:02:26.407 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-02-18 14:02:26.426 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 16 ms. Found 5 JPA repository interfaces.
+2026-02-18 14:02:26.578 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat initialized with port 8080 (http)
+2026-02-18 14:02:26.582 [main] INFO  o.a.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8080"]
+2026-02-18 14:02:26.582 [main] INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
+2026-02-18 14:02:26.582 [main] INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.44]
+2026-02-18 14:02:26.595 [main] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+2026-02-18 14:02:26.595 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 432 ms
+2026-02-18 14:02:26.656 [main] INFO  c.a.backend.config.DataSourceConfig - application.yml is configured
+2026-02-18 14:02:26.688 [main] INFO  o.h.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-02-18 14:02:26.705 [main] INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 6.6.26.Final
+2026-02-18 14:02:26.714 [main] INFO  o.h.c.i.RegionFactoryInitiator - HHH000026: Second-level cache disabled
+2026-02-18 14:02:26.799 [main] INFO  o.s.o.j.p.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-02-18 14:02:26.804 [main] WARN  org.hibernate.orm.deprecation - HHH90000021: Encountered deprecated setting [hibernate.temp.use_jdbc_metadata_defaults], use [hibernate.boot.allow_jdbc_metadata_access] instead
+2026-02-18 14:02:26.810 [main] WARN  org.hibernate.orm.deprecation - HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-02-18 14:02:26.814 [main] INFO  o.hibernate.orm.connections.pooling - HHH10001005: Database info:
+	Database JDBC URL [undefined/unknown]
+	Database driver: undefined/unknown
+	Database version: 12.0
+	Autocommit mode: undefined/unknown
+	Isolation level: <unknown>
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-02-18 14:02:27.144 [main] INFO  o.h.e.t.j.p.i.JtaPlatformInitiator - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-02-18 14:02:27.150 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2026-02-18 14:02:27.203 [main] INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@787b7796
+2026-02-18 14:02:27.203 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2026-02-18 14:02:27.326 [main] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-02-18 14:02:27.407 [main] INFO  o.s.d.j.r.query.QueryEnhancerFactory - Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-02-18 14:02:27.656 [main] WARN  o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-02-18 14:02:27.805 [main] INFO  o.s.b.a.e.web.EndpointLinksResolver - Exposing 1 endpoint beneath base path '/actuator'
+2026-02-18 14:02:27.826 [main] INFO  o.a.coyote.http11.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8080"]
+2026-02-18 14:02:27.829 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat started on port 8080 (http) with context path '/'
+2026-02-18 14:02:27.836 [main] INFO  c.a.backend.BackendApplication - Started BackendApplication in 1.816 seconds (process running for 2.087)
+2026-02-18 14:02:27.975 [RMI TCP Connection(4)-127.0.0.1] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-02-18 14:02:27.975 [RMI TCP Connection(4)-127.0.0.1] INFO  o.s.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
+2026-02-18 14:02:27.976 [RMI TCP Connection(4)-127.0.0.1] INFO  o.s.web.servlet.DispatcherServlet - Completed initialization in 1 ms
+2026-02-18 14:02:33.896 [http-nio-8080-exec-1] INFO  c.a.b.controller.RootController - Root controller called
+2026-02-18 14:02:42.683 [http-nio-8080-exec-2] INFO  c.a.b.controller.RootController - Root controller called
+2026-02-18 14:03:00.749 [http-nio-8080-exec-4] INFO  c.a.b.controller.StudentController - Fetching all students
+2026-02-18 14:03:00.826 [http-nio-8080-exec-4] WARN  o.s.w.s.m.s.DefaultHandlerExceptionResolver - Resolved [org.springframework.http.converter.HttpMessageNotWritableException: Could not write JSON: Cannot invoke "com.assxmblxr.backend.repository.GroupRepository.findById(java.lang.Long)" because "com.assxmblxr.backend.dto.StudentResponse.groupRepository" is null]
+2026-02-18 14:04:33.713 [http-nio-8080-exec-5] INFO  c.a.b.controller.StudentController - Fetching all students
+2026-02-18 14:04:33.722 [http-nio-8080-exec-5] WARN  o.s.w.s.m.s.DefaultHandlerExceptionResolver - Resolved [org.springframework.http.converter.HttpMessageNotWritableException: Could not write JSON: Cannot invoke "com.assxmblxr.backend.repository.GroupRepository.findById(java.lang.Long)" because "com.assxmblxr.backend.dto.StudentResponse.groupRepository" is null]
+2026-02-18 14:05:35.193 [SpringApplicationShutdownHook] INFO  o.s.b.w.e.tomcat.GracefulShutdown - Commencing graceful shutdown. Waiting for active requests to complete
+2026-02-18 14:05:35.195 [tomcat-shutdown] INFO  o.s.b.w.e.tomcat.GracefulShutdown - Graceful shutdown complete
+2026-02-18 14:05:35.198 [SpringApplicationShutdownHook] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-02-18 14:05:35.199 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown initiated...
+2026-02-18 14:05:35.199 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown completed.
+2026-02-18 14:05:36.703 [background-preinit] INFO  o.h.validator.internal.util.Version - HV000001: Hibernate Validator 8.0.3.Final
+2026-02-18 14:05:36.716 [main] INFO  c.a.backend.BackendApplication - Starting BackendApplication using Java 25.0.2 with PID 3352 (/Users/assxmblxr/IT/tabularium/backend/target/classes started by assxmblxr in /Users/assxmblxr/IT/tabularium/backend)
+2026-02-18 14:05:36.716 [main] DEBUG c.a.backend.BackendApplication - Running with Spring Boot v3.5.5, Spring v6.2.10
+2026-02-18 14:05:36.716 [main] INFO  c.a.backend.BackendApplication - No active profile set, falling back to 1 default profile: "default"
+2026-02-18 14:05:36.983 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-02-18 14:05:37.001 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 14 ms. Found 5 JPA repository interfaces.
+2026-02-18 14:05:37.146 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat initialized with port 8080 (http)
+2026-02-18 14:05:37.150 [main] INFO  o.a.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8080"]
+2026-02-18 14:05:37.151 [main] INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
+2026-02-18 14:05:37.151 [main] INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.44]
+2026-02-18 14:05:37.163 [main] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+2026-02-18 14:05:37.163 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 433 ms
+2026-02-18 14:05:37.217 [main] INFO  c.a.backend.config.DataSourceConfig - application.yml is configured
+2026-02-18 14:05:37.245 [main] INFO  o.h.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-02-18 14:05:37.262 [main] INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 6.6.26.Final
+2026-02-18 14:05:37.270 [main] INFO  o.h.c.i.RegionFactoryInitiator - HHH000026: Second-level cache disabled
+2026-02-18 14:05:37.348 [main] INFO  o.s.o.j.p.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-02-18 14:05:37.353 [main] WARN  org.hibernate.orm.deprecation - HHH90000021: Encountered deprecated setting [hibernate.temp.use_jdbc_metadata_defaults], use [hibernate.boot.allow_jdbc_metadata_access] instead
+2026-02-18 14:05:37.358 [main] WARN  org.hibernate.orm.deprecation - HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-02-18 14:05:37.362 [main] INFO  o.hibernate.orm.connections.pooling - HHH10001005: Database info:
+	Database JDBC URL [undefined/unknown]
+	Database driver: undefined/unknown
+	Database version: 12.0
+	Autocommit mode: undefined/unknown
+	Isolation level: <unknown>
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-02-18 14:05:37.650 [main] INFO  o.h.e.t.j.p.i.JtaPlatformInitiator - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-02-18 14:05:37.656 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2026-02-18 14:05:37.718 [main] INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@11a29c0
+2026-02-18 14:05:37.718 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2026-02-18 14:05:37.852 [main] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-02-18 14:05:37.934 [main] INFO  o.s.d.j.r.query.QueryEnhancerFactory - Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-02-18 14:05:38.232 [main] WARN  o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-02-18 14:05:38.391 [main] INFO  o.s.b.a.e.web.EndpointLinksResolver - Exposing 1 endpoint beneath base path '/actuator'
+2026-02-18 14:05:38.414 [main] INFO  o.a.coyote.http11.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8080"]
+2026-02-18 14:05:38.418 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat started on port 8080 (http) with context path '/'
+2026-02-18 14:05:38.425 [main] INFO  c.a.backend.BackendApplication - Started BackendApplication in 1.862 seconds (process running for 2.133)
+2026-02-18 14:05:38.945 [RMI TCP Connection(4)-127.0.0.1] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-02-18 14:05:38.945 [RMI TCP Connection(4)-127.0.0.1] INFO  o.s.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
+2026-02-18 14:05:38.946 [RMI TCP Connection(4)-127.0.0.1] INFO  o.s.web.servlet.DispatcherServlet - Completed initialization in 1 ms
+2026-02-18 14:05:40.549 [http-nio-8080-exec-1] INFO  c.a.b.controller.StudentController - Fetching all students
+2026-02-18 14:19:18.096 [http-nio-8080-exec-3] INFO  c.a.b.controller.SubjectController - Creating subject SubjectDTO(id=null, name=Математика, teacherIds=[])
+2026-02-18 14:19:18.154 [http-nio-8080-exec-5] INFO  c.a.b.controller.SubjectController - Creating subject SubjectDTO(id=null, name=Физика, teacherIds=[])
+2026-02-18 14:19:18.168 [http-nio-8080-exec-7] INFO  c.a.b.controller.SubjectController - Creating subject SubjectDTO(id=null, name=Химия, teacherIds=[])
+2026-02-18 14:19:18.181 [http-nio-8080-exec-9] INFO  c.a.b.controller.SubjectController - Creating subject SubjectDTO(id=null, name=Биология, teacherIds=[])
+2026-02-18 14:19:18.195 [http-nio-8080-exec-1] INFO  c.a.b.controller.SubjectController - Creating subject SubjectDTO(id=null, name=История, teacherIds=[])
+2026-02-18 14:19:18.207 [http-nio-8080-exec-3] INFO  c.a.b.controller.SubjectController - Creating subject SubjectDTO(id=null, name=География, teacherIds=[])
+2026-02-18 14:19:18.219 [http-nio-8080-exec-5] INFO  c.a.b.controller.SubjectController - Creating subject SubjectDTO(id=null, name=Литература, teacherIds=[])
+2026-02-18 14:19:18.231 [http-nio-8080-exec-7] INFO  c.a.b.controller.SubjectController - Creating subject SubjectDTO(id=null, name=Русский язык, teacherIds=[])
+2026-02-18 14:19:18.244 [http-nio-8080-exec-9] INFO  c.a.b.controller.SubjectController - Creating subject SubjectDTO(id=null, name=Английский язык, teacherIds=[])
+2026-02-18 14:19:18.255 [http-nio-8080-exec-1] INFO  c.a.b.controller.SubjectController - Creating subject SubjectDTO(id=null, name=Информатика, teacherIds=[])
+2026-02-18 14:19:18.270 [http-nio-8080-exec-3] INFO  c.a.b.controller.SubjectController - Creating subject SubjectDTO(id=null, name=Физкультура, teacherIds=[])
+2026-02-18 14:19:18.284 [http-nio-8080-exec-4] INFO  c.a.b.controller.SubjectController - Creating subject SubjectDTO(id=null, name=ОБЖ, teacherIds=[])
+2026-02-18 14:19:18.298 [http-nio-8080-exec-6] INFO  c.a.b.controller.SubjectController - Creating subject SubjectDTO(id=null, name=Обществознание, teacherIds=[])
+2026-02-18 14:19:18.313 [http-nio-8080-exec-8] INFO  c.a.b.controller.SubjectController - Creating subject SubjectDTO(id=null, name=Экономика, teacherIds=[])
+2026-02-18 14:19:18.330 [http-nio-8080-exec-10] INFO  c.a.b.controller.SubjectController - Creating subject SubjectDTO(id=null, name=Право, teacherIds=[])
+2026-02-18 14:21:06.045 [http-nio-8080-exec-2] INFO  c.a.b.controller.TeacherController - Create teacher: TeacherRequest(fullname=Иван Петрович Сидоров, phone=+375291234567, subjectIds=[1, 2, 3])
+2026-02-18 14:21:06.109 [http-nio-8080-exec-4] INFO  c.a.b.controller.TeacherController - Create teacher: TeacherRequest(fullname=Мария Ивановна Петрова, phone=+375331234567, subjectIds=[4, 5, 6])
+2026-02-18 14:21:06.138 [http-nio-8080-exec-6] INFO  c.a.b.controller.TeacherController - Create teacher: TeacherRequest(fullname=Алексей Сергеевич Иванов, phone=+375441234567, subjectIds=[7, 8])
+2026-02-18 14:21:06.170 [http-nio-8080-exec-7] INFO  c.a.b.controller.TeacherController - Create teacher: TeacherRequest(fullname=Елена Дмитриевна Козлова, phone=+375251234567, subjectIds=[9, 10, 11])
+2026-02-18 14:21:06.200 [http-nio-8080-exec-9] INFO  c.a.b.controller.TeacherController - Create teacher: TeacherRequest(fullname=Дмитрий Николаевич Новиков, phone=+375331112233, subjectIds=[12, 13])
+2026-02-18 14:21:06.228 [http-nio-8080-exec-1] INFO  c.a.b.controller.TeacherController - Create teacher: TeacherRequest(fullname=Ольга Викторовна Морозова, phone=+375294445566, subjectIds=[14, 15])
+2026-02-18 14:22:09.306 [http-nio-8080-exec-2] INFO  c.a.b.controller.GradeController - Creating grade: GradeRequest(studentId=1, subjectId=1, teacherId=1, grade=9)
+2026-02-18 14:22:09.354 [http-nio-8080-exec-3] INFO  c.a.b.controller.GradeController - Creating grade: GradeRequest(studentId=1, subjectId=2, teacherId=1, grade=8)
+2026-02-18 14:22:09.387 [http-nio-8080-exec-5] INFO  c.a.b.controller.GradeController - Creating grade: GradeRequest(studentId=2, subjectId=1, teacherId=1, grade=7)
+2026-02-18 14:22:09.417 [http-nio-8080-exec-6] INFO  c.a.b.controller.GradeController - Creating grade: GradeRequest(studentId=2, subjectId=3, teacherId=2, grade=9)
+2026-02-18 14:22:09.449 [http-nio-8080-exec-7] INFO  c.a.b.controller.GradeController - Creating grade: GradeRequest(studentId=3, subjectId=4, teacherId=2, grade=6)
+2026-02-18 14:22:09.477 [http-nio-8080-exec-9] INFO  c.a.b.controller.GradeController - Creating grade: GradeRequest(studentId=3, subjectId=5, teacherId=3, grade=10)
+2026-02-18 14:22:09.504 [http-nio-8080-exec-10] INFO  c.a.b.controller.GradeController - Creating grade: GradeRequest(studentId=1, subjectId=6, teacherId=3, grade=8)
+2026-02-18 14:22:09.529 [http-nio-8080-exec-1] INFO  c.a.b.controller.GradeController - Creating grade: GradeRequest(studentId=2, subjectId=7, teacherId=4, grade=7)
+2026-02-18 14:22:09.553 [http-nio-8080-exec-3] INFO  c.a.b.controller.GradeController - Creating grade: GradeRequest(studentId=3, subjectId=8, teacherId=4, grade=9)
+2026-02-18 14:25:08.600 [SpringApplicationShutdownHook] INFO  o.s.b.w.e.tomcat.GracefulShutdown - Commencing graceful shutdown. Waiting for active requests to complete
+2026-02-18 14:25:08.603 [tomcat-shutdown] INFO  o.s.b.w.e.tomcat.GracefulShutdown - Graceful shutdown complete
+2026-02-18 14:25:08.606 [SpringApplicationShutdownHook] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-02-18 14:25:08.607 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown initiated...
+2026-02-18 14:25:08.608 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown completed.
+2026-02-18 14:25:18.972 [background-preinit] INFO  o.h.validator.internal.util.Version - HV000001: Hibernate Validator 8.0.3.Final
+2026-02-18 14:25:18.982 [main] INFO  c.a.backend.BackendApplication - Starting BackendApplication using Java 25.0.2 with PID 4032 (/Users/assxmblxr/IT/tabularium/backend/target/classes started by assxmblxr in /Users/assxmblxr/IT/tabularium/backend)
+2026-02-18 14:25:18.982 [main] DEBUG c.a.backend.BackendApplication - Running with Spring Boot v3.5.5, Spring v6.2.10
+2026-02-18 14:25:18.982 [main] INFO  c.a.backend.BackendApplication - No active profile set, falling back to 1 default profile: "default"
+2026-02-18 14:25:19.243 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-02-18 14:25:19.262 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 15 ms. Found 5 JPA repository interfaces.
+2026-02-18 14:25:19.407 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat initialized with port 8080 (http)
+2026-02-18 14:25:19.411 [main] INFO  o.a.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8080"]
+2026-02-18 14:25:19.411 [main] INFO  o.a.catalina.core.StandardService - Starting service [Tomcat]
+2026-02-18 14:25:19.412 [main] INFO  o.a.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.44]
+2026-02-18 14:25:19.424 [main] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+2026-02-18 14:25:19.424 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 429 ms
+2026-02-18 14:25:19.471 [main] INFO  c.a.backend.config.DataSourceConfig - application.yml is configured
+2026-02-18 14:25:19.508 [main] INFO  o.h.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-02-18 14:25:19.527 [main] INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 6.6.26.Final
+2026-02-18 14:25:19.537 [main] INFO  o.h.c.i.RegionFactoryInitiator - HHH000026: Second-level cache disabled
+2026-02-18 14:25:19.627 [main] INFO  o.s.o.j.p.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-02-18 14:25:19.632 [main] WARN  org.hibernate.orm.deprecation - HHH90000021: Encountered deprecated setting [hibernate.temp.use_jdbc_metadata_defaults], use [hibernate.boot.allow_jdbc_metadata_access] instead
+2026-02-18 14:25:19.638 [main] WARN  org.hibernate.orm.deprecation - HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-02-18 14:25:19.644 [main] INFO  o.hibernate.orm.connections.pooling - HHH10001005: Database info:
+	Database JDBC URL [undefined/unknown]
+	Database driver: undefined/unknown
+	Database version: 12.0
+	Autocommit mode: undefined/unknown
+	Isolation level: <unknown>
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-02-18 14:25:19.981 [main] INFO  o.h.e.t.j.p.i.JtaPlatformInitiator - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-02-18 14:25:19.989 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2026-02-18 14:25:20.040 [main] INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@492d38a2
+2026-02-18 14:25:20.040 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2026-02-18 14:25:20.171 [main] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-02-18 14:25:20.261 [main] INFO  o.s.d.j.r.query.QueryEnhancerFactory - Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-02-18 14:25:20.554 [main] WARN  o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-02-18 14:25:20.714 [main] INFO  o.s.b.a.e.web.EndpointLinksResolver - Exposing 1 endpoint beneath base path '/actuator'
+2026-02-18 14:25:20.739 [main] INFO  o.a.coyote.http11.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8080"]
+2026-02-18 14:25:20.743 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer - Tomcat started on port 8080 (http) with context path '/'
+2026-02-18 14:25:20.750 [main] INFO  c.a.backend.BackendApplication - Started BackendApplication in 1.891 seconds (process running for 2.132)
+2026-02-18 14:25:20.825 [RMI TCP Connection(1)-127.0.0.1] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-02-18 14:25:20.825 [RMI TCP Connection(1)-127.0.0.1] INFO  o.s.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
+2026-02-18 14:25:20.826 [RMI TCP Connection(1)-127.0.0.1] INFO  o.s.web.servlet.DispatcherServlet - Completed initialization in 1 ms
+2026-02-18 14:26:12.283 [http-nio-8080-exec-3] INFO  c.a.b.controller.StudentController - Fetching all students
+2026-02-18 14:26:12.283 [http-nio-8080-exec-2] INFO  c.a.b.controller.StudentController - Fetching all students
+2026-02-18 14:26:12.283 [http-nio-8080-exec-1] INFO  c.a.b.controller.GroupController - Fetching all groups
+2026-02-18 14:26:12.283 [http-nio-8080-exec-4] INFO  c.a.b.controller.GroupController - Fetching all groups
+2026-02-18 14:26:15.464 [http-nio-8080-exec-5] INFO  c.a.b.controller.GroupController - Fetching all groups
+2026-02-18 14:26:15.470 [http-nio-8080-exec-6] INFO  c.a.b.controller.GroupController - Fetching all groups
+2026-02-18 14:26:16.745 [http-nio-8080-exec-7] INFO  c.a.b.controller.StudentController - Fetching all students
+2026-02-18 14:26:16.749 [http-nio-8080-exec-8] INFO  c.a.b.controller.GroupController - Fetching all groups
+2026-02-18 14:26:16.756 [http-nio-8080-exec-9] INFO  c.a.b.controller.StudentController - Fetching all students
+2026-02-18 14:26:16.760 [http-nio-8080-exec-10] INFO  c.a.b.controller.GroupController - Fetching all groups
+2026-02-18 14:26:17.292 [http-nio-8080-exec-2] INFO  c.a.b.controller.GroupController - Fetching all groups
+2026-02-18 14:26:17.299 [http-nio-8080-exec-4] INFO  c.a.b.controller.GroupController - Fetching all groups
+2026-02-18 14:26:17.703 [http-nio-8080-exec-1] INFO  c.a.b.controller.StudentController - Fetching all students
+2026-02-18 14:26:17.707 [http-nio-8080-exec-3] INFO  c.a.b.controller.GroupController - Fetching all groups
+2026-02-18 14:26:17.714 [http-nio-8080-exec-5] INFO  c.a.b.controller.StudentController - Fetching all students
+2026-02-18 14:26:17.718 [http-nio-8080-exec-6] INFO  c.a.b.controller.GroupController - Fetching all groups
+2026-02-18 14:26:18.177 [http-nio-8080-exec-7] INFO  c.a.b.controller.GroupController - Fetching all groups
+2026-02-18 14:26:18.184 [http-nio-8080-exec-8] INFO  c.a.b.controller.GroupController - Fetching all groups
+2026-02-18 14:26:18.556 [http-nio-8080-exec-9] INFO  c.a.b.controller.StudentController - Fetching all students
+2026-02-18 14:26:18.560 [http-nio-8080-exec-10] INFO  c.a.b.controller.GroupController - Fetching all groups
+2026-02-18 14:26:18.566 [http-nio-8080-exec-2] INFO  c.a.b.controller.StudentController - Fetching all students
+2026-02-18 14:26:18.570 [http-nio-8080-exec-4] INFO  c.a.b.controller.GroupController - Fetching all groups
+2026-02-18 14:26:19.116 [http-nio-8080-exec-3] INFO  c.a.b.controller.GroupController - Fetching all groups
+2026-02-18 14:26:19.122 [http-nio-8080-exec-1] INFO  c.a.b.controller.GroupController - Fetching all groups
+2026-02-18 14:26:20.269 [http-nio-8080-exec-5] INFO  c.a.b.controller.StudentController - Fetching all students
+2026-02-18 14:26:20.273 [http-nio-8080-exec-6] INFO  c.a.b.controller.GroupController - Fetching all groups
+2026-02-18 14:26:20.280 [http-nio-8080-exec-7] INFO  c.a.b.controller.StudentController - Fetching all students
+2026-02-18 14:26:20.284 [http-nio-8080-exec-8] INFO  c.a.b.controller.GroupController - Fetching all groups
+2026-02-18 14:26:23.122 [http-nio-8080-exec-10] INFO  c.a.b.controller.StudentController - Fetching all students
+2026-02-18 14:26:23.124 [http-nio-8080-exec-9] INFO  c.a.b.controller.GroupController - Fetching all groups
+2026-02-18 14:26:23.130 [http-nio-8080-exec-2] INFO  c.a.b.controller.StudentController - Fetching all students
+2026-02-18 14:26:23.133 [http-nio-8080-exec-4] INFO  c.a.b.controller.GroupController - Fetching all groups
+2026-02-18 14:26:24.102 [http-nio-8080-exec-3] INFO  c.a.b.controller.StudentController - Fetching all students
+2026-02-18 14:26:24.104 [http-nio-8080-exec-1] INFO  c.a.b.controller.GroupController - Fetching all groups
+2026-02-18 14:26:24.109 [http-nio-8080-exec-5] INFO  c.a.b.controller.StudentController - Fetching all students
+2026-02-18 14:26:24.112 [http-nio-8080-exec-6] INFO  c.a.b.controller.GroupController - Fetching all groups
+2026-02-18 14:26:24.788 [http-nio-8080-exec-7] INFO  c.a.b.controller.StudentController - Fetching all students
+2026-02-18 14:26:24.790 [http-nio-8080-exec-8] INFO  c.a.b.controller.GroupController - Fetching all groups
+2026-02-18 14:26:24.796 [http-nio-8080-exec-9] INFO  c.a.b.controller.StudentController - Fetching all students
+2026-02-18 14:26:24.799 [http-nio-8080-exec-10] INFO  c.a.b.controller.GroupController - Fetching all groups
+2026-02-18 14:26:25.236 [http-nio-8080-exec-2] INFO  c.a.b.controller.StudentController - Fetching all students
+2026-02-18 14:26:25.238 [http-nio-8080-exec-4] INFO  c.a.b.controller.GroupController - Fetching all groups
+2026-02-18 14:26:25.244 [http-nio-8080-exec-2] INFO  c.a.b.controller.StudentController - Fetching all students
+2026-02-18 14:26:25.247 [http-nio-8080-exec-3] INFO  c.a.b.controller.GroupController - Fetching all groups
+2026-02-18 14:26:25.596 [http-nio-8080-exec-5] INFO  c.a.b.controller.StudentController - Fetching all students
+2026-02-18 14:26:25.599 [http-nio-8080-exec-6] INFO  c.a.b.controller.GroupController - Fetching all groups
+2026-02-18 14:26:25.604 [http-nio-8080-exec-8] INFO  c.a.b.controller.StudentController - Fetching all students
+2026-02-18 14:26:25.607 [http-nio-8080-exec-7] INFO  c.a.b.controller.GroupController - Fetching all groups
+2026-02-18 14:26:26.415 [http-nio-8080-exec-9] INFO  c.a.b.controller.StudentController - Fetching all students
+2026-02-18 14:26:26.417 [http-nio-8080-exec-10] INFO  c.a.b.controller.GroupController - Fetching all groups
+2026-02-18 14:26:26.424 [http-nio-8080-exec-4] INFO  c.a.b.controller.StudentController - Fetching all students
+2026-02-18 14:26:26.426 [http-nio-8080-exec-1] INFO  c.a.b.controller.GroupController - Fetching all groups
+2026-02-18 14:27:13.209 [SpringApplicationShutdownHook] INFO  o.s.b.w.e.tomcat.GracefulShutdown - Commencing graceful shutdown. Waiting for active requests to complete
+2026-02-18 14:27:13.212 [tomcat-shutdown] INFO  o.s.b.w.e.tomcat.GracefulShutdown - Graceful shutdown complete
+2026-02-18 14:27:13.214 [SpringApplicationShutdownHook] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-02-18 14:27:13.216 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown initiated...
+2026-02-18 14:27:13.216 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown completed.

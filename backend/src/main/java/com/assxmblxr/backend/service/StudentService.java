@@ -1,7 +1,6 @@
 package com.assxmblxr.backend.service;
 
 import com.assxmblxr.backend.dto.CreateStudentRequest;
-import com.assxmblxr.backend.dto.UpdateStudentRequest;
 import com.assxmblxr.backend.entity.Group;
 import com.assxmblxr.backend.entity.Student;
 import com.assxmblxr.backend.exceptions.GroupNotFoundException;

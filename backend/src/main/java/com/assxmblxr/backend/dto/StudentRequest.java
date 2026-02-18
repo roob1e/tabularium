@@ -15,7 +15,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @Getter
 @ToString
-public class CreateStudentRequest {
+public class StudentRequest {
   @NotBlank(message = "Full name is required")
   @Size(min = 2, max = 100, message = "Full name should be from 2 to 100 symbols")
   private String fullname;

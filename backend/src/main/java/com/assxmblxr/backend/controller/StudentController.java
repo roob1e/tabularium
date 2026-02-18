@@ -1,7 +1,7 @@
 package com.assxmblxr.backend.controller;
 
 import com.assxmblxr.backend.dto.CreateStudentRequest;
-import com.assxmblxr.backend.dto.UpdateStudentRequest;
+import com.assxmblxr.backend.dto.StudentRequest;
 import com.assxmblxr.backend.entity.Student;
 import com.assxmblxr.backend.exceptions.StudentNotFoundException;
 import com.assxmblxr.backend.service.StudentService;
@@ -55,7 +55,7 @@ public class StudentController {
   // POST: create;
   @PostMapping
   public ResponseEntity<Student> createStudent(
-          @RequestBody CreateStudentRequest request
+          @RequestBody StudentRequest request
   ) {
     try {
       log.info("Creating student {}", request.toString());
