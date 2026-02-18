@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="e10879a7-47f4-4320-9078-b17d97f958b6" name="Changes" comment="Fixed DTOs">
+    <list default="true" id="e10879a7-47f4-4320-9078-b17d97f958b6" name="Changes" comment="Im so fuckin scared">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -41,6 +41,9 @@
     &quot;accountId&quot;: &quot;63be91a1-2fed-489c-a06d-ba61b1154c82&quot;
   }
 }</component>
+  <component name="HighlightingSettingsPerFile">
+    <setting file="mock:///Dummy.txt" root0="SKIP_HIGHLIGHTING" />
+  </component>
   <component name="HttpClientOnboardingState">{
   &quot;isOnboardingCommentShown&quot;: true
 }</component>
@@ -85,7 +88,7 @@
     "project.structure.proportion": "0.0",
     "project.structure.side.proportion": "0.0",
     "run.code.analysis.last.selected.profile": "pProject Default",
-    "settings.editor.selected.configurable": "project.propVCSSupport.DirectoryMappings",
+    "settings.editor.selected.configurable": "preferences.keymap",
     "vue.rearranger.settings.migration": "true"
   },
   "keyToStringList": {
@@ -128,6 +131,9 @@
       </list>
     </recent_temporary>
   </component>
+  <component name="StructureViewState">
+    <option name="selectedTab" value="Logical" />
+  </component>
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
       <changelist id="e10879a7-47f4-4320-9078-b17d97f958b6" name="Changes" comment="" />
@@ -157,7 +163,8 @@
       <workItem from="1771422558854" duration="415000" />
       <workItem from="1771422977206" duration="294000" />
       <workItem from="1771423272954" duration="33000" />
-      <workItem from="1771423313084" duration="363000" />
+      <workItem from="1771423313084" duration="592000" />
+      <workItem from="1771435833164" duration="104000" />
     </task>
     <task id="LOCAL-00001" summary="Fixed DTOs">
       <option name="closed" value="true" />
@@ -199,7 +206,15 @@
       <option name="project" value="LOCAL" />
       <updated>1771423023806</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="Im so fuckin scared">
+      <option name="closed" value="true" />
+      <created>1771423855402</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1771423855402</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -244,6 +259,7 @@
     </ignored-roots>
     <MESSAGE value="test" />
     <MESSAGE value="Fixed DTOs" />
-    <option name="LAST_COMMIT_MESSAGE" value="Fixed DTOs" />
+    <MESSAGE value="Im so fuckin scared" />
+    <option name="LAST_COMMIT_MESSAGE" value="Im so fuckin scared" />
   </component>
 </project>
