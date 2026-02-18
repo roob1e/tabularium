@@ -19,7 +19,7 @@ public class StudentRequest {
   @NotBlank(message = "Phone is required")
   @Pattern(
           regexp = "^\\+375(25|29|33|44|17|23)\\d{7}$",
-          message = "Phone format should be +375(25|29|33|44|17|23)XXXXXXX"
+          message = "Phone format should be +375(25|29|33|44|17|23)XXXXXXX "
   )
   private String phone;
 
