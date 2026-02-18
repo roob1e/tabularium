@@ -4,10 +4,14 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="e10879a7-47f4-4320-9078-b17d97f958b6" name="Changes" comment="Im so fuckin scared 2">
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/assxmblxr/backend/dto/GroupDTO.java" afterDir="false" />
+    <list default="true" id="e10879a7-47f4-4320-9078-b17d97f958b6" name="Changes" comment="Im so fuckin scared 3">
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/assxmblxr/backend/entity/RefreshToken.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/assxmblxr/backend/entity/User.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/assxmblxr/backend/repository/RefreshTokenRepository.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/assxmblxr/backend/repository/UserRepository.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/dataSources/67ed9073-2dbe-4926-ae04-439505e96e9b/storage_v2/_src_/database/students_db.haRijA/schema/public.abK9xQ.meta" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/67ed9073-2dbe-4926-ae04-439505e96e9b/storage_v2/_src_/database/students_db.haRijA/schema/public.abK9xQ.meta" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/assxmblxr/backend/dto/StudentRequest.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/assxmblxr/backend/dto/StudentRequest.class" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -37,6 +41,9 @@
     &quot;assignee&quot;: &quot;roob1e&quot;
   }
 }</component>
+  <component name="GithubDefaultAccount">
+    <option name="defaultAccountId" value="63be91a1-2fed-489c-a06d-ba61b1154c82" />
+  </component>
   <component name="GithubPullRequestsUISettings">{
   &quot;selectedUrlAndAccountId&quot;: {
     &quot;url&quot;: &quot;https://ВАШ_ТОКЕН@github.com/roob1e/tabularium.git&quot;,
@@ -70,6 +77,7 @@
     "ASKED_MARK_IGNORED_FILES_AS_EXCLUDED": "true",
     "HTTP Request.All in generated-requests.executor": "Run",
     "HTTP Request.generated-requests | #2.executor": "Run",
+    "JUnit.AutoGradeUpdateTest.executor": "Run",
     "Maven.backend [clean,compile,exec:java...].executor": "Run",
     "Maven.backend [mvn,clean,compile,exec:java...].executor": "Run",
     "ModuleVcsDetector.initialDetectionPerformed": "true",
@@ -90,7 +98,7 @@
     "project.structure.proportion": "0.0",
     "project.structure.side.proportion": "0.0",
     "run.code.analysis.last.selected.profile": "pProject Default",
-    "settings.editor.selected.configurable": "preferences.lookFeel",
+    "settings.editor.selected.configurable": "vcs.Git",
     "vue.rearranger.settings.migration": "true"
   },
   "keyToStringList": {
@@ -105,13 +113,7 @@
       <command value="mvn clean compile exec:java -Dexec.mainClass=&quot;com.assxmblxr.backend.BackendApplication&quot;" />
     </option>
   </component>
-  <component name="RunManager" selected="Spring Boot.BackendApplication">
-    <configuration name="All in generated-requests" type="HttpClient.HttpRequestRunConfigurationType" factoryName="HTTP Request" temporary="true" path="$APPLICATION_CONFIG_DIR$/scratches/generated-requests.http">
-      <method v="2" />
-    </configuration>
-    <configuration name="generated-requests | #2" type="HttpClient.HttpRequestRunConfigurationType" factoryName="HTTP Request" temporary="true" nameIsGenerated="true" path="$APPLICATION_CONFIG_DIR$/scratches/generated-requests.http" executionIdentifier="#2" index="2" runType="Run single request">
-      <method v="2" />
-    </configuration>
+  <component name="RunManager">
     <configuration name="BackendApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
       <option name="ALTERNATIVE_JRE_PATH" value="25" />
       <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
@@ -121,17 +123,6 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <list>
-      <item itemvalue="HTTP Request.All in generated-requests" />
-      <item itemvalue="HTTP Request.generated-requests | #2" />
-      <item itemvalue="Spring Boot.BackendApplication" />
-    </list>
-    <recent_temporary>
-      <list>
-        <item itemvalue="HTTP Request.generated-requests | #2" />
-        <item itemvalue="HTTP Request.All in generated-requests" />
-      </list>
-    </recent_temporary>
   </component>
   <component name="StructureViewState">
     <option name="selectedTab" value="Logical" />
@@ -166,7 +157,7 @@
       <workItem from="1771422977206" duration="294000" />
       <workItem from="1771423272954" duration="33000" />
       <workItem from="1771423313084" duration="592000" />
-      <workItem from="1771435833164" duration="1044000" />
+      <workItem from="1771435833164" duration="5271000" />
     </task>
     <task id="LOCAL-00001" summary="Fixed DTOs">
       <option name="closed" value="true" />
@@ -224,7 +215,15 @@
       <option name="project" value="LOCAL" />
       <updated>1771435946544</updated>
     </task>
-    <option name="localTasksCounter" value="8" />
+    <task id="LOCAL-00008" summary="Im so fuckin scared 3">
+      <option name="closed" value="true" />
+      <created>1771437134970</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1771437134970</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -271,6 +270,7 @@
     <MESSAGE value="Fixed DTOs" />
     <MESSAGE value="Im so fuckin scared" />
     <MESSAGE value="Im so fuckin scared 2" />
-    <option name="LAST_COMMIT_MESSAGE" value="Im so fuckin scared 2" />
+    <MESSAGE value="Im so fuckin scared 3" />
+    <option name="LAST_COMMIT_MESSAGE" value="Im so fuckin scared 3" />
   </component>
 </project>

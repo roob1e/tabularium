@@ -12,14 +12,14 @@ import java.util.Optional;
 
 @Repository
 public interface GroupRepository extends JpaRepository<Group, Long> {
-    Optional<Group> findById(Long id);
-    Optional<Group> findByName(String name);
+  Optional<Group> findById(Long id);
+  Optional<Group> findByName(String name);
 
-    @Modifying
-    @Query("""
-        UPDATE Group g
-        SET g.amount = (SELECT COUNT(s) FROM Student s WHERE s.group = g)
-        WHERE g IN :groups
-    """)
-    void updateGroupAmount(@Param("groups") List<Group> groups);
+  @Modifying
+  @Query("""
+    UPDATE Group g
+      SET g.amount = (SELECT COUNT(s) FROM Student s WHERE s.group = g)
+      WHERE g IN :groups
+  """)
+  void updateGroupAmount(@Param("groups") List<Group> groups);
 }

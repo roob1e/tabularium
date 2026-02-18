@@ -16,60 +16,60 @@ import java.util.Set;
 @Service
 public class SubjectService {
 
-    private final SubjectRepository subjectRepository;
-    private final TeacherRepository teacherRepository;
+  private final SubjectRepository subjectRepository;
+  private final TeacherRepository teacherRepository;
 
-    public SubjectService(SubjectRepository subjectRepository, TeacherRepository teacherRepository) {
-        this.subjectRepository = subjectRepository;
-        this.teacherRepository = teacherRepository;
+  public SubjectService(SubjectRepository subjectRepository, TeacherRepository teacherRepository) {
+    this.subjectRepository = subjectRepository;
+    this.teacherRepository = teacherRepository;
+  }
+
+  @Transactional
+  public Subject createSubject(SubjectDTO dto) {
+    Set<Teacher> teachers = new HashSet<>();
+    if (dto.getTeacherIds() != null) {
+      teachers = new HashSet<>(teacherRepository.findAllById(dto.getTeacherIds()));
     }
 
-    @Transactional
-    public Subject createSubject(SubjectDTO dto) {
-        Set<Teacher> teachers = new HashSet<>();
-        if (dto.getTeacherIds() != null) {
-            teachers = new HashSet<>(teacherRepository.findAllById(dto.getTeacherIds()));
-        }
+    Subject subject = Subject.builder()
+            .name(dto.getName())
+            .teachers(teachers)
+            .build();
 
-        Subject subject = Subject.builder()
-                .name(dto.getName())
-                .teachers(teachers)
-                .build();
+    return subjectRepository.save(subject);
+  }
 
-        return subjectRepository.save(subject);
+  @Transactional
+  public Subject updateSubject(Long id, SubjectDTO dto) {
+    Subject subject = subjectRepository.findById(id)
+            .orElseThrow(() -> new SubjectNotFoundException("Subject not found", id));
+
+    subject.setName(dto.getName());
+
+    Set<Teacher> teachers = new HashSet<>();
+    if (dto.getTeacherIds() != null) {
+      teachers = new HashSet<>(teacherRepository.findAllById(dto.getTeacherIds()));
     }
+    subject.setTeachers(teachers);
 
-    @Transactional
-    public Subject updateSubject(Long id, SubjectDTO dto) {
-        Subject subject = subjectRepository.findById(id)
-                .orElseThrow(() -> new SubjectNotFoundException("Subject not found", id));
+    return subjectRepository.save(subject);
+  }
 
-        subject.setName(dto.getName());
+  public Subject getSubject(Long id) {
+    return subjectRepository.findById(id)
+            .orElseThrow(() -> new SubjectNotFoundException("Subject not found", id));
+  }
 
-        Set<Teacher> teachers = new HashSet<>();
-        if (dto.getTeacherIds() != null) {
-            teachers = new HashSet<>(teacherRepository.findAllById(dto.getTeacherIds()));
-        }
-        subject.setTeachers(teachers);
+  public List<Subject> getAllSubjects() {
+    return subjectRepository.findAll();
+  }
 
-        return subjectRepository.save(subject);
-    }
-
-    public Subject getSubject(Long id) {
-        return subjectRepository.findById(id)
-                .orElseThrow(() -> new SubjectNotFoundException("Subject not found", id));
-    }
-
-    public List<Subject> getAllSubjects() {
-        return subjectRepository.findAll();
-    }
-
-    @Transactional
-    public boolean deleteSubject(Long id) {
-        return subjectRepository.findById(id)
-                .map(subject -> {
-                    subjectRepository.delete(subject);
-                    return true;
-                }).orElse(false);
-    }
+  @Transactional
+  public boolean deleteSubject(Long id) {
+    return subjectRepository.findById(id)
+            .map(subject -> {
+              subjectRepository.delete(subject);
+              return true;
+            }).orElse(false);
+  }
 }

@@ -15,68 +15,68 @@ import java.util.concurrent.ScheduledFuture;
 @Service
 public class SchedulerService {
 
-    private final ThreadPoolTaskScheduler scheduler;
-    private final AutoGradeUpdate autoGradeUpdate;
-    private ScheduledFuture<?> scheduledTask;
-    @Getter
-    private String cronExpression = "0 0 0 30 7 *"; // дефолт: 30 июля
+  private final ThreadPoolTaskScheduler scheduler;
+  private final AutoGradeUpdate autoGradeUpdate;
+  private ScheduledFuture<?> scheduledTask;
+  @Getter
+  private String cronExpression = "0 0 0 30 7 *"; // дефолт: 30 июля
 
-    public SchedulerService(ThreadPoolTaskScheduler scheduler, AutoGradeUpdate autoGradeUpdate) {
-        this.scheduler = scheduler;
-        scheduleTask(cronExpression);
-        this.autoGradeUpdate = autoGradeUpdate;
+  public SchedulerService(ThreadPoolTaskScheduler scheduler, AutoGradeUpdate autoGradeUpdate) {
+    this.scheduler = scheduler;
+    scheduleTask(cronExpression);
+    this.autoGradeUpdate = autoGradeUpdate;
+  }
+
+  public void setCronByDate(String dateString) {
+    LocalDate date = parseDate(dateString);
+    if (date == null) return;
+
+    // Формируем новый CRON
+    this.cronExpression = toCron(date);
+
+    // Отменяем предыдущую задачу
+    if (scheduledTask != null) {
+      scheduledTask.cancel(false);
     }
 
-    public void setCronByDate(String dateString) {
-        LocalDate date = parseDate(dateString);
-        if (date == null) return;
+    // Планируем новую задачу
+    scheduleTask(cronExpression);
+  }
 
-        // Формируем новый CRON
-        this.cronExpression = toCron(date);
+  private void scheduleTask(String cron) {
+    scheduledTask = scheduler.schedule(this::executeTask, new CronTrigger(cron));
+  }
 
-        // Отменяем предыдущую задачу
-        if (scheduledTask != null) {
-            scheduledTask.cancel(false);
-        }
+  private void executeTask() {
+    System.out.println("Task executed at: " + java.time.LocalDateTime.now());
+    autoGradeUpdate.updateAllStudents();
+  }
 
-        // Планируем новую задачу
-        scheduleTask(cronExpression);
+  private String toCron(LocalDate date) {
+    // CRON: секунда, минута, час, день, месяц, день недели (*)
+    System.out.println("Cron expression: " + String.format("0 0 0 %d %d *", date.getDayOfMonth(), date.getMonthValue()));
+    return String.format("0 0 0 %d %d *", date.getDayOfMonth(), date.getMonthValue());
+  }
+
+  public LocalDate parseDate(String dateString) {
+    try {
+      if (dateString == null) return null;
+
+      // убираем пробелы и кавычки
+      dateString = dateString.trim().replace("\"", "");
+
+      // добавляем текущий год
+      String fullDate = dateString + "." + Year.now().getValue(); // "30.07.2025"
+
+      // создаём форматтер
+      DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+
+      // парсим и возвращаем LocalDate
+      return LocalDate.parse(fullDate, formatter);
+
+    } catch (Exception e) {
+      System.out.println("Failed to parse date: '" + dateString + "'. Error: " + e.getMessage());
+      return null;
     }
-
-    private void scheduleTask(String cron) {
-        scheduledTask = scheduler.schedule(this::executeTask, new CronTrigger(cron));
-    }
-
-    private void executeTask() {
-        System.out.println("Task executed at: " + java.time.LocalDateTime.now());
-        autoGradeUpdate.updateAllStudents();
-    }
-
-    private String toCron(LocalDate date) {
-        // CRON: секунда, минута, час, день, месяц, день недели (*)
-        System.out.println("Cron expression: " + String.format("0 0 0 %d %d *", date.getDayOfMonth(), date.getMonthValue()));
-        return String.format("0 0 0 %d %d *", date.getDayOfMonth(), date.getMonthValue());
-    }
-
-    public LocalDate parseDate(String dateString) {
-        try {
-            if (dateString == null) return null;
-
-            // убираем пробелы и кавычки
-            dateString = dateString.trim().replace("\"", "");
-
-            // добавляем текущий год
-            String fullDate = dateString + "." + Year.now().getValue(); // "30.07.2025"
-
-            // создаём форматтер
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
-
-            // парсим и возвращаем LocalDate
-            return LocalDate.parse(fullDate, formatter);
-
-        } catch (Exception e) {
-            System.out.println("Failed to parse date: '" + dateString + "'. Error: " + e.getMessage());
-            return null;
-        }
-    }
+  }
 }
