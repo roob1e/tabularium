@@ -1,0 +1,37 @@
+POST http://localhost:8080/api/students
+User-Agent: IntelliJ HTTP Client/IntelliJ IDEA 2025.3
+Accept-Encoding: br, deflate, gzip, x-gzip
+Accept: */*
+content-length: 0
+
+<> 2026-02-18T134729.400.json
+
+###
+
+GET http://localhost:8080/api/students
+Content-Type: application/json
+User-Agent: IntelliJ HTTP Client/IntelliJ IDEA 2025.3
+Accept-Encoding: br, deflate, gzip, x-gzip
+Accept: */*
+content-length: 70
+
+{
+  "fullname": "",
+  "phone": "",
+  "birthdate": "",
+  "groupId": 0
+}
+
+<> 2026-02-18T134651.200.json
+
+###
+
+GET http://localhost:8080/api/students
+User-Agent: IntelliJ HTTP Client/IntelliJ IDEA 2025.3
+Accept-Encoding: br, deflate, gzip, x-gzip
+Accept: */*
+
+<> 2026-02-18T134633.200.json
+
+###
+
