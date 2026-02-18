@@ -24,7 +24,7 @@
   </component>
   <component name="Git.Settings">
     <option name="PUSH_AUTO_UPDATE" value="true" />
-    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/../.." />
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
     <option name="RESET_MODE" value="KEEP" />
   </component>
   <component name="GitHubPullRequestSearchHistory">{
@@ -35,7 +35,7 @@
 }</component>
   <component name="GithubPullRequestsUISettings">{
   &quot;selectedUrlAndAccountId&quot;: {
-    &quot;url&quot;: &quot;git@github.com:roob1e/tabularium.git&quot;,
+    &quot;url&quot;: &quot;https://ВАШ_ТОКЕН@github.com/roob1e/tabularium.git&quot;,
     &quot;accountId&quot;: &quot;63be91a1-2fed-489c-a06d-ba61b1154c82&quot;
   }
 }</component>
@@ -88,20 +88,6 @@
     ]
   }
 }</component>
-  <component name="RunDashboard">
-    <option name="configurationStatuses">
-      <map>
-        <entry key="HttpClient.HttpRequestRunConfigurationType">
-          <value>
-            <map>
-              <entry key="All in generated-requests" value="STOPPED" />
-              <entry key="generated-requests | #2" value="STOPPED" />
-            </map>
-          </value>
-        </entry>
-      </map>
-    </option>
-  </component>
   <component name="RunManager" selected="Spring Boot.BackendApplication">
     <configuration name="All in generated-requests" type="HttpClient.HttpRequestRunConfigurationType" factoryName="HTTP Request" temporary="true" path="$APPLICATION_CONFIG_DIR$/scratches/generated-requests.http">
       <method v="2" />
@@ -157,6 +143,7 @@
       <workItem from="1771416793655" duration="1055000" />
       <workItem from="1771417855120" duration="409000" />
       <workItem from="1771418278139" duration="320000" />
+      <workItem from="1771422558854" duration="415000" />
     </task>
     <task id="LOCAL-00001" summary="Fixed DTOs">
       <option name="closed" value="true" />
@@ -217,7 +204,7 @@
                   <entry key="branch">
                     <value>
                       <list>
-                        <option value="HEAD" />
+                        <option value="master" />
                       </list>
                     </value>
                   </entry>
