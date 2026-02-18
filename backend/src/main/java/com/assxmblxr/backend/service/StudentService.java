@@ -1,6 +1,6 @@
 package com.assxmblxr.backend.service;
 
-import com.assxmblxr.backend.dto.CreateStudentRequest;
+import com.assxmblxr.backend.dto.StudentRequest;
 import com.assxmblxr.backend.entity.Group;
 import com.assxmblxr.backend.entity.Student;
 import com.assxmblxr.backend.exceptions.GroupNotFoundException;
@@ -13,9 +13,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-/**
- * @author assxmblxr
- */
 @Service
 public class StudentService {
     private final StudentRepository studentRepository;
@@ -33,7 +30,7 @@ public class StudentService {
      * @exception GroupNotFoundException указано название несуществующей группы в запросе.
      */
     @Transactional
-    public Student createStudent(CreateStudentRequest request) {
+    public Student createStudent(StudentRequest request) {
         Group group = groupRepository.findById(request.getGroupId())
                 .orElseThrow(() -> new GroupNotFoundException("Группа не найдена", request.getGroupId()));
 
@@ -92,7 +89,7 @@ public class StudentService {
      * @exception StudentNotFoundException указан несуществующий ID
      */
     @Transactional
-    public Student updateStudent(Long id, UpdateStudentRequest dto) {
+    public Student updateStudent(Long id, StudentRequest dto) {
         Student student = studentRepository.findById(id)
                 .orElseThrow(() -> new StudentNotFoundException("Студент с id " + id + " не найден", id));
 

@@ -1,6 +1,5 @@
 package com.assxmblxr.backend.controller;
 
-import com.assxmblxr.backend.dto.CreateStudentRequest;
 import com.assxmblxr.backend.dto.StudentRequest;
 import com.assxmblxr.backend.entity.Student;
 import com.assxmblxr.backend.exceptions.StudentNotFoundException;
@@ -82,7 +81,7 @@ public class StudentController {
   @PutMapping("/{id}")
   public ResponseEntity<Student> updateStudent(
           @PathVariable Long id,
-          @Valid @RequestBody UpdateStudentRequest request
+          @Valid @RequestBody StudentRequest request
   ) {
     try {
       log.info("Updating student with id {}", id);

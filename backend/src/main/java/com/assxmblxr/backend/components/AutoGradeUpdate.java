@@ -1,5 +1,6 @@
 package com.assxmblxr.backend.components;
 
+import com.assxmblxr.backend.dto.StudentRequest;
 import com.assxmblxr.backend.entity.Group;
 import com.assxmblxr.backend.entity.Student;
 import com.assxmblxr.backend.service.GroupService;
@@ -66,7 +67,7 @@ public class AutoGradeUpdate {
       Group newGroup = groupService.getGroupByName(newGradeName);
       if (newGroup != null && !student.getGroup().getId().equals(newGroup.getId())) {
         // Обновляем студента через сервис, чтобы пересчитать amount
-        UpdateStudentRequest dto = new UpdateStudentRequest();
+        StudentRequest dto = new StudentRequest();
         dto.setFullname(student.getFullname());
         dto.setPhone(student.getPhone());
         dto.setBirthdate(student.getBirthdate());

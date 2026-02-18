@@ -3,17 +3,13 @@ package com.assxmblxr.backend.dto;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.Getter;
 import lombok.ToString;
 
 import java.time.LocalDate;
 
-/**
- * DTO для создания записи STUDENT
- * @author assxmblxr
- */
-@AllArgsConstructor
-@Getter
+@Data
 @ToString
 public class StudentRequest {
   @NotBlank(message = "Full name is required")
