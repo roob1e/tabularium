@@ -4,7 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="e10879a7-47f4-4320-9078-b17d97f958b6" name="Changes" comment="Im so fuckin scared">
+    <list default="true" id="e10879a7-47f4-4320-9078-b17d97f958b6" name="Changes" comment="Im so fuckin scared 2">
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/assxmblxr/backend/dto/GroupDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/67ed9073-2dbe-4926-ae04-439505e96e9b/storage_v2/_src_/database/students_db.haRijA/schema/public.abK9xQ.meta" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/67ed9073-2dbe-4926-ae04-439505e96e9b/storage_v2/_src_/database/students_db.haRijA/schema/public.abK9xQ.meta" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -88,7 +90,7 @@
     "project.structure.proportion": "0.0",
     "project.structure.side.proportion": "0.0",
     "run.code.analysis.last.selected.profile": "pProject Default",
-    "settings.editor.selected.configurable": "preferences.keymap",
+    "settings.editor.selected.configurable": "preferences.lookFeel",
     "vue.rearranger.settings.migration": "true"
   },
   "keyToStringList": {
@@ -164,7 +166,7 @@
       <workItem from="1771422977206" duration="294000" />
       <workItem from="1771423272954" duration="33000" />
       <workItem from="1771423313084" duration="592000" />
-      <workItem from="1771435833164" duration="104000" />
+      <workItem from="1771435833164" duration="1044000" />
     </task>
     <task id="LOCAL-00001" summary="Fixed DTOs">
       <option name="closed" value="true" />
@@ -214,7 +216,15 @@
       <option name="project" value="LOCAL" />
       <updated>1771423855402</updated>
     </task>
-    <option name="localTasksCounter" value="7" />
+    <task id="LOCAL-00007" summary="Im so fuckin scared 2">
+      <option name="closed" value="true" />
+      <created>1771435946544</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1771435946544</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -260,6 +270,7 @@
     <MESSAGE value="test" />
     <MESSAGE value="Fixed DTOs" />
     <MESSAGE value="Im so fuckin scared" />
-    <option name="LAST_COMMIT_MESSAGE" value="Im so fuckin scared" />
+    <MESSAGE value="Im so fuckin scared 2" />
+    <option name="LAST_COMMIT_MESSAGE" value="Im so fuckin scared 2" />
   </component>
 </project>
