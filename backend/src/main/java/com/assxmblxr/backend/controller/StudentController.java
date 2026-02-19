@@ -24,12 +24,11 @@ public class StudentController {
   @Autowired
   private StudentService studentService;
 
-  // GET: get all, get by ID;
   @GetMapping
   public ResponseEntity<List<Student>> getAllStudents() {
     try {
       log.info("Fetching all students");
-      var students = studentService.getStudents();
+      List<Student> students = studentService.getStudents();
       return ResponseEntity.ok(students);
     } catch (Exception e) {
       log.error("GOT AN ERROR WHEN FETCHING ALL STUDENTS: {}", e.getMessage(), e);

@@ -5,6 +5,7 @@ import com.assxmblxr.backend.entity.Subject;
 import com.assxmblxr.backend.exceptions.SubjectNotFoundException;
 import com.assxmblxr.backend.service.SubjectService;
 
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.http.HttpStatus;
@@ -27,7 +28,7 @@ public class SubjectController {
 
   @PostMapping
   public ResponseEntity<Subject> createSubject(
-          @RequestBody SubjectDTO request
+          @RequestBody @Valid SubjectDTO request
   ) {
     try {
       log.info("Creating subject {}", request);
