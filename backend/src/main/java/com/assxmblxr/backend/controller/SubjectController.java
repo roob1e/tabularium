@@ -2,7 +2,7 @@ package com.assxmblxr.backend.controller;
 
 import com.assxmblxr.backend.dto.SubjectDTO;
 import com.assxmblxr.backend.entity.Subject;
-import com.assxmblxr.backend.exceptions.SubjectNotFoundException;
+import com.assxmblxr.backend.exceptions.SubjectException;
 import com.assxmblxr.backend.service.SubjectService;
 
 import jakarta.validation.Valid;
@@ -49,7 +49,7 @@ public class SubjectController {
       log.info("Updating subject {}", request);
       Subject updated = subjectService.updateSubject(id, request);
       return ResponseEntity.ok(updated);
-    } catch (SubjectNotFoundException e) {
+    } catch (SubjectException e) {
       log.error("Grade with id {} not found", id);
       return ResponseEntity.notFound().build();
     } catch (Exception e) {
@@ -66,7 +66,7 @@ public class SubjectController {
       log.info("Fetching subject {}", id);
       var subjects = subjectService.getSubject(id);
       return ResponseEntity.ok(subjects);
-    } catch (SubjectNotFoundException e) {
+    } catch (SubjectException e) {
       log.info("Subject with id {} not found", id);
       return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
     }

@@ -2,7 +2,7 @@ package com.assxmblxr.backend.controller;
 
 import com.assxmblxr.backend.dto.StudentRequest;
 import com.assxmblxr.backend.entity.Student;
-import com.assxmblxr.backend.exceptions.StudentNotFoundException;
+import com.assxmblxr.backend.exceptions.StudentException;
 import com.assxmblxr.backend.service.StudentService;
 
 import jakarta.validation.Valid;
@@ -44,13 +44,12 @@ public class StudentController {
       log.info("Fetching student with id {}", id);
       var students = studentService.getStudent(id);
       return ResponseEntity.ok(students);
-    } catch (StudentNotFoundException e) {
+    } catch (StudentException e) {
       log.info("Student with id {} not found", id);
       return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
     }
   }
 
-  // POST: create;
   @PostMapping
   public ResponseEntity<Student> createStudent(
           @RequestBody StudentRequest request
@@ -65,7 +64,6 @@ public class StudentController {
     }
   }
 
-  // DELETE: delete;
   @DeleteMapping("/{id}")
   public ResponseEntity<Void> deleteStudent(
           @PathVariable Long id
@@ -76,7 +74,6 @@ public class StudentController {
             : ResponseEntity.status(HttpStatus.NOT_FOUND).build();
   }
 
-  // PUT: update;
   @PutMapping("/{id}")
   public ResponseEntity<Student> updateStudent(
           @PathVariable Long id,
@@ -86,7 +83,7 @@ public class StudentController {
       log.info("Updating student with id {}", id);
       Student updatedStudent = studentService.updateStudent(id, request);
       return ResponseEntity.ok(updatedStudent);
-    } catch (StudentNotFoundException e) {
+    } catch (StudentException e) {
       log.error("Student with id {} not found", id);
       return ResponseEntity.notFound().build();
     } catch (Exception e) {

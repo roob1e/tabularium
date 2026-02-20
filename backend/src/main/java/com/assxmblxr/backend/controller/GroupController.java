@@ -1,7 +1,7 @@
 package com.assxmblxr.backend.controller;
 
 import com.assxmblxr.backend.entity.Group;
-import com.assxmblxr.backend.exceptions.GroupNotFoundException;
+import com.assxmblxr.backend.exceptions.GroupException;
 import com.assxmblxr.backend.service.GroupService;
 
 import lombok.extern.slf4j.Slf4j;
@@ -20,7 +20,6 @@ public class GroupController {
   @Autowired
   private GroupService groupService;
 
-  // GET: get all, get by name;
   @GetMapping
   public ResponseEntity<List<Group>> getAllGroups() {
     try {
@@ -40,13 +39,12 @@ public class GroupController {
     try {
       log.info("Fetching group by id: {}", id);
       return ResponseEntity.ok(groupService.getGroup(id));
-    } catch (GroupNotFoundException e) {
+    } catch (GroupException e) {
       log.error("Group not found: {}", id);
       return ResponseEntity.notFound().build();
     }
   }
 
-  // POST: create;
   @PostMapping()
   public ResponseEntity<Group> createGroup(
           @RequestBody Group group
@@ -61,7 +59,6 @@ public class GroupController {
     }
   }
 
-  // DELETE: delete;
   @DeleteMapping("/{id}")
   public ResponseEntity<Void> deleteGroup(
           @PathVariable Long id

@@ -2,7 +2,7 @@ package com.assxmblxr.backend.controller;
 
 import com.assxmblxr.backend.dto.TeacherRequest;
 import com.assxmblxr.backend.dto.TeacherResponse;
-import com.assxmblxr.backend.exceptions.TeacherNotFoundException;
+import com.assxmblxr.backend.exceptions.TeacherException;
 import com.assxmblxr.backend.service.TeacherService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -23,7 +23,6 @@ public class TeacherController {
     this.teacherService = teacherService;
   }
 
-  // Создание учителя
   @PostMapping
   public ResponseEntity<TeacherResponse> createTeacher(
           @RequestBody TeacherRequest request
@@ -38,7 +37,6 @@ public class TeacherController {
     }
   }
 
-  // Обновление учителя
   @PutMapping("/{id}")
   public ResponseEntity<TeacherResponse> updateTeacher(
           @PathVariable Long id,
@@ -48,7 +46,7 @@ public class TeacherController {
       log.info("Updating teacher with id {}", id);
       TeacherResponse updated = teacherService.updateTeacher(id, request);
       return ResponseEntity.ok(updated);
-    } catch (TeacherNotFoundException e) {
+    } catch (TeacherException e) {
       log.error("Teacher with id {} not found", id);
       return ResponseEntity.notFound().build();
     } catch (Exception e) {
@@ -57,7 +55,6 @@ public class TeacherController {
     }
   }
 
-  // Получение одного учителя
   @GetMapping("/{id}")
   public ResponseEntity<TeacherResponse> getTeacher(
           @PathVariable Long id
@@ -66,13 +63,12 @@ public class TeacherController {
       log.info("Fetching teacher with id {}", id);
       var teacher = teacherService.getTeacher(id) ;
       return ResponseEntity.ok(teacher);
-    } catch (TeacherNotFoundException e) {
+    } catch (TeacherException e) {
       log.info("Teacher with id {} not found", id);
       return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
     }
   }
 
-  // Получение всех учителей
   @GetMapping
   public ResponseEntity<List<TeacherResponse>> getAllTeachers() {
     try {
@@ -85,7 +81,6 @@ public class TeacherController {
     }
   }
 
-  // Удаление учителя
   @DeleteMapping("/{id}")
   public ResponseEntity<Void> deleteTeacher(
           @PathVariable Long id

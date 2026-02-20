@@ -4,8 +4,8 @@ import com.assxmblxr.backend.dto.TeacherRequest;
 import com.assxmblxr.backend.dto.TeacherResponse;
 import com.assxmblxr.backend.entity.Subject;
 import com.assxmblxr.backend.entity.Teacher;
-import com.assxmblxr.backend.exceptions.SubjectNotFoundException;
-import com.assxmblxr.backend.exceptions.TeacherNotFoundException;
+import com.assxmblxr.backend.exceptions.SubjectException;
+import com.assxmblxr.backend.exceptions.TeacherException;
 import com.assxmblxr.backend.repository.SubjectRepository;
 import com.assxmblxr.backend.repository.TeacherRepository;
 import jakarta.transaction.Transactional;
@@ -43,7 +43,7 @@ public class TeacherService {
   @Transactional
   public TeacherResponse updateTeacher(Long id, TeacherRequest request) {
     Teacher teacher = teacherRepository.findById(id)
-            .orElseThrow(() -> new TeacherNotFoundException("Учитель не найден", id));
+            .orElseThrow(() -> new TeacherException("Учитель не найден", id));
 
     teacher.setFullname(request.getFullname());
     teacher.setPhone(request.getPhone());
@@ -65,7 +65,7 @@ public class TeacherService {
 
   public TeacherResponse getTeacher(Long id) {
     Teacher teacher = teacherRepository.findById(id)
-            .orElseThrow(() -> new TeacherNotFoundException("Учитель не найден", id));
+            .orElseThrow(() -> new TeacherException("Учитель не найден", id));
     return toResponse(teacher);
   }
 
@@ -81,7 +81,7 @@ public class TeacherService {
     Set<Subject> subjects = new HashSet<>();
     for (Long id : ids) {
       Subject subject = subjectRepository.findById(id)
-              .orElseThrow(() -> new SubjectNotFoundException("Предмет не найден", id));
+              .orElseThrow(() -> new SubjectException("Предмет не найден", id));
       subjects.add(subject);
     }
     return subjects;

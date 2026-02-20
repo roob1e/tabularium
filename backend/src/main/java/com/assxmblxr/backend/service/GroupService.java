@@ -1,7 +1,7 @@
 package com.assxmblxr.backend.service;
 
 import com.assxmblxr.backend.entity.Group;
-import com.assxmblxr.backend.exceptions.GroupNotFoundException;
+import com.assxmblxr.backend.exceptions.GroupException;
 import com.assxmblxr.backend.repository.GroupRepository;
 import org.springframework.stereotype.Service;
 
@@ -25,11 +25,11 @@ public class GroupService {
    * Получить группу по ID.
    * @param id ID группы.
    * @return Найденная группа.
-   * @throws GroupNotFoundException если группа не найдена.
+   * @throws GroupException если группа не найдена.
    */
   public Group getGroup(Long id) {
     return groupRepository.findById(id)
-            .orElseThrow(() -> new GroupNotFoundException("Группа не найдена", id));
+            .orElseThrow(() -> new GroupException("Группа не найдена", id));
   }
 
   /**

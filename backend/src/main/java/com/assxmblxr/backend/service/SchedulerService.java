@@ -1,4 +1,3 @@
-// SchedulerService.java
 package com.assxmblxr.backend.service;
 
 import com.assxmblxr.backend.components.AutoGradeUpdate;
@@ -19,7 +18,7 @@ public class SchedulerService {
   private final AutoGradeUpdate autoGradeUpdate;
   private ScheduledFuture<?> scheduledTask;
   @Getter
-  private String cronExpression = "0 0 0 30 7 *"; // дефолт: 30 июля
+  private String cronExpression = "0 0 0 30 7 *"; // 30 июля
 
   public SchedulerService(ThreadPoolTaskScheduler scheduler, AutoGradeUpdate autoGradeUpdate) {
     this.scheduler = scheduler;
@@ -31,15 +30,12 @@ public class SchedulerService {
     LocalDate date = parseDate(dateString);
     if (date == null) return;
 
-    // Формируем новый CRON
     this.cronExpression = toCron(date);
 
-    // Отменяем предыдущую задачу
     if (scheduledTask != null) {
       scheduledTask.cancel(false);
     }
 
-    // Планируем новую задачу
     scheduleTask(cronExpression);
   }
 
@@ -61,19 +57,11 @@ public class SchedulerService {
   public LocalDate parseDate(String dateString) {
     try {
       if (dateString == null) return null;
-
-      // убираем пробелы и кавычки
       dateString = dateString.trim().replace("\"", "");
-
-      // добавляем текущий год
       String fullDate = dateString + "." + Year.now().getValue(); // "30.07.2025"
 
-      // создаём форматтер
       DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
-
-      // парсим и возвращаем LocalDate
       return LocalDate.parse(fullDate, formatter);
-
     } catch (Exception e) {
       System.out.println("Failed to parse date: '" + dateString + "'. Error: " + e.getMessage());
       return null;

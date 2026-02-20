@@ -6,10 +6,10 @@ import com.assxmblxr.backend.entity.Grade;
 import com.assxmblxr.backend.entity.Student;
 import com.assxmblxr.backend.entity.Subject;
 import com.assxmblxr.backend.entity.Teacher;
-import com.assxmblxr.backend.exceptions.GradeNotFoundException;
-import com.assxmblxr.backend.exceptions.StudentNotFoundException;
-import com.assxmblxr.backend.exceptions.SubjectNotFoundException;
-import com.assxmblxr.backend.exceptions.TeacherNotFoundException;
+import com.assxmblxr.backend.exceptions.GradeException;
+import com.assxmblxr.backend.exceptions.StudentException;
+import com.assxmblxr.backend.exceptions.SubjectException;
+import com.assxmblxr.backend.exceptions.TeacherException;
 import com.assxmblxr.backend.repository.GradeRepository;
 import com.assxmblxr.backend.repository.StudentRepository;
 import com.assxmblxr.backend.repository.SubjectRepository;
@@ -26,7 +26,6 @@ public class GradeService {
   private final StudentRepository studentRepository;
   private final SubjectRepository subjectRepository;
   private final TeacherRepository teacherRepository;
-
 
   public GradeService(
           GradeRepository gradeRepository,
@@ -55,7 +54,7 @@ public class GradeService {
   @Transactional
   public GradeResponse updateGrade(Long id, GradeRequest request) {
     Grade grade = gradeRepository.findById(id)
-            .orElseThrow(() -> new GradeNotFoundException("Оценка не найдена", id));
+            .orElseThrow(() -> new GradeException("Оценка не найдена", id));
 
     grade.setStudent(getStudentById(request.getStudentId()));
     grade.setSubject(getSubjectById(request.getSubjectId()));
@@ -85,7 +84,7 @@ public class GradeService {
   public GradeResponse getGrade(Long id) {
     return gradeRepository.findById(id)
             .map(this::toResponse)
-            .orElseThrow(() -> new GradeNotFoundException("Оценка не найдена", id));
+            .orElseThrow(() -> new GradeException("Оценка не найдена", id));
   }
 
   private GradeResponse toResponse(Grade grade) {
@@ -100,16 +99,16 @@ public class GradeService {
 
   private Teacher getTeacherById(Long id) {
     return teacherRepository.findById(id)
-            .orElseThrow(() -> new TeacherNotFoundException("Учитель не найден", id));
+            .orElseThrow(() -> new TeacherException("Учитель не найден", id));
   }
 
   private Subject getSubjectById(Long id) {
     return subjectRepository.findById(id)
-            .orElseThrow(() -> new SubjectNotFoundException("Предмет не найден", id));
+            .orElseThrow(() -> new SubjectException("Предмет не найден", id));
   }
 
   private Student getStudentById(Long id) {
     return studentRepository.findById(id)
-            .orElseThrow(() -> new StudentNotFoundException("Студент не найден", id));
+            .orElseThrow(() -> new StudentException("Студент не найден", id));
   }
 }

@@ -1,4 +1,4 @@
-package com.assxmblxr.backend.config;
+package com.assxmblxr.backend.utils;
 
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;

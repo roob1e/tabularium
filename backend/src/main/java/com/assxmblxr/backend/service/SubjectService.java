@@ -3,7 +3,7 @@ package com.assxmblxr.backend.service;
 import com.assxmblxr.backend.dto.SubjectDTO;
 import com.assxmblxr.backend.entity.Subject;
 import com.assxmblxr.backend.entity.Teacher;
-import com.assxmblxr.backend.exceptions.SubjectNotFoundException;
+import com.assxmblxr.backend.exceptions.SubjectException;
 import com.assxmblxr.backend.repository.SubjectRepository;
 import com.assxmblxr.backend.repository.TeacherRepository;
 import org.springframework.stereotype.Service;
@@ -42,7 +42,7 @@ public class SubjectService {
   @Transactional
   public Subject updateSubject(Long id, SubjectDTO dto) {
     Subject subject = subjectRepository.findById(id)
-            .orElseThrow(() -> new SubjectNotFoundException("Subject not found", id));
+            .orElseThrow(() -> new SubjectException("Subject not found", id));
 
     subject.setName(dto.getName());
 
@@ -57,7 +57,7 @@ public class SubjectService {
 
   public Subject getSubject(Long id) {
     return subjectRepository.findById(id)
-            .orElseThrow(() -> new SubjectNotFoundException("Subject not found", id));
+            .orElseThrow(() -> new SubjectException("Subject not found", id));
   }
 
   public List<Subject> getAllSubjects() {

@@ -3,8 +3,8 @@ package com.assxmblxr.backend.service;
 import com.assxmblxr.backend.dto.StudentRequest;
 import com.assxmblxr.backend.entity.Group;
 import com.assxmblxr.backend.entity.Student;
-import com.assxmblxr.backend.exceptions.GroupNotFoundException;
-import com.assxmblxr.backend.exceptions.StudentNotFoundException;
+import com.assxmblxr.backend.exceptions.GroupException;
+import com.assxmblxr.backend.exceptions.StudentException;
 import com.assxmblxr.backend.repository.GroupRepository;
 import com.assxmblxr.backend.repository.StudentRepository;
 
@@ -27,12 +27,12 @@ public class StudentService {
    * Создаёт запись в таблице students, используя DTO; обновляет параметр amount в соответствующей группе.
    * @param request данные для создания объекта студента: { String fullname, int age, String phone, LocalDate birthdate, Group group }.
    * @return Созданный объект студента.
-   * @exception GroupNotFoundException указано название несуществующей группы в запросе.
+   * @exception GroupException указано название несуществующей группы в запросе.
    */
   @Transactional
   public Student createStudent(StudentRequest request) {
     Group group = groupRepository.findById(request.getGroupId())
-            .orElseThrow(() -> new GroupNotFoundException("Группа не найдена", request.getGroupId()));
+            .orElseThrow(() -> new GroupException("Группа не найдена", request.getGroupId()));
 
     Student student = Student.builder()
             .fullname(request.getFullname())
@@ -78,7 +78,7 @@ public class StudentService {
    * @return объект студента, если найден, иначе null.
    */
   public Student getStudent(Long id) {
-    return studentRepository.findById(id).orElseThrow(() -> new StudentNotFoundException("Студент не найден", id));
+    return studentRepository.findById(id).orElseThrow(() -> new StudentException("Студент не найден", id));
   }
 
   /**
@@ -86,12 +86,12 @@ public class StudentService {
    * @param id ID студента, чьи параметры будут изменены.
    * @param dto новые значения параметров студента.
    * @return обновлённый объект студента
-   * @exception StudentNotFoundException указан несуществующий ID
+   * @exception StudentException указан несуществующий ID
    */
   @Transactional
   public Student updateStudent(Long id, StudentRequest dto) {
     Student student = studentRepository.findById(id)
-            .orElseThrow(() -> new StudentNotFoundException("Студент с id " + id + " не найден", id));
+            .orElseThrow(() -> new StudentException("Студент с id " + id + " не найден", id));
 
     Group oldGroup = student.getGroup();
 
@@ -101,7 +101,7 @@ public class StudentService {
     student.recalcAge();
 
     Group newGroup = groupRepository.findById(dto.getGroupId())
-            .orElseThrow(() -> new GroupNotFoundException("Группа не найдена", dto.getGroupId()));
+            .orElseThrow(() -> new GroupException("Группа не найдена", dto.getGroupId()));
     student.setGroup(newGroup);
 
     if (!oldGroup.getId().equals(newGroup.getId())) {

@@ -2,7 +2,7 @@ package com.assxmblxr.backend.controller;
 
 import com.assxmblxr.backend.dto.GradeRequest;
 import com.assxmblxr.backend.dto.GradeResponse;
-import com.assxmblxr.backend.exceptions.GradeNotFoundException;
+import com.assxmblxr.backend.exceptions.GradeException;
 import com.assxmblxr.backend.service.GradeService;
 
 import lombok.AllArgsConstructor;
@@ -41,7 +41,7 @@ public class GradeController {
     try {
       log.info("Fetching grade by id: {}", id);
       return ResponseEntity.ok(gradeService.getGrade(id));
-    } catch (GradeNotFoundException e) {
+    } catch (GradeException e) {
       log.error("Grade not found: {}", id);
       return ResponseEntity.notFound().build();
     }
@@ -70,7 +70,7 @@ public class GradeController {
       log.info("Updating grade: {}", request);
       GradeResponse updatedGrade = gradeService.updateGrade(id, request);
       return ResponseEntity.ok(updatedGrade);
-    } catch (GradeNotFoundException e) {
+    } catch (GradeException e) {
       log.error("Grade not found: {}", id);
       return ResponseEntity.notFound().build();
     } catch (Exception e) {
