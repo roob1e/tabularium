@@ -4,6 +4,6 @@ spring:
     username: admin
     password: 1234
 jwt:
-  # secret: "YOUR SECRET HERE"
+
   access-token-expiration: 3600000
   refresh-token-expiration: 604800000
