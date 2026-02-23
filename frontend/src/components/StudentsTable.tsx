@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import { Table, Button, Modal, Form, Input, message, Select } from "antd";
-import { Student, Group } from "../types.ts";
+import { Student, Group } from "../types/types.ts";
 import { fetchStudents, createStudent, deleteStudent, updateStudent } from "../api/students.ts";
 import { getAllGroups } from "../api/groups.ts";
 import { SortOrder } from "antd/es/table/interface";
@@ -126,7 +126,14 @@ const StudentsTable: React.FC = () => {
     };
 
     const columns = [
-        { title: "ID", dataIndex: "id", key: "id", sorter: (a: Student, b: Student) => a.id - b.id, defaultSortOrder: "ascend" as SortOrder },
+        {
+            title: "ID",
+            dataIndex: "id",
+            key: "id",
+            sorter: (a: Student, b: Student) => a.id - b.id,
+            defaultSortOrder: "ascend" as SortOrder,
+            width: 80,
+        },
         { title: "ФИО", dataIndex: "fullname", key: "fullname" },
         { title: "Возраст", dataIndex: "age", key: "age" },
         { title: "Телефон", dataIndex: "phone", key: "phone" },
@@ -136,14 +143,26 @@ const StudentsTable: React.FC = () => {
             title: "Действия",
             key: "actions",
             render: (_: any, record: Student) => (
-                <>
-                    <Button className="edit-btn" onClick={() => openEditModal(record)} style={{ marginRight: 8 }}>
+                <div style={{
+                    display: "flex",
+                    flexWrap: "wrap", // Разрешаем перенос на новую строку
+                    gap: "8px",       // Расстояние между кнопками во все стороны
+                    alignItems: "center"
+                }}>
+                    <Button
+                        className="edit-btn"
+                        onClick={() => openEditModal(record)}
+                    >
                         Изменить
                     </Button>
-                    <Button className="delete-btn" onClick={() => handleDelete(record.id)}>
+                    <Button
+                        danger
+                        className="delete-btn"
+                        onClick={() => handleDelete(record.id)}
+                    >
                         Удалить
                     </Button>
-                </>
+                </div>
             ),
         }
     ];

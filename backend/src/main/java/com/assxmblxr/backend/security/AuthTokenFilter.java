@@ -23,6 +23,7 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class AuthTokenFilter extends OncePerRequestFilter {
   private final JwtUtils jwtUtils;
+
   @Autowired
   @Lazy
   private final UserService userService;
@@ -40,7 +41,7 @@ public class AuthTokenFilter extends OncePerRequestFilter {
         UserDetails userDetails = userService.loadUserByUsername(username);
 
         UsernamePasswordAuthenticationToken authentication =
-                new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+              new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
 
         authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
         SecurityContextHolder.getContext().setAuthentication(authentication);

@@ -31,12 +31,21 @@ const AuthPage: React.FC<AuthPageProps> = ({ onLoginSuccess }) => {
         try {
             if (isLogin) {
                 const res = await login({ username: data.username, password: data.password });
+                localStorage.setItem('accessToken', res.accessToken);
+                localStorage.setItem('refreshToken', res.refreshToken);
+
                 onLoginSuccess(res.accessToken);
             } else {
-                await register(data);
-                setIsLogin(true);
-                reset();
-                alert('Регистрация завершена успешно!');
+                const res = await register(data);
+                if (res && res.accessToken && res.refreshToken) {
+                    localStorage.setItem('accessToken', res.accessToken);
+                    localStorage.setItem('refreshToken', res.refreshToken);
+                    onLoginSuccess(res.accessToken);
+                } else {
+                    setIsLogin(true);
+                    reset();
+                    alert('Регистрация завершена успешно!');
+                }
             }
         } catch (err: any) {
             setError(err.response?.data?.message || 'Ошибка выполнения операции');

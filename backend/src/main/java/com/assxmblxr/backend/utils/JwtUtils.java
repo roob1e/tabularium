@@ -1,5 +1,6 @@
 package com.assxmblxr.backend.utils;
 
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
@@ -46,11 +47,16 @@ public class JwtUtils {
 
   public boolean validateJwtToken(String authToken) {
     try {
-      Jwts.parserBuilder().setSigningKey(getSigningKey()).build().parseClaimsJws(authToken);
+      Jwts.parserBuilder()
+              .setSigningKey(getSigningKey())
+              .build()
+              .parseClaimsJws(authToken);
       return true;
+    } catch (ExpiredJwtException e) {
+      log.error("JWT токен просрочен: {}", e.getMessage());
     } catch (Exception e) {
-      log.error("Token {} malformed", authToken);
-      return false;
+      log.error("Ошибка валидации токена: {}", e.getMessage());
     }
+    return false;
   }
 }
