@@ -8,6 +8,7 @@ export interface Student {
 }
 
 export interface Group {
+    id: number;
     name: string;
     amount: number;
 }

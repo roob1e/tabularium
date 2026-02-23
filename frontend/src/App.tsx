@@ -1,23 +1,45 @@
-import React, { useState, useRef} from "react";
+import React, { useState } from "react";
 import { Layout, Menu } from "antd";
 import StudentsTable from "./components/StudentsTable";
 import GroupsTable from "./components/GroupsTable";
-import { TableOutlined, DatabaseOutlined } from "@ant-design/icons";
+import AuthPage from "./pages/AuthPage";
+import { TableOutlined, DatabaseOutlined, LogoutOutlined } from "@ant-design/icons";
 
 const { Header, Sider, Content } = Layout;
 
 const App: React.FC = () => {
+    const [token, setToken] = useState<string | null>(localStorage.getItem('accessToken'));
     const [selectedKey, setSelectedKey] = useState("1");
-    const contentRef = useRef<HTMLDivElement>(null);
+
+    const handleLoginSuccess = (newToken: string) => {
+        localStorage.setItem('accessToken', newToken);
+        setToken(newToken);
+    };
+
+    const handleLogout = () => {
+        localStorage.removeItem('accessToken');
+        setToken(null);
+    };
+
+    if (!token) {
+        return <AuthPage onLoginSuccess={handleLoginSuccess} />;
+    }
 
     return (
         <Layout style={{ height: "100vh" }}>
-            <Header style={{ color: "white" }}>Tabularium</Header>
+            <Header style={{ color: "white", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <span style={{ fontSize: '18px', fontWeight: 'bold' }}>Tabularium</span>
+                <LogoutOutlined
+                    onClick={handleLogout}
+                    style={{ cursor: 'pointer', fontSize: '18px', color: '#ff4d4f' }}
+                    title="Выйти"
+                />
+            </Header>
             <Layout style={{ height: "100%" }}>
                 <Sider width={200} style={{ height: "100%" }}>
                     <Menu
                         mode="vertical"
-                        defaultSelectedKeys={["1"]}
+                        selectedKeys={[selectedKey]}
                         onClick={(e) => setSelectedKey(e.key)}
                         items={[
                             { key: "1", icon: <TableOutlined />, label: "Учащиеся" },
@@ -26,13 +48,12 @@ const App: React.FC = () => {
                     />
                 </Sider>
                 <Content
-                    ref={contentRef}
                     style={{
                         display: "flex",
                         flexDirection: "column",
                         minHeight: 0,
-                        padding: "0px 20px 40px",
-                        overflow: "hidden",
+                        padding: "20px",
+                        overflow: "auto",
                     }}
                 >
                     {selectedKey === "1" && <StudentsTable />}

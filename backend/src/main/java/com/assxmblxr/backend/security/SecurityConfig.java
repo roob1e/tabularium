@@ -14,6 +14,7 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfigurationSource;
 
 @Configuration
 @EnableWebSecurity
@@ -25,10 +26,8 @@ public class SecurityConfig {
   @Bean
   public DaoAuthenticationProvider authenticationProvider(UserService userService) {
     DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-
     authProvider.setUserDetailsService(userService);
     authProvider.setPasswordEncoder(passwordEncoder.passwordEncoder());
-
     return authProvider;
   }
 
@@ -40,12 +39,12 @@ public class SecurityConfig {
   @Bean
   public SecurityFilterChain filterChain(HttpSecurity http,
                                          AuthTokenFilter authTokenFilter,
-                                         UserService userService) throws Exception {
+                                         UserService userService,
+                                         CorsConfigurationSource corsConfigurationSource) throws Exception {
     http
             .csrf(AbstractHttpConfigurer::disable)
-            .sessionManagement(
-                    session ->
-                            session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .cors(cors -> cors.configurationSource(corsConfigurationSource))
             .authorizeHttpRequests(auth -> auth
                     .requestMatchers("/auth/**").permitAll()
                     .anyRequest().authenticated()
@@ -53,6 +52,7 @@ public class SecurityConfig {
 
     http.authenticationProvider(authenticationProvider(userService));
     http.addFilterBefore(authTokenFilter, UsernamePasswordAuthenticationFilter.class);
+
     return http.build();
   }
 }

@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import { Table, Modal, Button, Form, Input, message } from "antd";
 import { Group } from "../types.ts";
-import { createGroup, deleteGroup, getAllGroups } from "../api/groupApi.ts";
+import { createGroup, deleteGroup, getAllGroups } from "../api/groups.ts";
 
 const GroupsTable: React.FC = () => {
     const [groups, setGroups] = useState<Group[]>([]);

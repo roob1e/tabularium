@@ -52,7 +52,7 @@ public class StudentController {
 
   @PostMapping
   public ResponseEntity<Student> createStudent(
-          @RequestBody StudentRequest request
+          @Valid @RequestBody StudentRequest request
   ) {
     try {
       log.info("Creating student {}", request.toString());

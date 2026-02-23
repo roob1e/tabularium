@@ -1,8 +1,8 @@
 import React, { useEffect, useState, useRef } from "react";
-import { Table, Button, Modal, Form, Input, message, AutoComplete } from "antd";
+import { Table, Button, Modal, Form, Input, message, Select } from "antd";
 import { Student, Group } from "../types.ts";
-import { fetchStudents, createStudent, deleteStudent, updateStudent } from "../api/studentsApi.ts";
-import { getAllGroups } from "../api/groupApi.ts";
+import { fetchStudents, createStudent, deleteStudent, updateStudent } from "../api/students.ts";
+import { getAllGroups } from "../api/groups.ts";
 import { SortOrder } from "antd/es/table/interface";
 
 const StudentsTable: React.FC = () => {
@@ -20,7 +20,6 @@ const StudentsTable: React.FC = () => {
     const [form] = Form.useForm();
     const [editForm] = Form.useForm();
 
-    // Горячие клавиши
     useEffect(() => {
         const handleShortcut = (event: KeyboardEvent) => {
             if (event.shiftKey && ["n", "т"].includes(event.key.toLowerCase())) {
@@ -32,7 +31,6 @@ const StudentsTable: React.FC = () => {
         return () => window.removeEventListener("keydown", handleShortcut);
     }, []);
 
-    // Загрузка данных
     const loadStudents = async () => {
         setLoading(true);
         try {
@@ -184,14 +182,20 @@ const StudentsTable: React.FC = () => {
                     <Form.Item name="age" label="Возраст" rules={[{ required: true }]}><Input type="number" /></Form.Item>
                     <Form.Item name="phone" label="Телефон" rules={[{ required: true }]}><Input /></Form.Item>
                     <Form.Item name="birthdate" label="Дата рождения" rules={[{ required: true }]}><Input type="date" /></Form.Item>
-                    <Form.Item name="groupName" label="Класс" rules={[{ required: true }]}>
-                        <AutoComplete
-                            options={groups.map((g) => ({ value: g.name }))}
-                            onChange={(value) => form.setFieldsValue({ groupName: value })}
-                            filterOption={(inputValue, option) => option!.value.toLowerCase().includes(inputValue.toLowerCase())}
-                        >
-                            <Input placeholder="Выберите или введите группу" />
-                        </AutoComplete>
+                    <Form.Item
+                        name="groupId"
+                        label="Класс"
+                        rules={[{ required: true, message: "Выберите группу" }]}
+                    >
+                        <Select
+                            placeholder="Выберите или введите группу"
+                            showSearch
+                            optionFilterProp="label"
+                            options={groups.map((g) => ({
+                                value: g.id,
+                                label: g.name,
+                            }))}
+                        />
                     </Form.Item>
                     <Form.Item><Button type="primary" htmlType="submit" block>Сохранить</Button></Form.Item>
                 </Form>
@@ -203,14 +207,19 @@ const StudentsTable: React.FC = () => {
                     <Form.Item name="age" label="Возраст" rules={[{ required: true }]}><Input type="number" /></Form.Item>
                     <Form.Item name="phone" label="Телефон" rules={[{ required: true }]}><Input /></Form.Item>
                     <Form.Item name="birthdate" label="Дата рождения" rules={[{ required: true }]}><Input type="date" /></Form.Item>
-                    <Form.Item name="groupName" label="Класс" rules={[{ required: true }]}>
-                        <AutoComplete
-                            options={groups.map((g) => ({ value: g.name }))}
-                            onChange={(value) => editForm.setFieldsValue({ groupName: value })}
-                            filterOption={(inputValue, option) => option!.value.toLowerCase().includes(inputValue.toLowerCase())}
-                        >
-                            <Input placeholder="Выберите или введите группу" />
-                        </AutoComplete>
+                    <Form.Item name="groupId" label="Класс" rules={[{ required: true, message: "Выберите группу" }]}>
+                        <Select
+                            showSearch
+                            placeholder="Выберите группу"
+                            optionFilterProp="children"
+                            filterOption={(input, option) =>
+                                (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
+                            }
+                            options={groups.map((g) => ({
+                                value: g.id,
+                                label: g.name,
+                            }))}
+                        />
                     </Form.Item>
                     <Form.Item><Button type="primary" htmlType="submit" block>Сохранить изменения</Button></Form.Item>
                 </Form>
