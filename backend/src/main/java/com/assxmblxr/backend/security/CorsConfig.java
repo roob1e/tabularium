@@ -1,4 +1,4 @@
-package com.assxmblxr.backend.config;
+package com.assxmblxr.backend.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

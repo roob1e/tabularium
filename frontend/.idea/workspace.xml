@@ -2,21 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="073918de-16ad-41dc-a7be-ae3bc4813620" name="Changes" comment="test">
-      <change beforePath="$PROJECT_DIR$/../.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/components/AutoGradeUpdate.java" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/components/AutoGradeUpdate.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/config/CorsConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/config/CorsConfig.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/config/DataSourceConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/config/DataSourceConfig.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/controller/GradeController.java" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/controller/GradeController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/controller/GroupController.java" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/controller/GroupController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/controller/SchedulerController.java" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/controller/SchedulerController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/controller/StudentController.java" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/controller/StudentController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/controller/SubjectController.java" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/controller/SubjectController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/controller/TeacherController.java" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/controller/TeacherController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/dto/CreateStudentRequest.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/dto/UpdateStudentRequest.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/entity/Student.java" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/entity/Student.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/service/StudentService.java" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/service/StudentService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../backend/src/test/java/com/assxmblxr/backend/AutoGradeUpdateTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/src/test/java/com/assxmblxr/backend/AutoGradeUpdateTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -26,18 +12,18 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
   </component>
-  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
-  "lastFilter": {
-    "state": "OPEN",
-    "assignee": "roob1e"
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;roob1e&quot;
   }
-}]]></component>
-  <component name="GithubPullRequestsUISettings"><![CDATA[{
-  "selectedUrlAndAccountId": {
-    "url": "git@github.com:roob1e/tabularium.git",
-    "accountId": "2802dd4e-d136-4846-b245-ae63e9b3af4f"
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;git@github.com:roob1e/tabularium.git&quot;,
+    &quot;accountId&quot;: &quot;2802dd4e-d136-4846-b245-ae63e9b3af4f&quot;
   }
-}]]></component>
+}</component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 6
 }</component>
@@ -60,8 +46,8 @@
     "nodejs_interpreter_path": "/Users/assxmblxr/Library/Application Support/JetBrains/WebStorm2025.3/node/versions/24.13.1/bin/node",
     "nodejs_package_manager_path": "pnpm",
     "npm.dev.executor": "Run",
-    "settings.editor.selected.configurable": "settings.javascript.runtime",
-    "ts.external.directory.path": "/Users/assxmblxr/IT/tabularium/frontend/node_modules/typescript/lib",
+    "settings.editor.selected.configurable": "project.propVCSSupport.DirectoryMappings",
+    "ts.external.directory.path": "/Users/assxmblxr/tabularium/frontend/node_modules/typescript/lib",
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
@@ -102,6 +88,8 @@
       <workItem from="1771006438909" duration="96000" />
       <workItem from="1771006536265" duration="54000" />
       <workItem from="1771413951499" duration="74000" />
+      <workItem from="1771577308599" duration="4000" />
+      <workItem from="1771833919596" duration="12000" />
     </task>
     <task id="LOCAL-00001" summary="test">
       <option name="closed" value="true" />
@@ -141,6 +129,9 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
+    <ignored-roots>
+      <path value="$USER_HOME$" />
+    </ignored-roots>
     <MESSAGE value="test" />
     <option name="LAST_COMMIT_MESSAGE" value="test" />
   </component>
