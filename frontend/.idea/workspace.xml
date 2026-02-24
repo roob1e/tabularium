@@ -4,12 +4,16 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="073918de-16ad-41dc-a7be-ae3bc4813620" name="Changes" comment="Authentication pages and apis">
+    <list default="true" id="073918de-16ad-41dc-a7be-ae3bc4813620" name="Changes" comment="Light/dark themes. Fixed header">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/App.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/App.css" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/App.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/App.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/api/api.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/api/api.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/api/groups.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/api/groups.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/GroupsTable.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/GroupsTable.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/StudentsTable.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/StudentsTable.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/pages/AuthPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/AuthPage.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/types/types.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/types/types.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -121,6 +125,9 @@
       <workItem from="1771847480305" duration="5410000" />
       <workItem from="1771875871372" duration="29000" />
       <workItem from="1771913593881" duration="3436000" />
+      <workItem from="1771917330432" duration="36000" />
+      <workItem from="1771926824686" duration="3023000" />
+      <workItem from="1771933708470" duration="5817000" />
     </task>
     <task id="LOCAL-00001" summary="test">
       <option name="closed" value="true" />
@@ -162,7 +169,15 @@
       <option name="project" value="LOCAL" />
       <updated>1771875883715</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="Light/dark themes. Fixed header">
+      <option name="closed" value="true" />
+      <created>1771917349720</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1771917349720</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -189,6 +204,7 @@
     </ignored-roots>
     <MESSAGE value="test" />
     <MESSAGE value="Authentication pages and apis" />
-    <option name="LAST_COMMIT_MESSAGE" value="Authentication pages and apis" />
+    <MESSAGE value="Light/dark themes. Fixed header" />
+    <option name="LAST_COMMIT_MESSAGE" value="Light/dark themes. Fixed header" />
   </component>
 </project>

@@ -11,19 +11,27 @@ const GroupsTable: React.FC = () => {
 
     const [form] = Form.useForm();
     const containerRef = useRef<HTMLDivElement>(null);
+    const firstInputRef = useRef<any>(null);
 
-    // Горячие клавиши
+    const isMac = typeof window !== 'undefined' && /Mac|iPod|iPhone|iPad/.test(navigator.platform);
+    const shortcutSubmit = isMac ? "shift + return" : "Shift + Enter";
+    const shortcutAdd = isMac ? "shift + n" : "Shift + N";
+
     useEffect(() => {
         const handleShortcut = (event: KeyboardEvent) => {
-            if (event.shiftKey && ["n", "т"].includes(event.key.toLowerCase())) {
-                event.preventDefault();
-                setIsModalOpen(true);
+            const key = event.key.toLowerCase();
+            if (event.shiftKey && ["n", "т"].includes(key)) {
+                if (!isModalOpen) {
+                    event.preventDefault();
+                    form.resetFields();
+                    setIsModalOpen(true);
+                }
             }
         };
 
         window.addEventListener("keydown", handleShortcut);
         return () => window.removeEventListener("keydown", handleShortcut);
-    }, []);
+    }, [isModalOpen, form]);
 
     const loadGroups = async () => {
         setLoading(true);
@@ -41,27 +49,40 @@ const GroupsTable: React.FC = () => {
         loadGroups();
     }, []);
 
+    const closeAddModal = () => {
+        setIsModalOpen(false);
+        form.resetFields();
+    };
+
     const onFinish = async (values: any) => {
         const newGroup = { name: values.name, amount: 0 };
         try {
             await createGroup(newGroup);
             message.success("Группа добавлена!");
-            setIsModalOpen(false);
-            form.resetFields();
+            closeAddModal();
             await loadGroups();
         } catch (err: any) {
             message.error(err.message || "Ошибка при добавлении группы");
         }
     };
 
-    const handleDelete = async (groupName: string) => {
+    const handleDelete = async (id: number) => {
         try {
-            await deleteGroup(groupName);
+            await deleteGroup(id);
             message.success("Группа удалена!");
         } catch (err: any) {
             message.error(err.message || "Ошибка при удалении группы");
         } finally {
             await loadGroups();
+        }
+    };
+
+    const handleFormKeyDown = (e: React.KeyboardEvent<HTMLFormElement>) => {
+        if (e.key === "Enter") {
+            e.preventDefault();
+            if (e.shiftKey) {
+                e.currentTarget.requestSubmit();
+            }
         }
     };
 
@@ -82,24 +103,24 @@ const GroupsTable: React.FC = () => {
             title: "Действия",
             key: "actions",
             render: (_: any, record: Group) => (
-                <Button className="delete-btn" onClick={() => handleDelete(record.name)}>
+                <Button
+                    danger
+                    className="delete-btn"
+                    onClick={() => handleDelete(record.id)}
+                >
                     Удалить
                 </Button>
             ),
         },
     ];
 
-    // вычисляем высоту таблицы
     useEffect(() => {
         const updateHeight = () => {
             if (containerRef.current) {
                 const containerHeight = containerRef.current.clientHeight;
                 const topBlock = containerRef.current.querySelector("div");
                 const topBlockHeight = topBlock ? (topBlock as HTMLElement).clientHeight + 8 : 0;
-
-                // адаптивный отступ снизу: 5% экрана, но минимум 24px
                 const bottomOffset = Math.max(window.innerHeight * 0.05, 24);
-
                 setTableScrollY(containerHeight - topBlockHeight - bottomOffset);
             }
         };
@@ -119,43 +140,60 @@ const GroupsTable: React.FC = () => {
                 padding: "10px 10px 0 10px",
             }}
         >
-            {/* Кнопка добавления группы */}
             <div style={{ marginBottom: 8 }}>
-                <Button type="primary" onClick={() => setIsModalOpen(true)}>
-                    Добавить группу (Shift + N)
+                <Button
+                    type="primary"
+                    onClick={() => { form.resetFields(); setIsModalOpen(true); }}
+                    style={{ position: 'relative' }}
+                >
+                    Добавить группу
+                    <span style={{ opacity: 0.5, marginLeft: 12, fontSize: '0.8em' }}>{shortcutAdd}</span>
                 </Button>
             </div>
 
-            {/* Таблица */}
             <div style={{ flex: 1, minHeight: 0, paddingBottom: 40 }}>
                 <Table
                     dataSource={groups}
                     columns={columns}
-                    rowKey="name"
+                    rowKey="id"
                     loading={loading}
                     pagination={false}
                     scroll={{ y: tableScrollY }}
                 />
             </div>
 
-            {/* Модалка */}
             <Modal
                 title="Добавить группу"
                 open={isModalOpen}
-                onCancel={() => setIsModalOpen(false)}
+                onCancel={closeAddModal}
                 footer={null}
+                destroyOnClose
+                afterOpenChange={(open) => open && firstInputRef.current?.focus()}
             >
-                <Form form={form} onFinish={onFinish} layout="vertical" autoComplete="off">
+                <Form
+                    form={form}
+                    onFinish={onFinish}
+                    layout="vertical"
+                    autoComplete="off"
+                    onKeyDown={handleFormKeyDown}
+                    initialValues={{ name: "" }}
+                >
                     <Form.Item
                         label="Название группы"
                         name="name"
                         rules={[{ required: true, message: "Введите название группы" }]}
                     >
-                        <Input placeholder="П-11, П-12..." />
+                        <Input ref={firstInputRef} placeholder="П-11, П-12..." autoComplete="off" />
                     </Form.Item>
-                    <Form.Item>
-                        <Button type="primary" htmlType="submit" block>
-                            Сохранить
+                    <Form.Item style={{ marginBottom: 0 }}>
+                        <Button
+                            type="primary"
+                            htmlType="submit"
+                            block
+                            style={{ display: 'flex', justifyContent: 'center', position: 'relative' }}
+                        >
+                            <span>Сохранить</span>
+                            <span style={{ opacity: 0.5, position: 'absolute', right: 15, fontSize: '0.85em' }}>{shortcutSubmit}</span>
                         </Button>
                     </Form.Item>
                 </Form>

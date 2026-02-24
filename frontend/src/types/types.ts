@@ -5,6 +5,7 @@ export interface Student {
     phone: string;
     birthdate: string;
     groupName: string;
+    groupId: number;
 }
 
 export interface Group {

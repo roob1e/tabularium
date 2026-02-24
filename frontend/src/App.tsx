@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Layout, Menu, Spin, Switch, ConfigProvider, theme } from "antd";
-import { TableOutlined, DatabaseOutlined, LogoutOutlined, SunOutlined, MoonOutlined, UserOutlined } from "@ant-design/icons";
+import { Layout, Menu, Spin, Switch, ConfigProvider, theme, Button } from "antd";
+import { LogoutOutlined, SunOutlined, MoonOutlined, UserOutlined } from "@ant-design/icons";
+import { motion, AnimatePresence } from "framer-motion";
 import StudentsTable from "./components/StudentsTable";
 import GroupsTable from "./components/GroupsTable";
 import AuthPage from "./pages/AuthPage";
@@ -17,10 +18,16 @@ const App: React.FC = () => {
     const isStarted = useRef(false);
     const [fullname, setFullname] = useState<string | null>(() => localStorage.getItem('fullname'));
 
+    const customBlue = "#1d39c4";
+    const headerColor = isDarkMode ? customBlue : "#1677ff";
+    const selectionBg = isDarkMode ? "rgba(255, 255, 255, 0.08)" : "rgba(0, 0, 0, 0.04)";
+
     const handleLogout = () => {
         localStorage.removeItem('accessToken');
         localStorage.removeItem('refreshToken');
+        localStorage.removeItem('fullname');
         setToken(null);
+        setFullname(null);
         setInitializing(false);
     };
 
@@ -63,15 +70,47 @@ const App: React.FC = () => {
         setToken(data.accessToken);
         setFullname(data.fullname);
     };
+
     const toggleTheme = (checked: boolean) => {
         setIsDarkMode(checked);
-        localStorage.setItem('theme', checked ? "#001529" : "#1677ff");
+        localStorage.setItem('theme', checked ? 'dark' : 'light');
     };
+
+    useEffect(() => {
+        const handleKeys = (e: KeyboardEvent) => {
+            if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
+            if (e.key === "1") setSelectedKey("1");
+            if (e.key === "2") setSelectedKey("2");
+        };
+        window.addEventListener("keydown", handleKeys);
+        return () => window.removeEventListener("keydown", handleKeys);
+    }, []);
+
+    const menuItems = [
+        {
+            key: "1",
+            label: (
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span>Учащиеся</span>
+                    <span style={{ opacity: 0.4, fontSize: '0.8em' }}>1</span>
+                </div>
+            )
+        },
+        {
+            key: "2",
+            label: (
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span>Группы</span>
+                    <span style={{ opacity: 0.4, fontSize: '0.8em' }}>2</span>
+                </div>
+            )
+        }
+    ];
 
     if (initializing) {
         return (
             <ConfigProvider theme={{ algorithm: isDarkMode ? theme.darkAlgorithm : theme.defaultAlgorithm }}>
-                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', background: isDarkMode ? "#141414" : "#fff" }}>
+                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', background: isDarkMode ? "#141414" : "#f5f5f5" }}>
                     <Spin size="large" />
                 </div>
             </ConfigProvider>
@@ -87,53 +126,157 @@ const App: React.FC = () => {
     }
 
     return (
-        <ConfigProvider theme={{ algorithm: isDarkMode ? theme.darkAlgorithm : theme.defaultAlgorithm }}>
-            <Layout style={{ height: "100vh" }}>
-                <Header style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    padding: "0 20px",
-                    background: isDarkMode ? "#001529" : "#1677ff"
-                }}>
-                    <span style={{ color: "white", fontSize: '18px', fontWeight: 'bold' }}>Tabularium</span>
-                    <div style={{ display: "flex", alignItems: "center", gap: "20px" }}>
-                        <Switch
-                            checked={isDarkMode}
-                            onChange={toggleTheme}
-                            checkedChildren={<MoonOutlined />}
-                            unCheckedChildren={<SunOutlined />}
-                        />
+        <ConfigProvider
+            theme={{
+                algorithm: isDarkMode ? theme.darkAlgorithm : theme.defaultAlgorithm,
+                token: {
+                    colorPrimary: headerColor,
+                },
+                components: {
+                    Menu: {
+                        colorItemBgSelected: selectionBg,
+                        colorItemBgHover: selectionBg,
+                        colorItemTextSelected: isDarkMode ? "rgba(255, 255, 255, 0.65)" : "rgba(0, 0, 0, 0.88)",
+                        colorItemTextHover: isDarkMode ? "rgba(255, 255, 255, 0.65)" : "rgba(0, 0, 0, 0.88)",
+                    }
+                }
+            }}
+        >
+            <style>
+                {`
+                    .ant-table {
+                        border-bottom-left-radius: 8px !important;
+                        border-bottom-right-radius: 8px !important;
+                        overflow: hidden !important;
+                    }
+                    .ant-table-container {
+                        border-bottom-left-radius: 8px !important;
+                        border-bottom-right-radius: 8px !important;
+                    }
+                    .ant-table-body::-webkit-scrollbar {
+                        width: 6px;
+                        height: 6px;
+                    }
+                    .ant-table-body::-webkit-scrollbar-track {
+                        background: transparent;
+                    }
+                    .ant-table-body::-webkit-scrollbar-thumb {
+                        background: rgba(128, 128, 128, 0.3);
+                        border-radius: 10px;
+                    }
+                    .ant-table-body::-webkit-scrollbar-thumb:hover {
+                        background: rgba(128, 128, 128, 0.5);
+                    }
+                    .theme-fade-wrapper {
+                        height: 100vh;
+                        width: 100vw;
+                        position: fixed;
+                        top: 0;
+                        left: 0;
+                    }
+                `}
+            </style>
 
-                        {fullname && (
-                            <span style={{
-                                color: "white",
-                                display: "flex",
-                                alignItems: "center",
-                                gap: "8px"
+            <AnimatePresence mode="wait" initial={false}>
+                <motion.div
+                    key={isDarkMode ? "dark" : "light"}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.6, ease: "easeInOut" }}
+                    className="theme-fade-wrapper"
+                    style={{ background: isDarkMode ? "#141414" : "#f5f5f5" }}
+                >
+                    <Layout style={{ height: "100vh", background: "transparent" }}>
+                        <Header style={{
+                            display: "flex",
+                            justifyContent: "space-between",
+                            alignItems: "center",
+                            padding: "0 20px",
+                            background: headerColor,
+                            zIndex: 1
+                        }}>
+                            <span style={{ color: "white", fontSize: '18px', fontWeight: 'bold' }}>Tabularium</span>
+                            <div style={{ display: "flex", alignItems: "center", gap: "20px" }}>
+                                <Switch
+                                    checked={isDarkMode}
+                                    onChange={toggleTheme}
+                                    checkedChildren={<MoonOutlined />}
+                                    unCheckedChildren={<SunOutlined />}
+                                />
+
+                                {fullname && (
+                                    <span style={{
+                                        color: "white",
+                                        display: "flex",
+                                        alignItems: "center",
+                                        gap: "8px"
+                                    }}>
+                                        <UserOutlined style={{ fontSize: '16px' }} />
+                                        {fullname.split(' ').slice(0, 2).join(' ')}
+                                    </span>
+                                )}
+
+                                <Button
+                                    type="text"
+                                    icon={<LogoutOutlined />}
+                                    onClick={handleLogout}
+                                    size="middle"
+                                    style={{
+                                        color: "white",
+                                        background: "rgba(255, 255, 255, 0.15)",
+                                        border: "none",
+                                        transition: "all 0.2s ease"
+                                    }}
+                                    onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(255, 255, 255, 0.25)")}
+                                    onMouseLeave={(e) => (e.currentTarget.style.background = "rgba(255, 255, 255, 0.15)")}
+                                >
+                                    Выйти
+                                </Button>
+                            </div>
+                        </Header>
+                        <Layout style={{ overflow: 'hidden', background: "transparent" }}>
+                            <Sider width={200} theme={isDarkMode ? "dark" : "light"} style={{ background: "transparent" }}>
+                                <Menu
+                                    mode="vertical"
+                                    selectedKeys={[selectedKey]}
+                                    style={{ height: "100%", borderRight: 0, background: "transparent" }}
+                                    onClick={(e) => setSelectedKey(e.key)}
+                                    items={menuItems}
+                                />
+                            </Sider>
+                            <Content style={{
+                                position: "relative",
+                                overflow: "hidden",
+                                background: "transparent",
                             }}>
-                <UserOutlined style={{ fontSize: '16px' }} />
-                                {fullname.split(' ').slice(0, 2).join(' ')}
-            </span>
-                        )}
-
-                        <LogoutOutlined
-                            onClick={handleLogout}
-                            style={{ cursor: 'pointer', fontSize: '18px', color: '#ff4d4f' }}
-                        />
-                    </div>
-                </Header>
-                <Layout style={{ overflow: 'hidden' }}>
-                    <Sider width={200}>
-                        <Menu mode="vertical" selectedKeys={[selectedKey]} style={{ height: "100%" }} onClick={(e) => setSelectedKey(e.key)}
-                              items={[{ key: "1", icon: <TableOutlined />, label: "Учащиеся" }, { key: "2", icon: <DatabaseOutlined />, label: "Группы" }]} />
-                    </Sider>
-                    <Content style={{ padding: "20px", overflow: "auto", background: isDarkMode ? "#141414" : "#f0f2f5", display: "flex", flexDirection: "column" }}>
-                        {selectedKey === "1" && <StudentsTable />}
-                        {selectedKey === "2" && <GroupsTable />}
-                    </Content>
-                </Layout>
-            </Layout>
+                                <AnimatePresence mode="wait">
+                                    <motion.div
+                                        key={selectedKey}
+                                        initial={{ opacity: 0, filter: "blur(2px)" }}
+                                        animate={{ opacity: 1, filter: "blur(0px)" }}
+                                        exit={{ opacity: 0, filter: "blur(2px)" }}
+                                        transition={{
+                                            duration: 0.2,
+                                            ease: "easeOut"
+                                        }}
+                                        style={{
+                                            height: "100%",
+                                            width: "100%",
+                                            padding: "20px 20px 40px 20px",
+                                            display: "flex",
+                                            flexDirection: "column"
+                                        }}
+                                    >
+                                        {selectedKey === "1" && <StudentsTable />}
+                                        {selectedKey === "2" && <GroupsTable />}
+                                    </motion.div>
+                                </AnimatePresence>
+                            </Content>
+                        </Layout>
+                    </Layout>
+                </motion.div>
+            </AnimatePresence>
         </ConfigProvider>
     );
 };

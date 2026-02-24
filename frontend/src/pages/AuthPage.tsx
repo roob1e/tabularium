@@ -1,54 +1,40 @@
 import React, { useState } from 'react';
-import { useForm, Controller } from 'react-hook-form';
-import { Card, Form, Input, Button, Typography, Alert, Divider } from 'antd';
-import { UserOutlined, LockOutlined, IdcardOutlined, LoginOutlined, UserAddOutlined } from '@ant-design/icons';
-import { login, register } from '../api/auth';
-
-const { Title, Text } = Typography;
-
-interface IAuthForm {
-    username: string;
-    fullname: string;
-    password: string;
-}
+import { Card, Input, Button, Form, message, Tabs } from 'antd';
+import { UserOutlined, LockOutlined, LoginOutlined, UserAddOutlined } from '@ant-design/icons';
+import axios from 'axios';
 
 interface AuthPageProps {
-    onLoginSuccess: (data: { accessToken: string; fullname: string }) => void;
+    onLoginSuccess: (data: { accessToken: string; refreshToken: string; fullname: string }) => void;
 }
 
 const AuthPage: React.FC<AuthPageProps> = ({ onLoginSuccess }) => {
-    const [isLogin, setIsLogin] = useState(true);
     const [loading, setLoading] = useState(false);
-    const [error, setError] = useState<string | null>(null);
+    const [activeTab, setActiveTab] = useState('login');
 
-    const { handleSubmit, control, reset, formState: { errors } } = useForm<IAuthForm>({
-        defaultValues: { username: '', fullname: '', password: '' }
-    });
-
-    const onSubmit = async (data: IAuthForm) => {
+    const onFinish = async (values: any) => {
         setLoading(true);
-        setError(null);
-        try {
-            if (isLogin) {
-                const res = await login({ username: data.username, password: data.password });
-                localStorage.setItem('accessToken', res.accessToken);
-                localStorage.setItem('refreshToken', res.refreshToken);
+        const url = activeTab === 'login'
+            ? "http://localhost:8080/auth/login"
+            : "http://localhost:8080/auth/register";
 
-                onLoginSuccess(res.accessToken);
+        try {
+            const response = await axios.post(url, values);
+
+            if (activeTab === 'login') {
+                const { accessToken, refreshToken, fullname } = response.data;
+
+                localStorage.setItem('accessToken', accessToken);
+                localStorage.setItem('refreshToken', refreshToken);
+                localStorage.setItem('fullname', fullname || '');
+
+                onLoginSuccess({ accessToken, refreshToken, fullname });
+                message.success("Вход выполнен");
             } else {
-                const res = await register(data);
-                if (res && res.accessToken && res.refreshToken) {
-                    localStorage.setItem('accessToken', res.accessToken);
-                    localStorage.setItem('refreshToken', res.refreshToken);
-                    onLoginSuccess(res.accessToken);
-                } else {
-                    setIsLogin(true);
-                    reset();
-                    alert('Регистрация завершена успешно!');
-                }
+                message.success("Регистрация успешна! Теперь войдите");
+                setActiveTab('login');
             }
-        } catch (err: any) {
-            setError(err.response?.data?.message || 'Ошибка выполнения операции');
+        } catch (error: any) {
+            message.error(error.response?.data?.message || "Ошибка операции");
         } finally {
             setLoading(false);
         }
@@ -56,74 +42,40 @@ const AuthPage: React.FC<AuthPageProps> = ({ onLoginSuccess }) => {
 
     return (
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', background: '#f0f2f5' }}>
-            <Card style={{ width: 400, boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}>
-                <div style={{ textAlign: 'center', marginBottom: 24 }}>
-                    <Title level={2}>Tabularium</Title>
-                    <Text type="secondary">{isLogin ? 'Вход в систему' : 'Новый аккаунт'}</Text>
-                </div>
+            <Card style={{ width: 400 }}>
+                <Tabs activeKey={activeTab} onChange={setActiveTab} centered items={[
+                    { key: 'login', label: 'Вход' },
+                    { key: 'register', label: 'Регистрация' }
+                ]} />
 
-                {error && <Alert message={error} type="error" showIcon style={{ marginBottom: 24 }} />}
-
-                <Form layout="vertical" onFinish={handleSubmit(onSubmit)}>
-                    <Form.Item validateStatus={errors.username ? 'error' : ''} help={errors.username?.message}>
-                        <Controller
-                            name="username"
-                            control={control}
-                            rules={{
-                                required: 'Введите логин',
-                                minLength: { value: 2, message: 'Минимум 2 символа' },
-                                maxLength: { value: 15, message: 'Максимум 15 символов' }
-                            }}
-                            render={({ field }) => (
-                                <Input {...field} prefix={<UserOutlined />} placeholder="Логин" size="large" />
-                            )}
-                        />
+                <Form name="auth" onFinish={onFinish} layout="vertical" style={{ marginTop: 20 }}>
+                    <Form.Item name="username" rules={[{ required: true, message: 'Введите логин' }]}>
+                        <Input prefix={<UserOutlined />} placeholder="Логин" size="large" />
                     </Form.Item>
 
-                    {/* Поле FULLNAME (только регистрация) */}
-                    {!isLogin && (
-                        <Form.Item validateStatus={errors.fullname ? 'error' : ''} help={errors.fullname?.message}>
-                            <Controller
-                                name="fullname"
-                                control={control}
-                                rules={{
-                                    required: 'Введите полное имя',
-                                    maxLength: { value: 100, message: 'Слишком длинное имя' }
-                                }}
-                                render={({ field }) => (
-                                    <Input {...field} prefix={<IdcardOutlined />} placeholder="Полное имя (ФИО)" size="large" />
-                                )}
-                            />
+                    {activeTab === 'register' && (
+                        <Form.Item name="fullname" rules={[{ required: true, message: 'Введите ФИО' }]}>
+                            <Input prefix={<UserOutlined />} placeholder="Имя и Фамилия" size="large" />
                         </Form.Item>
                     )}
 
-                    <Form.Item validateStatus={errors.password ? 'error' : ''} help={errors.password?.message}>
-                        <Controller
-                            name="password"
-                            control={control}
-                            rules={{
-                                required: 'Введите пароль',
-                                pattern: {
-                                    value: /^(?=.*[A-Za-z]).{8,}$/,
-                                    message: 'Минимум 8 символов и одна буква'
-                                }
-                            }}
-                            render={({ field }) => (
-                                <Input.Password {...field} prefix={<LockOutlined />} placeholder="Пароль" size="large" />
-                            )}
-                        />
+                    <Form.Item name="password" rules={[{ required: true, message: 'Введите пароль' }]}>
+                        <Input.Password prefix={<LockOutlined />} placeholder="Пароль" size="large" />
                     </Form.Item>
 
-                    <Button type="primary" htmlType="submit" size="large" block loading={loading} icon={isLogin ? <LoginOutlined /> : <UserAddOutlined />}>
-                        {isLogin ? 'Войти' : 'Зарегистрироваться'}
-                    </Button>
+                    <Form.Item>
+                        <Button
+                            type="primary"
+                            htmlType="submit"
+                            size="large"
+                            block
+                            loading={loading}
+                            icon={activeTab === 'login' ? <LoginOutlined /> : <UserAddOutlined />}
+                        >
+                            {activeTab === 'login' ? 'Войти' : 'Создать аккаунт'}
+                        </Button>
+                    </Form.Item>
                 </Form>
-
-                <Divider plain>или</Divider>
-
-                <Button type="link" block onClick={() => { setIsLogin(!isLogin); setError(null); reset(); }}>
-                    {isLogin ? 'Нет аккаунта? Зарегистрироваться' : 'Есть аккаунт? Войти'}
-                </Button>
             </Card>
         </div>
     );

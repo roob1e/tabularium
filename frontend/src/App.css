@@ -60,3 +60,44 @@
   background: #1677ff !important;
   color: #fff !important;
 }
+
+/* Делаем прозрачными только символы-заполнители (_) */
+.ant-input-mask-placeholder {
+  color: rgba(0, 0, 0, 0.25) !important;
+}
+
+/* На всякий случай для других реализаций библиотеки */
+input::placeholder {
+  color: rgba(0, 0, 0, 0.25);
+}
+
+/* Оформление скроллбара для таблицы */
+.ant-table-body::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.ant-table-body::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* Используем rgba для универсальности: на светлом он будет серым, на темном — тусклым */
+.ant-table-body::-webkit-scrollbar-thumb {
+  background: rgba(128, 128, 128, 0.3);
+  border-radius: 10px;
+}
+
+.ant-table-body::-webkit-scrollbar-thumb:hover {
+  background: rgba(128, 128, 128, 0.5);
+}
+
+/* Для Firefox */
+.ant-table-body {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(128, 128, 128, 0.3) transparent;
+}
+
+/* Убираем стандартные контуры Ant в темной теме, если они лезут */
+.ant-table-container {
+  scrollbar-gutter: stable;
+}
