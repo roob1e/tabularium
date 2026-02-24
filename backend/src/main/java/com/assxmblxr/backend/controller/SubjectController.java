@@ -1,7 +1,6 @@
 package com.assxmblxr.backend.controller;
 
 import com.assxmblxr.backend.dto.SubjectDTO;
-import com.assxmblxr.backend.entity.Subject;
 import com.assxmblxr.backend.exceptions.SubjectException;
 import com.assxmblxr.backend.service.SubjectService;
 
@@ -27,12 +26,12 @@ public class SubjectController {
   }
 
   @PostMapping
-  public ResponseEntity<Subject> createSubject(
+  public ResponseEntity<SubjectDTO> createSubject(
           @RequestBody @Valid SubjectDTO request
   ) {
     try {
       log.info("Creating subject {}", request);
-      Subject created = subjectService.createSubject(request);
+      SubjectDTO created = subjectService.createSubject(request);
       return ResponseEntity.status(HttpStatus.CREATED).body(created);
     } catch (Exception e) {
       log.error("GOT AN ERROR WHEN CREATING SUBJECT: {}", e.getMessage(), e);
@@ -41,16 +40,16 @@ public class SubjectController {
   }
 
   @PutMapping("/{id}")
-  public ResponseEntity<Subject> updateSubject(
+  public ResponseEntity<SubjectDTO> updateSubject(
           @PathVariable Long id,
           @RequestBody SubjectDTO request
   ) {
     try {
       log.info("Updating subject {}", request);
-      Subject updated = subjectService.updateSubject(id, request);
+      SubjectDTO updated = subjectService.updateSubject(id, request);
       return ResponseEntity.ok(updated);
     } catch (SubjectException e) {
-      log.error("Grade with id {} not found", id);
+      log.error("Subject with id {} not found", id);
       return ResponseEntity.notFound().build();
     } catch (Exception e) {
       log.error("GOT AN ERROR WHEN UPDATING SUBJECT: {}", e.getMessage(), e);
@@ -59,13 +58,13 @@ public class SubjectController {
   }
 
   @GetMapping("/{id}")
-  public ResponseEntity<Subject> getSubject(
+  public ResponseEntity<SubjectDTO> getSubject(
           @PathVariable Long id
   ) {
     try {
       log.info("Fetching subject {}", id);
-      var subjects = subjectService.getSubject(id);
-      return ResponseEntity.ok(subjects);
+      SubjectDTO subject = subjectService.getSubject(id);
+      return ResponseEntity.ok(subject);
     } catch (SubjectException e) {
       log.info("Subject with id {} not found", id);
       return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
@@ -73,10 +72,10 @@ public class SubjectController {
   }
 
   @GetMapping
-  public ResponseEntity<List<Subject>> getAllSubjects() {
+  public ResponseEntity<List<SubjectDTO>> getAllSubjects() {
     try {
       log.info("Fetching all subjects");
-      var subjects = subjectService.getAllSubjects();
+      List<SubjectDTO> subjects = subjectService.getAllSubjects();
       return ResponseEntity.ok(subjects);
     } catch (Exception e) {
       log.error("GOT AN ERROR WHEN FETCHING ALL SUBJECTS: {}", e.getMessage(), e);

@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class SubjectService {
@@ -24,8 +25,19 @@ public class SubjectService {
     this.teacherRepository = teacherRepository;
   }
 
+  private SubjectDTO toDTO(Subject subject) {
+    Set<Long> teacherIds = subject.getTeachers() != null
+            ? subject.getTeachers().stream().map(Teacher::getId).collect(Collectors.toSet())
+            : new HashSet<>();
+    return SubjectDTO.builder()
+            .id(subject.getId())
+            .name(subject.getName())
+            .teacherIds(teacherIds)
+            .build();
+  }
+
   @Transactional
-  public Subject createSubject(SubjectDTO dto) {
+  public SubjectDTO createSubject(SubjectDTO dto) {
     Set<Teacher> teachers = new HashSet<>();
     if (dto.getTeacherIds() != null) {
       teachers = new HashSet<>(teacherRepository.findAllById(dto.getTeacherIds()));
@@ -36,11 +48,11 @@ public class SubjectService {
             .teachers(teachers)
             .build();
 
-    return subjectRepository.save(subject);
+    return toDTO(subjectRepository.save(subject));
   }
 
   @Transactional
-  public Subject updateSubject(Long id, SubjectDTO dto) {
+  public SubjectDTO updateSubject(Long id, SubjectDTO dto) {
     Subject subject = subjectRepository.findById(id)
             .orElseThrow(() -> new SubjectException("Subject not found", id));
 
@@ -52,16 +64,16 @@ public class SubjectService {
     }
     subject.setTeachers(teachers);
 
-    return subjectRepository.save(subject);
+    return toDTO(subjectRepository.save(subject));
   }
 
-  public Subject getSubject(Long id) {
-    return subjectRepository.findById(id)
-            .orElseThrow(() -> new SubjectException("Subject not found", id));
+  public SubjectDTO getSubject(Long id) {
+    return toDTO(subjectRepository.findById(id)
+            .orElseThrow(() -> new SubjectException("Subject not found", id)));
   }
 
-  public List<Subject> getAllSubjects() {
-    return subjectRepository.findAll();
+  public List<SubjectDTO> getAllSubjects() {
+    return subjectRepository.findAll().stream().map(this::toDTO).toList();
   }
 
   @Transactional

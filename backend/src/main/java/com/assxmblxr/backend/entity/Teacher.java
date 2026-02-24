@@ -2,31 +2,26 @@ package com.assxmblxr.backend.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.Set;
 
 @Entity
 @Table(name = "teachers")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class Teacher {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  @Column(name = "id")
   private Long id;
 
   @NotBlank
-  @Column(name = "fullname")
   private String fullname;
 
   @NotBlank
-  @Column(name = "phone")
   private String phone;
 
   @ManyToMany
@@ -35,5 +30,7 @@ public class Teacher {
           joinColumns = @JoinColumn(name = "teacher_id"),
           inverseJoinColumns = @JoinColumn(name = "subject_id")
   )
+  @ToString.Exclude
+  @EqualsAndHashCode.Exclude
   private Set<Subject> subjects;
 }
