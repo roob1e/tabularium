@@ -36,5 +36,20 @@ export interface TeacherRequest {
 
 export interface SubjectRequest {
     name: string;
-    teacherIds?: number[]; // Чтобы можно было привязать учителей сразу к предмету
+    teacherIds?: number[];
+}
+
+export interface Grade {
+    id: number;
+    studentId: number;
+    subjectId: number;
+    teacherId: number;
+    grade: number;
+}
+
+export interface GradeRequest {
+    studentId: number;
+    subjectId: number;
+    teacherId: number;
+    grade: number;
 }

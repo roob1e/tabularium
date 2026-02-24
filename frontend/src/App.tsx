@@ -6,6 +6,7 @@ import StudentsTable from "./components/StudentsTable";
 import GroupsTable from "./components/GroupsTable";
 import SubjectsTable from "./components/SubjectsTable";
 import TeachersTable from "./components/TeachersTable";
+import GradesTable from "./components/GradesTable";
 import AuthPage from "./pages/AuthPage";
 import { pingServer } from "./api/auth.ts";
 import { useThemeTransition } from "./hooks/useThemeTransition";
@@ -81,6 +82,7 @@ const App: React.FC = () => {
             if (e.key === "2") setSelectedKey("2");
             if (e.key === "3") setSelectedKey("3");
             if (e.key === "4") setSelectedKey("4");
+            if (e.key === "5") setSelectedKey("5");
         };
         window.addEventListener("keydown", handleKeys);
         return () => window.removeEventListener("keydown", handleKeys);
@@ -131,6 +133,15 @@ const App: React.FC = () => {
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <span>Учителя</span>
                     <span style={{ opacity: 0.4, fontSize: '0.8em' }}>4</span>
+                </div>
+            )
+        },
+        {
+            key: "5",
+            label: (
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span>Оценки</span>
+                    <span style={{ opacity: 0.4, fontSize: '0.8em' }}>5</span>
                 </div>
             )
         }
@@ -232,14 +243,7 @@ const App: React.FC = () => {
                         <Content style={{ background: isDarkMode ? "#141414" : "#fff", padding: 24, margin: 0, minHeight: 280, borderRadius: 8 }}>
                             <AnimatePresence mode="wait">
                                 {selectedKey === "1" && (
-                                    <motion.div
-                                        key="students"
-                                        initial={{ opacity: 0, y: 10 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        exit={{ opacity: 0, y: -10 }}
-                                        transition={{ duration: 0.2 }}
-                                        style={{ height: "100%" }}
-                                    >
+                                    <motion.div key="students" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.2 }} style={{ height: "100%" }}>
                                         <StudentsTable
                                             highlightId={highlightTable === "1" ? highlightId : null}
                                             onHighlightClear={clearHighlight}
@@ -248,14 +252,7 @@ const App: React.FC = () => {
                                     </motion.div>
                                 )}
                                 {selectedKey === "2" && (
-                                    <motion.div
-                                        key="groups"
-                                        initial={{ opacity: 0, y: 10 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        exit={{ opacity: 0, y: -10 }}
-                                        transition={{ duration: 0.2 }}
-                                        style={{ height: "100%" }}
-                                    >
+                                    <motion.div key="groups" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.2 }} style={{ height: "100%" }}>
                                         <GroupsTable
                                             highlightId={highlightTable === "2" ? highlightId : null}
                                             onHighlightClear={clearHighlight}
@@ -263,14 +260,7 @@ const App: React.FC = () => {
                                     </motion.div>
                                 )}
                                 {selectedKey === "3" && (
-                                    <motion.div
-                                        key="subjects"
-                                        initial={{ opacity: 0, y: 10 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        exit={{ opacity: 0, y: -10 }}
-                                        transition={{ duration: 0.2 }}
-                                        style={{ height: "100%" }}
-                                    >
+                                    <motion.div key="subjects" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.2 }} style={{ height: "100%" }}>
                                         <SubjectsTable
                                             highlightId={highlightTable === "3" ? highlightId : null}
                                             onHighlightClear={clearHighlight}
@@ -279,16 +269,18 @@ const App: React.FC = () => {
                                     </motion.div>
                                 )}
                                 {selectedKey === "4" && (
-                                    <motion.div
-                                        key="teachers"
-                                        initial={{ opacity: 0, y: 10 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        exit={{ opacity: 0, y: -10 }}
-                                        transition={{ duration: 0.2 }}
-                                        style={{ height: "100%" }}
-                                    >
+                                    <motion.div key="teachers" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.2 }} style={{ height: "100%" }}>
                                         <TeachersTable
                                             highlightId={highlightTable === "4" ? highlightId : null}
+                                            onHighlightClear={clearHighlight}
+                                            onTagClick={handleTagClick}
+                                        />
+                                    </motion.div>
+                                )}
+                                {selectedKey === "5" && (
+                                    <motion.div key="grades" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.2 }} style={{ height: "100%" }}>
+                                        <GradesTable
+                                            highlightId={highlightTable === "5" ? highlightId : null}
                                             onHighlightClear={clearHighlight}
                                             onTagClick={handleTagClick}
                                         />
