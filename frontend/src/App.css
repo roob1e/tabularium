@@ -101,3 +101,16 @@ input::placeholder {
 .ant-table-container {
   scrollbar-gutter: stable;
 }
+
+/* Изолируем отрисовку тяжелых компонентов */
+.ant-table-container, .ant-table-content {
+  contain: paint;
+  backface-visibility: hidden;
+  transform: translateZ(0); /* Принудительный вынос на GPU */
+}
+
+/* Отключаем все внутренние CSS-переходы Ant Design строго на время смены темы */
+html.view-transitioning * {
+  transition: none !important;
+  animation-duration: 0s !important;
+}
