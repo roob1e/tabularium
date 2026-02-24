@@ -4,9 +4,10 @@ import { LogoutOutlined, SunOutlined, MoonOutlined, UserOutlined } from "@ant-de
 import { motion, AnimatePresence } from "framer-motion";
 import StudentsTable from "./components/StudentsTable";
 import GroupsTable from "./components/GroupsTable";
+import SubjectsTable from "./components/SubjectsTable";
+import TeachersTable from "./components/TeachersTable";
 import AuthPage from "./pages/AuthPage";
 import { pingServer } from "./api/auth.ts";
-import api from "./api/api";
 import { useThemeTransition } from "./hooks/useThemeTransition";
 import "./styles/themeTransition.css";
 
@@ -19,6 +20,9 @@ const App: React.FC = () => {
     const [initializing, setInitializing] = useState(true);
     const [fullname, setFullname] = useState<string | null>(() => localStorage.getItem('fullname'));
     const isStarted = useRef(false);
+
+    const [highlightId, setHighlightId] = useState<number | null>(null);
+    const [highlightTable, setHighlightTable] = useState<string | null>(null);
 
     const darkBlue = "#1d39c4";
     const headerColor = isDarkMode ? darkBlue : "#1677ff";
@@ -49,9 +53,6 @@ const App: React.FC = () => {
             const initAuth = async () => {
                 try {
                     await pingServer();
-                    if (localStorage.getItem('accessToken')) {
-                        await api.get("/auth/me");
-                    }
                 } catch (err) {
                     if (!localStorage.getItem('accessToken')) handleLogout();
                 } finally {
@@ -78,10 +79,23 @@ const App: React.FC = () => {
             if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
             if (e.key === "1") setSelectedKey("1");
             if (e.key === "2") setSelectedKey("2");
+            if (e.key === "3") setSelectedKey("3");
+            if (e.key === "4") setSelectedKey("4");
         };
         window.addEventListener("keydown", handleKeys);
         return () => window.removeEventListener("keydown", handleKeys);
     }, []);
+
+    const handleTagClick = (tableKey: string, id: number) => {
+        setHighlightId(id);
+        setHighlightTable(tableKey);
+        setSelectedKey(tableKey);
+    };
+
+    const clearHighlight = () => {
+        setHighlightId(null);
+        setHighlightTable(null);
+    };
 
     const menuItems = [
         {
@@ -99,6 +113,24 @@ const App: React.FC = () => {
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <span>Группы</span>
                     <span style={{ opacity: 0.4, fontSize: '0.8em' }}>2</span>
+                </div>
+            )
+        },
+        {
+            key: "3",
+            label: (
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span>Предметы</span>
+                    <span style={{ opacity: 0.4, fontSize: '0.8em' }}>3</span>
+                </div>
+            )
+        },
+        {
+            key: "4",
+            label: (
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span>Учителя</span>
+                    <span style={{ opacity: 0.4, fontSize: '0.8em' }}>4</span>
                 </div>
             )
         }
@@ -141,9 +173,14 @@ const App: React.FC = () => {
                 {`
         .ant-table { border-bottom-left-radius: 8px !important; border-bottom-right-radius: 8px !important; overflow: hidden !important; }
         .ant-table-container { border-bottom-left-radius: 8px !important; border-bottom-right-radius: 8px !important; }
-        
+
         .ant-layout, .ant-layout-header, .ant-layout-sider, .ant-table, .ant-table-thead > tr > th, .ant-table-tbody > tr > td {
             transition: background-color 0.4s ease !important;
+        }
+
+        .row-highlighted td {
+            background-color: rgba(22, 119, 255, 0.12) !important;
+            transition: background-color 0.3s ease !important;
         }
     `}
             </style>
@@ -175,37 +212,91 @@ const App: React.FC = () => {
                             type="text"
                             icon={<LogoutOutlined />}
                             onClick={handleLogout}
-                            style={{ color: "white", background: "rgba(255, 255, 255, 0.15)", border: "none" }}
+                            style={{ color: "white", background: "rgba(255, 255, 255, 0.15)" }}
                         >
                             Выйти
                         </Button>
                     </div>
                 </Header>
-                <Layout style={{ overflow: 'hidden' }}>
-                    <Sider width={200} theme={isDarkMode ? "dark" : "light"}>
+                <Layout>
+                    <Sider width={250} theme={isDarkMode ? "dark" : "light"}>
                         <Menu
-                            mode="vertical"
+                            mode="inline"
                             selectedKeys={[selectedKey]}
-                            style={{ height: "100%", borderRight: 0 }}
-                            onClick={(e) => setSelectedKey(e.key)}
+                            style={{ height: "100%", borderRight: 0, paddingTop: "10px" }}
                             items={menuItems}
+                            onClick={(e) => setSelectedKey(e.key)}
                         />
                     </Sider>
-                    <Content style={{ position: "relative", overflow: "hidden", background: isDarkMode ? "#141414" : "#f5f5f5" }}>
-                        <AnimatePresence mode="wait">
-                            <motion.div
-                                key={selectedKey}
-                                initial={{ opacity: 0, filter: "blur(2px)" }}
-                                animate={{ opacity: 1, filter: "blur(0px)" }}
-                                exit={{ opacity: 0, filter: "blur(2px)" }}
-                                transition={{ duration: 0.2, ease: "easeOut" }}
-                                style={{ height: "100%", width: "100%", padding: "20px 20px 40px 20px", display: "flex", flexDirection: "column" }}
-                            >
-                                {selectedKey === "1" && <StudentsTable />}
-                                {selectedKey === "2" && <GroupsTable />}
-                            </motion.div>
-                        </AnimatePresence>
-                    </Content>
+                    <Layout style={{ padding: "24px" }}>
+                        <Content style={{ background: isDarkMode ? "#141414" : "#fff", padding: 24, margin: 0, minHeight: 280, borderRadius: 8 }}>
+                            <AnimatePresence mode="wait">
+                                {selectedKey === "1" && (
+                                    <motion.div
+                                        key="students"
+                                        initial={{ opacity: 0, y: 10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        exit={{ opacity: 0, y: -10 }}
+                                        transition={{ duration: 0.2 }}
+                                        style={{ height: "100%" }}
+                                    >
+                                        <StudentsTable
+                                            highlightId={highlightTable === "1" ? highlightId : null}
+                                            onHighlightClear={clearHighlight}
+                                            onTagClick={handleTagClick}
+                                        />
+                                    </motion.div>
+                                )}
+                                {selectedKey === "2" && (
+                                    <motion.div
+                                        key="groups"
+                                        initial={{ opacity: 0, y: 10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        exit={{ opacity: 0, y: -10 }}
+                                        transition={{ duration: 0.2 }}
+                                        style={{ height: "100%" }}
+                                    >
+                                        <GroupsTable
+                                            highlightId={highlightTable === "2" ? highlightId : null}
+                                            onHighlightClear={clearHighlight}
+                                        />
+                                    </motion.div>
+                                )}
+                                {selectedKey === "3" && (
+                                    <motion.div
+                                        key="subjects"
+                                        initial={{ opacity: 0, y: 10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        exit={{ opacity: 0, y: -10 }}
+                                        transition={{ duration: 0.2 }}
+                                        style={{ height: "100%" }}
+                                    >
+                                        <SubjectsTable
+                                            highlightId={highlightTable === "3" ? highlightId : null}
+                                            onHighlightClear={clearHighlight}
+                                            onTagClick={handleTagClick}
+                                        />
+                                    </motion.div>
+                                )}
+                                {selectedKey === "4" && (
+                                    <motion.div
+                                        key="teachers"
+                                        initial={{ opacity: 0, y: 10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        exit={{ opacity: 0, y: -10 }}
+                                        transition={{ duration: 0.2 }}
+                                        style={{ height: "100%" }}
+                                    >
+                                        <TeachersTable
+                                            highlightId={highlightTable === "4" ? highlightId : null}
+                                            onHighlightClear={clearHighlight}
+                                            onTagClick={handleTagClick}
+                                        />
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
+                        </Content>
+                    </Layout>
                 </Layout>
             </Layout>
         </ConfigProvider>

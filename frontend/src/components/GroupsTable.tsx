@@ -3,35 +3,26 @@ import { Table, Modal, Button, Form, Input, message } from "antd";
 import { Group } from "../types/types.ts";
 import { createGroup, deleteGroup, getAllGroups } from "../api/groups.ts";
 
-const GroupsTable: React.FC = () => {
+interface Props {
+    highlightId?: number | null;
+    onHighlightClear?: () => void;
+}
+
+const GroupsTable: React.FC<Props> = ({ highlightId, onHighlightClear }) => {
     const [groups, setGroups] = useState<Group[]>([]);
     const [loading, setLoading] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [tableScrollY, setTableScrollY] = useState<number>(0);
+    const [activeHighlightId, setActiveHighlightId] = useState<number | null>(null);
 
     const [form] = Form.useForm();
     const containerRef = useRef<HTMLDivElement>(null);
+    const tableRef = useRef<HTMLDivElement>(null);
     const firstInputRef = useRef<any>(null);
 
     const isMac = typeof window !== 'undefined' && /Mac|iPod|iPhone|iPad/.test(navigator.platform);
     const shortcutSubmit = isMac ? "shift + return" : "Shift + Enter";
     const shortcutAdd = isMac ? "shift + n" : "Shift + N";
-
-    useEffect(() => {
-        const handleShortcut = (event: KeyboardEvent) => {
-            const key = event.key.toLowerCase();
-            if (event.shiftKey && ["n", "т"].includes(key)) {
-                if (!isModalOpen) {
-                    event.preventDefault();
-                    form.resetFields();
-                    setIsModalOpen(true);
-                }
-            }
-        };
-
-        window.addEventListener("keydown", handleShortcut);
-        return () => window.removeEventListener("keydown", handleShortcut);
-    }, [isModalOpen, form]);
 
     const loadGroups = async () => {
         setLoading(true);
@@ -49,17 +40,59 @@ const GroupsTable: React.FC = () => {
         loadGroups();
     }, []);
 
-    const closeAddModal = () => {
-        setIsModalOpen(false);
-        form.resetFields();
-    };
+    useEffect(() => {
+        if (!highlightId || loading) return;
+
+        setActiveHighlightId(highlightId);
+
+        setTimeout(() => {
+            const row = tableRef.current?.querySelector(`[data-row-key="${highlightId}"]`);
+            if (row) row.scrollIntoView({ behavior: "smooth", block: "center" });
+        }, 100);
+
+        const timer = setTimeout(() => {
+            setActiveHighlightId(null);
+            onHighlightClear?.();
+        }, 2000);
+
+        return () => clearTimeout(timer);
+    }, [highlightId]);
+
+    useEffect(() => {
+        const handleShortcut = (event: KeyboardEvent) => {
+            const key = event.key.toLowerCase();
+            if (event.shiftKey && ["n", "т"].includes(key)) {
+                if (!isModalOpen) {
+                    event.preventDefault();
+                    form.resetFields();
+                    setIsModalOpen(true);
+                }
+            }
+        };
+        window.addEventListener("keydown", handleShortcut);
+        return () => window.removeEventListener("keydown", handleShortcut);
+    }, [isModalOpen, form]);
+
+    useEffect(() => {
+        const updateHeight = () => {
+            if (containerRef.current) {
+                const containerHeight = containerRef.current.clientHeight;
+                const topBlock = containerRef.current.querySelector("div");
+                const topBlockHeight = topBlock ? (topBlock as HTMLElement).clientHeight + 8 : 0;
+                setTableScrollY(containerHeight - topBlockHeight - 60);
+            }
+        };
+        updateHeight();
+        window.addEventListener("resize", updateHeight);
+        return () => window.removeEventListener("resize", updateHeight);
+    }, []);
 
     const onFinish = async (values: any) => {
-        const newGroup = { name: values.name, amount: 0 };
         try {
-            await createGroup(newGroup);
+            await createGroup({ name: values.name, amount: 0 });
             message.success("Группа добавлена!");
-            closeAddModal();
+            setIsModalOpen(false);
+            form.resetFields();
             await loadGroups();
         } catch (err: any) {
             message.error(err.message || "Ошибка при добавлении группы");
@@ -70,10 +103,9 @@ const GroupsTable: React.FC = () => {
         try {
             await deleteGroup(id);
             message.success("Группа удалена!");
+            await loadGroups();
         } catch (err: any) {
             message.error(err.message || "Ошибка при удалении группы");
-        } finally {
-            await loadGroups();
         }
     };
 
@@ -82,6 +114,14 @@ const GroupsTable: React.FC = () => {
             e.preventDefault();
             if (e.shiftKey) {
                 e.currentTarget.requestSubmit();
+                return;
+            }
+            const target = e.target as HTMLElement;
+            if ((target as any).type === "submit") return;
+            const allElements = Array.from(e.currentTarget.querySelectorAll("input, .ant-select-selection-search-input")) as HTMLElement[];
+            const index = allElements.indexOf(target);
+            if (index > -1 && index < allElements.length - 1) {
+                allElements[index + 1].focus();
             }
         }
     };
@@ -91,6 +131,7 @@ const GroupsTable: React.FC = () => {
             title: "Название",
             dataIndex: "name",
             key: "name",
+            width: 200,
             sorter: (a: Group, b: Group) => a.name.localeCompare(b.name),
             defaultSortOrder: "ascend" as const,
         },
@@ -98,10 +139,12 @@ const GroupsTable: React.FC = () => {
             title: "Количество обучающихся",
             dataIndex: "amount",
             key: "amount",
+            width: 220,
         },
         {
             title: "Действия",
             key: "actions",
+            width: 120,
             render: (_: any, record: Group) => (
                 <Button
                     danger
@@ -114,33 +157,32 @@ const GroupsTable: React.FC = () => {
         },
     ];
 
-    useEffect(() => {
-        const updateHeight = () => {
-            if (containerRef.current) {
-                const containerHeight = containerRef.current.clientHeight;
-                const topBlock = containerRef.current.querySelector("div");
-                const topBlockHeight = topBlock ? (topBlock as HTMLElement).clientHeight + 8 : 0;
-                const bottomOffset = Math.max(window.innerHeight * 0.05, 24);
-                setTableScrollY(containerHeight - topBlockHeight - bottomOffset);
-            }
-        };
-        updateHeight();
-        window.addEventListener("resize", updateHeight);
-        return () => window.removeEventListener("resize", updateHeight);
-    }, []);
-
     return (
-        <div
-            ref={containerRef}
-            style={{
-                display: "flex",
-                flexDirection: "column",
-                flex: 1,
-                minHeight: 0,
-                padding: "10px 10px 0 10px",
-            }}
-        >
-            <div style={{ marginBottom: 8 }}>
+        <div ref={containerRef} style={{ height: "100%", display: "flex", flexDirection: "column", padding: "10px" }}>
+            <style>
+                {`
+                    .ant-table {
+                        border-bottom-left-radius: 8px !important;
+                        border-bottom-right-radius: 8px !important;
+                        overflow: hidden !important;
+                    }
+                    .ant-table-container {
+                        border-bottom-left-radius: 8px !important;
+                        border-bottom-right-radius: 8px !important;
+                    }
+                    .ant-table-tbody > tr > td {
+                        padding: 8px 16px !important;
+                    }
+                    .ant-table-thead > tr > th {
+                        padding: 8px 16px !important;
+                    }
+                    .row-highlighted td {
+                        background-color: rgba(22, 119, 255, 0.12) !important;
+                        transition: background-color 0.3s ease !important;
+                    }
+                `}
+            </style>
+            <div style={{ marginBottom: 10 }}>
                 <Button
                     type="primary"
                     onClick={() => { form.resetFields(); setIsModalOpen(true); }}
@@ -151,7 +193,7 @@ const GroupsTable: React.FC = () => {
                 </Button>
             </div>
 
-            <div style={{ flex: 1, minHeight: 0, paddingBottom: 40 }}>
+            <div ref={tableRef}>
                 <Table
                     dataSource={groups}
                     columns={columns}
@@ -159,13 +201,14 @@ const GroupsTable: React.FC = () => {
                     loading={loading}
                     pagination={false}
                     scroll={{ y: tableScrollY }}
+                    rowClassName={(record: Group) => record.id === activeHighlightId ? "row-highlighted" : ""}
                 />
             </div>
 
             <Modal
                 title="Добавить группу"
                 open={isModalOpen}
-                onCancel={closeAddModal}
+                onCancel={() => setIsModalOpen(false)}
                 footer={null}
                 destroyOnClose
                 afterOpenChange={(open) => open && firstInputRef.current?.focus()}
@@ -174,9 +217,7 @@ const GroupsTable: React.FC = () => {
                     form={form}
                     onFinish={onFinish}
                     layout="vertical"
-                    autoComplete="off"
                     onKeyDown={handleFormKeyDown}
-                    initialValues={{ name: "" }}
                 >
                     <Form.Item
                         label="Название группы"

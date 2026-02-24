@@ -1,14 +1,10 @@
 import React, { useEffect, useState, useRef } from "react";
-import { Table, Button, Modal, Form, Input, message, Select, DatePicker, Space, Tag, Tooltip, theme } from "antd";
+import { Table, Button, Modal, Form, Input, message, Select, Space, Tag, Tooltip, theme } from "antd";
 import { MaskedInput } from "antd-mask-input";
-import { Student, Group } from "../types/types.ts";
-import { fetchStudents, createStudent, deleteStudent, updateStudent } from "../api/students.ts";
-import { getAllGroups } from "../api/groups.ts";
+import { Teacher, Subject } from "../types/types.ts";
+import { fetchTeachers, createTeacher, deleteTeacher, updateTeacher } from "../api/teachers.ts";
+import { fetchSubjects } from "../api/subjects.ts";
 import { SortOrder } from "antd/es/table/interface";
-import dayjs from "dayjs";
-import customParseFormat from "dayjs/plugin/customParseFormat";
-
-dayjs.extend(customParseFormat);
 
 const { Option } = Select;
 
@@ -18,16 +14,16 @@ interface Props {
     onTagClick?: (tableKey: string, id: number) => void;
 }
 
-const StudentsTable: React.FC<Props> = ({ highlightId, onHighlightClear, onTagClick }) => {
+const TeachersTable: React.FC<Props> = ({ highlightId, onHighlightClear, onTagClick }) => {
     const { token } = theme.useToken();
-    const [students, setStudents] = useState<Student[]>([]);
-    const [groups, setGroups] = useState<Group[]>([]);
+    const [teachers, setTeachers] = useState<Teacher[]>([]);
+    const [subjects, setSubjects] = useState<Subject[]>([]);
     const [loading, setLoading] = useState(false);
     const [activeHighlightId, setActiveHighlightId] = useState<number | null>(null);
 
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-    const [editingStudent, setEditingStudent] = useState<any>(null);
+    const [editingTeacher, setEditingTeacher] = useState<any>(null);
 
     const [tableScrollY, setTableScrollY] = useState<number>(0);
     const containerRef = useRef<HTMLDivElement>(null);
@@ -51,20 +47,11 @@ const StudentsTable: React.FC<Props> = ({ highlightId, onHighlightClear, onTagCl
         return phoneStr;
     };
 
-    const formatDateForTable = (dateStr: string) => {
-        if (!dateStr) return "";
-        return dayjs(dateStr).format("DD.MM.YYYY");
-    };
-
-    const loadStudents = async () => {
+    const loadTeachers = async () => {
         setLoading(true);
         try {
-            const data = await fetchStudents();
-            setStudents(data.map((s: any) => ({
-                ...s,
-                groupName: s.group?.name || s.groupName || "",
-                groupId: s.group?.id || s.groupId
-            })));
+            const data = await fetchTeachers();
+            setTeachers(data);
         } catch (err: any) {
             message.error(err.message);
         } finally {
@@ -72,18 +59,18 @@ const StudentsTable: React.FC<Props> = ({ highlightId, onHighlightClear, onTagCl
         }
     };
 
-    const loadGroups = async () => {
+    const loadSubjects = async () => {
         try {
-            const data = await getAllGroups();
-            setGroups(data);
+            const data = await fetchSubjects();
+            setSubjects(data);
         } catch (err: any) {
-            message.error(err.message || "Ошибка при загрузке групп");
+            message.error(err.message || "Ошибка при загрузке предметов");
         }
     };
 
     useEffect(() => {
-        loadStudents();
-        loadGroups();
+        loadTeachers();
+        loadSubjects();
     }, []);
 
     useEffect(() => {
@@ -133,23 +120,6 @@ const StudentsTable: React.FC<Props> = ({ highlightId, onHighlightClear, onTagCl
         return () => window.removeEventListener("resize", updateHeight);
     }, []);
 
-    const handleDateKeyDown = (e: React.KeyboardEvent<HTMLElement>) => {
-        const target = e.target as HTMLInputElement;
-        const key = e.key;
-        if (["Backspace", "Delete", "Tab", "Escape", "Enter", "ArrowLeft", "ArrowRight"].includes(key)) return;
-        if (!/[0-9]/.test(key)) {
-            e.preventDefault();
-            return;
-        }
-        const value = target.value;
-        if (value.length === 2 || value.length === 5) {
-            target.value += ".";
-        }
-        if (value.length >= 10) {
-            e.preventDefault();
-        }
-    };
-
     const handleFormKeyDown = (e: React.KeyboardEvent<HTMLFormElement>) => {
         if (e.key === "Enter") {
             e.preventDefault();
@@ -175,9 +145,9 @@ const StudentsTable: React.FC<Props> = ({ highlightId, onHighlightClear, onTagCl
     const processSubmit = (values: any) => {
         const cleanPhone = values.phone ? values.phone.replace(/[^\d]/g, "") : "";
         return {
-            ...values,
+            fullname: values.fullname,
             phone: `${values.prefix}${cleanPhone}`,
-            birthdate: values.birthdate ? values.birthdate.format("YYYY-MM-DD") : null
+            subjectIds: values.subjectIds || []
         };
     };
 
@@ -189,22 +159,22 @@ const StudentsTable: React.FC<Props> = ({ highlightId, onHighlightClear, onTagCl
     const closeEditModal = () => {
         setIsEditModalOpen(false);
         editForm.resetFields();
-        setEditingStudent(null);
+        setEditingTeacher(null);
     };
 
     const onFinish = async (values: any) => {
         try {
-            await createStudent(processSubmit(values));
-            message.success("Ученик добавлен!");
+            await createTeacher(processSubmit(values));
+            message.success("Учитель добавлен!");
             closeAddModal();
-            loadStudents();
+            loadTeachers();
         } catch (err: any) {
             message.error(err.message || "Ошибка");
         }
     };
 
-    const openEditModal = (student: Student) => {
-        const cleanPhone = student.phone ? student.phone.replace(/[^\d]/g, "") : "";
+    const openEditModal = (teacher: Teacher) => {
+        const cleanPhone = teacher.phone ? teacher.phone.replace(/[^\d]/g, "") : "";
         let prefix = "+375";
         let phonePart = cleanPhone;
         const prefixes = ["375", "380", "48", "7"];
@@ -215,21 +185,21 @@ const StudentsTable: React.FC<Props> = ({ highlightId, onHighlightClear, onTagCl
                 break;
             }
         }
-        setEditingStudent({
-            ...student,
+        setEditingTeacher({
+            ...teacher,
             ui_prefix: prefix,
             ui_phone: phonePart,
-            ui_birthdate: student.birthdate ? dayjs(student.birthdate) : null
+            ui_subjectIds: teacher.subjectIds || []
         });
         setIsEditModalOpen(true);
     };
 
     const onEditFinish = async (values: any) => {
         try {
-            await updateStudent(editingStudent.id, processSubmit(values));
-            message.success("Ученик обновлён!");
+            await updateTeacher(editingTeacher.id, processSubmit(values));
+            message.success("Учитель обновлён!");
             closeEditModal();
-            loadStudents();
+            loadTeachers();
         } catch (err: any) {
             message.error(err.message || "Ошибка");
         }
@@ -246,48 +216,53 @@ const StudentsTable: React.FC<Props> = ({ highlightId, onHighlightClear, onTagCl
         </Form.Item>
     );
 
-    const renderGroupTag = (record: Student) => {
-        const group = groups.find(g => g.id === record.groupId);
-        if (!group) return record.groupName || "—";
+    const renderSubjectTags = (subjectIds: number[]) => {
+        if (!subjectIds || subjectIds.length === 0) return "—";
         return (
-            <Tooltip
-                mouseEnterDelay={0.6}
-                title={
-                    <div style={{ fontSize: 13 }}>
-                        <div><b>Класс:</b> {group.name}</div>
-                        <div><b>Учеников:</b> {group.amount}</div>
-                    </div>
-                }
-            >
-                <Tag
-                    style={{ margin: 0, cursor: "pointer" }}
-                    onClick={() => onTagClick?.("2", group.id)}
-                >
-                    {group.name}
-                </Tag>
-            </Tooltip>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 4 }}>
+                {subjectIds.map(id => {
+                    const s = subjects.find(s => s.id === id);
+                    if (!s) return null;
+                    return (
+                        <Tooltip
+                            key={id}
+                            mouseEnterDelay={0.6}
+                            title={
+                                <div style={{ fontSize: 13 }}>
+                                    <div><b>Предмет:</b> {s.name}</div>
+                                </div>
+                            }
+                        >
+                            <Tag
+                                style={{ margin: 0, cursor: "pointer" }}
+                                onClick={() => onTagClick?.("3", id)}
+                            >
+                                {s.name}
+                            </Tag>
+                        </Tooltip>
+                    );
+                })}
+            </div>
         );
     };
 
     const columns = [
         { title: "ID", dataIndex: "id", key: "id", width: 80, sorter: (a: any, b: any) => a.id - b.id, defaultSortOrder: "ascend" as SortOrder },
         { title: "ФИО", dataIndex: "fullname", key: "fullname" },
-        { title: "Возраст", dataIndex: "age", key: "age", width: 100 },
         { title: "Телефон", dataIndex: "phone", key: "phone", render: (t: string) => formatPhoneForTable(t) },
-        { title: "Дата рождения", dataIndex: "birthdate", key: "birthdate", render: (t: string) => formatDateForTable(t) },
         {
-            title: "Класс",
-            dataIndex: "groupName",
-            key: "groupName",
-            render: (_: string, record: Student) => renderGroupTag(record)
+            title: "Предметы",
+            dataIndex: "subjectIds",
+            key: "subjectIds",
+            render: (subjectIds: number[]) => renderSubjectTags(subjectIds)
         },
         {
             title: "Действия",
             key: "actions",
-            render: (_: any, record: Student) => (
+            render: (_: any, record: Teacher) => (
                 <Space>
                     <Button className="edit-btn" onClick={() => openEditModal(record)}>Изменить</Button>
-                    <Button className="delete-btn" danger onClick={() => deleteStudent(record.id).then(loadStudents)}>Удалить</Button>
+                    <Button className="delete-btn" danger onClick={() => deleteTeacher(record.id).then(loadTeachers)}>Удалить</Button>
                 </Space>
             ),
         }
@@ -330,24 +305,24 @@ const StudentsTable: React.FC<Props> = ({ highlightId, onHighlightClear, onTagCl
             </style>
             <div style={{ marginBottom: 10 }}>
                 <Button type="primary" onClick={() => { form.resetFields(); setIsModalOpen(true); }} style={{ position: 'relative' }}>
-                    Добавить ученика
+                    Добавить учителя
                     <span style={{ opacity: 0.5, marginLeft: 12, fontSize: '0.8em' }}>{shortcutAdd}</span>
                 </Button>
             </div>
             <div ref={tableRef}>
                 <Table
-                    dataSource={students}
+                    dataSource={teachers}
                     columns={columns}
                     rowKey="id"
                     pagination={false}
                     loading={loading}
                     scroll={{ y: tableScrollY }}
-                    rowClassName={(record: Student) => record.id === activeHighlightId ? "row-highlighted" : ""}
+                    rowClassName={(record: Teacher) => record.id === activeHighlightId ? "row-highlighted" : ""}
                 />
             </div>
 
             <Modal
-                title="Добавить ученика"
+                title="Добавить учителя"
                 open={isModalOpen}
                 onCancel={closeAddModal}
                 footer={null}
@@ -355,7 +330,9 @@ const StudentsTable: React.FC<Props> = ({ highlightId, onHighlightClear, onTagCl
                 afterOpenChange={(open) => open && firstInputRef.current?.focus()}
             >
                 <Form form={form} onFinish={onFinish} layout="vertical" initialValues={{ prefix: "+375" }} onKeyDown={handleFormKeyDown}>
-                    <Form.Item name="fullname" label="ФИО" rules={[{ required: true }]}><Input ref={firstInputRef} autoComplete="off" /></Form.Item>
+                    <Form.Item name="fullname" label="ФИО" rules={[{ required: true }]}>
+                        <Input ref={firstInputRef} autoComplete="off" />
+                    </Form.Item>
                     <Form.Item label="Телефон" required>
                         <Input.Group compact>
                             {prefixSelector("prefix")}
@@ -364,11 +341,14 @@ const StudentsTable: React.FC<Props> = ({ highlightId, onHighlightClear, onTagCl
                             </Form.Item>
                         </Input.Group>
                     </Form.Item>
-                    <Form.Item name="birthdate" label="Дата рождения" rules={[{ required: true }]}>
-                        <DatePicker format="DD.MM.YYYY" placeholder="ДД.ММ.ГГГГ" style={{ width: "100%" }} onKeyDown={handleDateKeyDown as any} autoComplete="off" />
-                    </Form.Item>
-                    <Form.Item name="groupId" label="Класс" rules={[{ required: true }]}>
-                        <Select options={groups.map(g => ({ value: g.id, label: g.name }))} showSearch optionFilterProp="label" />
+                    <Form.Item name="subjectIds" label="Предметы" rules={[{ required: true, message: "Выберите хотя бы один предмет" }]}>
+                        <Select
+                            mode="multiple"
+                            options={subjects.map(s => ({ value: s.id, label: s.name }))}
+                            showSearch
+                            optionFilterProp="label"
+                            placeholder="Выберите предметы"
+                        />
                     </Form.Item>
                     <Button type="primary" htmlType="submit" block style={{ display: 'flex', justifyContent: 'center', position: 'relative' }}>
                         <span>Сохранить</span>
@@ -378,29 +358,30 @@ const StudentsTable: React.FC<Props> = ({ highlightId, onHighlightClear, onTagCl
             </Modal>
 
             <Modal
-                title="Изменить ученика"
+                title="Изменить учителя"
                 open={isEditModalOpen}
                 onCancel={closeEditModal}
                 footer={null}
                 destroyOnClose
                 afterOpenChange={(open) => open && editFirstInputRef.current?.focus()}
             >
-                {editingStudent && (
+                {editingTeacher && (
                     <Form
-                        key={editingStudent.id}
+                        key={editingTeacher.id}
                         form={editForm}
                         onFinish={onEditFinish}
                         layout="vertical"
                         onKeyDown={handleFormKeyDown}
                         initialValues={{
-                            fullname: editingStudent.fullname,
-                            prefix: editingStudent.ui_prefix,
-                            phone: editingStudent.ui_phone,
-                            birthdate: editingStudent.ui_birthdate,
-                            groupId: editingStudent.groupId
+                            fullname: editingTeacher.fullname,
+                            prefix: editingTeacher.ui_prefix,
+                            phone: editingTeacher.ui_phone,
+                            subjectIds: editingTeacher.ui_subjectIds
                         }}
                     >
-                        <Form.Item name="fullname" label="ФИО" rules={[{ required: true }]}><Input ref={editFirstInputRef} autoComplete="off" /></Form.Item>
+                        <Form.Item name="fullname" label="ФИО" rules={[{ required: true }]}>
+                            <Input ref={editFirstInputRef} autoComplete="off" />
+                        </Form.Item>
                         <Form.Item label="Телефон" required>
                             <Input.Group compact>
                                 {prefixSelector("prefix")}
@@ -409,11 +390,14 @@ const StudentsTable: React.FC<Props> = ({ highlightId, onHighlightClear, onTagCl
                                 </Form.Item>
                             </Input.Group>
                         </Form.Item>
-                        <Form.Item name="birthdate" label="Дата рождения" rules={[{ required: true }]}>
-                            <DatePicker format="DD.MM.YYYY" placeholder="ДД.ММ.ГГГГ" style={{ width: "100%" }} onKeyDown={handleDateKeyDown as any} autoComplete="off" />
-                        </Form.Item>
-                        <Form.Item name="groupId" label="Класс" rules={[{ required: true }]}>
-                            <Select options={groups.map(g => ({ value: g.id, label: g.name }))} showSearch optionFilterProp="label" />
+                        <Form.Item name="subjectIds" label="Предметы" rules={[{ required: true, message: "Выберите хотя бы один предмет" }]}>
+                            <Select
+                                mode="multiple"
+                                options={subjects.map(s => ({ value: s.id, label: s.name }))}
+                                showSearch
+                                optionFilterProp="label"
+                                placeholder="Выберите предметы"
+                            />
                         </Form.Item>
                         <Button type="primary" htmlType="submit" block style={{ display: 'flex', justifyContent: 'center', position: 'relative' }}>
                             <span>Сохранить изменения</span>
@@ -426,4 +410,4 @@ const StudentsTable: React.FC<Props> = ({ highlightId, onHighlightClear, onTagCl
     );
 };
 
-export default StudentsTable;
+export default TeachersTable;

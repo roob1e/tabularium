@@ -13,3 +13,28 @@ export interface Group {
     name: string;
     amount: number;
 }
+
+export interface Subject {
+    id: number;
+    name: string;
+    teacherIds?: number[];
+}
+
+export interface Teacher {
+    id: number;
+    fullname: string;
+    phone: string;
+    subjectIds?: number[];
+    subjects?: Subject[];
+}
+
+export interface TeacherRequest {
+    fullname: string;
+    phone: string;
+    subjectIds: number[];
+}
+
+export interface SubjectRequest {
+    name: string;
+    teacherIds?: number[]; // Чтобы можно было привязать учителей сразу к предмету
+}
