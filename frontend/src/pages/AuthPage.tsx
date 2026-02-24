@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { Card, Form, Input, Button, Typography, Alert, Divider } from 'antd';
 import { UserOutlined, LockOutlined, IdcardOutlined, LoginOutlined, UserAddOutlined } from '@ant-design/icons';
@@ -13,7 +13,7 @@ interface IAuthForm {
 }
 
 interface AuthPageProps {
-    onLoginSuccess: (token: string) => void;
+    onLoginSuccess: (data: { accessToken: string; fullname: string }) => void;
 }
 
 const AuthPage: React.FC<AuthPageProps> = ({ onLoginSuccess }) => {

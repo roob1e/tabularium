@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Layout, Menu, Spin, Switch, ConfigProvider, theme } from "antd";
-import { TableOutlined, DatabaseOutlined, LogoutOutlined, SunOutlined, MoonOutlined } from "@ant-design/icons";
+import { TableOutlined, DatabaseOutlined, LogoutOutlined, SunOutlined, MoonOutlined, UserOutlined } from "@ant-design/icons";
 import StudentsTable from "./components/StudentsTable";
 import GroupsTable from "./components/GroupsTable";
 import AuthPage from "./pages/AuthPage";
@@ -14,68 +14,67 @@ const App: React.FC = () => {
     const [selectedKey, setSelectedKey] = useState("1");
     const [initializing, setInitializing] = useState(true);
     const [isDarkMode, setIsDarkMode] = useState(() => localStorage.getItem('theme') === 'dark');
-
-    // Флаг для предотвращения двойного запуска в StrictMode и петель
     const isStarted = useRef(false);
+    const [fullname, setFullname] = useState<string | null>(() => localStorage.getItem('fullname'));
 
     const handleLogout = () => {
         localStorage.removeItem('accessToken');
         localStorage.removeItem('refreshToken');
         setToken(null);
+        setInitializing(false);
     };
 
     useEffect(() => {
-        if (isStarted.current) return;
-        isStarted.current = true;
-
         const handleForceLogout = () => handleLogout();
+        const handleTokenRefreshed = (e: any) => setToken(e.detail);
+
         window.addEventListener("force-logout", handleForceLogout);
+        window.addEventListener("token-refreshed", handleTokenRefreshed as EventListener);
 
-        const initAuth = async () => {
-            try {
-                // 1. Проверка связи
-                await pingServer();
-
-                // 2. Проверка токена
-                const currentToken = localStorage.getItem('accessToken');
-                if (currentToken) {
-                    // Если токен битый, интерцептор в api.ts сам сделает рефреш
-                    // или кинет force-logout
-                    await api.get("/auth/me");
+        if (!isStarted.current) {
+            isStarted.current = true;
+            const initAuth = async () => {
+                try {
+                    await pingServer();
+                    const currentToken = localStorage.getItem('accessToken');
+                    if (currentToken) {
+                        await api.get("/auth/me");
+                    }
+                } catch (err) {
+                    if (!localStorage.getItem('accessToken')) {
+                        handleLogout();
+                    }
+                } finally {
+                    setInitializing(false);
                 }
-            } catch (err) {
-                console.error("Initialization failed:", err);
-                // Если мы упали здесь, значит сервер недоступен или рефреш сдох
-                if (localStorage.getItem('accessToken')) handleLogout();
-            } finally {
-                setInitializing(false);
-            }
-        };
+            };
+            initAuth();
+        }
 
-        initAuth();
-        return () => window.removeEventListener("force-logout", handleForceLogout);
+        return () => {
+            window.removeEventListener("force-logout", handleForceLogout);
+            window.removeEventListener("token-refreshed", handleTokenRefreshed as EventListener);
+        };
     }, []);
 
-    const handleLoginSuccess = (newToken: string) => {
-        setToken(newToken);
+    const handleLoginSuccess = (data: { accessToken: string; fullname: string }) => {
+        localStorage.setItem('accessToken', data.accessToken);
+        localStorage.setItem('fullname', data.fullname);
+        setToken(data.accessToken);
+        setFullname(data.fullname);
     };
-
     const toggleTheme = (checked: boolean) => {
         setIsDarkMode(checked);
-        localStorage.setItem('theme', checked ? 'dark' : 'light');
+        localStorage.setItem('theme', checked ? "#001529" : "#1677ff");
     };
 
     if (initializing) {
         return (
-            <div style={{
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                height: '100vh',
-                background: isDarkMode ? "#141414" : "#fff"
-            }}>
-                <Spin size="large" tip="Загрузка..." />
-            </div>
+            <ConfigProvider theme={{ algorithm: isDarkMode ? theme.darkAlgorithm : theme.defaultAlgorithm }}>
+                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', background: isDarkMode ? "#141414" : "#fff" }}>
+                    <Spin size="large" />
+                </div>
+            </ConfigProvider>
         );
     }
 
@@ -94,10 +93,10 @@ const App: React.FC = () => {
                     display: "flex",
                     justifyContent: "space-between",
                     alignItems: "center",
-                    padding: "0 20px"
+                    padding: "0 20px",
+                    background: isDarkMode ? "#001529" : "#1677ff"
                 }}>
                     <span style={{ color: "white", fontSize: '18px', fontWeight: 'bold' }}>Tabularium</span>
-
                     <div style={{ display: "flex", alignItems: "center", gap: "20px" }}>
                         <Switch
                             checked={isDarkMode}
@@ -105,34 +104,31 @@ const App: React.FC = () => {
                             checkedChildren={<MoonOutlined />}
                             unCheckedChildren={<SunOutlined />}
                         />
+
+                        {fullname && (
+                            <span style={{
+                                color: "white",
+                                display: "flex",
+                                alignItems: "center",
+                                gap: "8px"
+                            }}>
+                <UserOutlined style={{ fontSize: '16px' }} />
+                                {fullname.split(' ').slice(0, 2).join(' ')}
+            </span>
+                        )}
+
                         <LogoutOutlined
                             onClick={handleLogout}
                             style={{ cursor: 'pointer', fontSize: '18px', color: '#ff4d4f' }}
                         />
                     </div>
                 </Header>
-
                 <Layout style={{ overflow: 'hidden' }}>
                     <Sider width={200}>
-                        <Menu
-                            mode="vertical"
-                            selectedKeys={[selectedKey]}
-                            style={{ height: "100%" }}
-                            onClick={(e) => setSelectedKey(e.key)}
-                            items={[
-                                { key: "1", icon: <TableOutlined />, label: "Учащиеся" },
-                                { key: "2", icon: <DatabaseOutlined />, label: "Группы" },
-                            ]}
-                        />
+                        <Menu mode="vertical" selectedKeys={[selectedKey]} style={{ height: "100%" }} onClick={(e) => setSelectedKey(e.key)}
+                              items={[{ key: "1", icon: <TableOutlined />, label: "Учащиеся" }, { key: "2", icon: <DatabaseOutlined />, label: "Группы" }]} />
                     </Sider>
-
-                    <Content style={{
-                        padding: "20px",
-                        overflow: "auto",
-                        background: isDarkMode ? "#141414" : "#f0f2f5",
-                        display: "flex",
-                        flexDirection: "column"
-                    }}>
+                    <Content style={{ padding: "20px", overflow: "auto", background: isDarkMode ? "#141414" : "#f0f2f5", display: "flex", flexDirection: "column" }}>
                         {selectedKey === "1" && <StudentsTable />}
                         {selectedKey === "2" && <GroupsTable />}
                     </Content>
