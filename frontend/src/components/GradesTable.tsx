@@ -274,7 +274,7 @@ const GradesTable: React.FC<Props> = ({ highlightId, onHighlightClear, onTagClic
             title: "Оценка",
             dataIndex: "grade",
             key: "grade",
-            width: 100,
+            width: 110,
             sorter: (a: GradeResponse, b: GradeResponse) => a.grade - b.grade,
             render: (grade: number) => (
                 <Tag color={gradeColor(grade)} style={{ fontWeight: 600, fontSize: 14 }}>

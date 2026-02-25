@@ -4,13 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="073918de-16ad-41dc-a7be-ae3bc4813620" name="Changes" comment="Added subjects' and teachers' tables; navigation by clicking on related tags.">
-      <change afterPath="$PROJECT_DIR$/src/api/grades.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/components/GradesTable.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+    <list default="true" id="073918de-16ad-41dc-a7be-ae3bc4813620" name="Changes" comment="Added grades' table">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/App.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/App.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/types/types.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/types/types.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/GradesTable.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/GradesTable.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -128,7 +124,8 @@
       <workItem from="1771946567108" duration="765000" />
       <workItem from="1771947336382" duration="11240000" />
       <workItem from="1771960606538" duration="14000" />
-      <workItem from="1771960624026" duration="1613000" />
+      <workItem from="1771960624026" duration="1882000" />
+      <workItem from="1771967411691" duration="104000" />
     </task>
     <task id="LOCAL-00001" summary="test">
       <option name="closed" value="true" />
@@ -210,7 +207,15 @@
       <option name="project" value="LOCAL" />
       <updated>1771958295271</updated>
     </task>
-    <option name="localTasksCounter" value="11" />
+    <task id="LOCAL-00011" summary="Added grades' table">
+      <option name="closed" value="true" />
+      <created>1771966224092</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1771966224092</updated>
+    </task>
+    <option name="localTasksCounter" value="12" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -241,6 +246,7 @@
     <MESSAGE value="Working on UI." />
     <MESSAGE value="Final realization of theme switch." />
     <MESSAGE value="Added subjects' and teachers' tables; navigation by clicking on related tags." />
-    <option name="LAST_COMMIT_MESSAGE" value="Added subjects' and teachers' tables; navigation by clicking on related tags." />
+    <MESSAGE value="Added grades' table" />
+    <option name="LAST_COMMIT_MESSAGE" value="Added grades' table" />
   </component>
 </project>
