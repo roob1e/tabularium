@@ -14,7 +14,7 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #434343; /* Серый цвет, который виден и на белом, и на черном */
+  background: #434343;
   border-radius: 4px;
 }
 
@@ -22,25 +22,21 @@
   background: #555;
 }
 
-/* Специально для таблиц Ant Design, чтобы убрать белую зону */
 .ant-table-body {
   scrollbar-width: thin;
   scrollbar-color: #434343 transparent;
 }
 
-/* Убираем конфликтную ошибку с медиа-запросом */
 @media (prefers-color-scheme: dark) {
   :root {
     background-color: #141414;
   }
 }
 
-/* Если используешь класс для переключения */
 [data-theme='dark'] {
   background-color: #141414;
 }
 
-/* Кнопки действий - оставляем как было, они не влияют на скролл */
 .delete-btn {
   color: #ff4d4f !important;
   border: 1px solid #ff4d4f !important;
@@ -61,17 +57,14 @@
   color: #fff !important;
 }
 
-/* Делаем прозрачными только символы-заполнители (_) */
 .ant-input-mask-placeholder {
   color: rgba(0, 0, 0, 0.25) !important;
 }
 
-/* На всякий случай для других реализаций библиотеки */
 input::placeholder {
   color: rgba(0, 0, 0, 0.25);
 }
 
-/* Оформление скроллбара для таблицы */
 .ant-table-body::-webkit-scrollbar {
   width: 6px;
   height: 6px;
@@ -81,7 +74,6 @@ input::placeholder {
   background: transparent;
 }
 
-/* Используем rgba для универсальности: на светлом он будет серым, на темном — тусклым */
 .ant-table-body::-webkit-scrollbar-thumb {
   background: rgba(128, 128, 128, 0.3);
   border-radius: 10px;
@@ -91,26 +83,62 @@ input::placeholder {
   background: rgba(128, 128, 128, 0.5);
 }
 
-/* Для Firefox */
 .ant-table-body {
   scrollbar-width: thin;
   scrollbar-color: rgba(128, 128, 128, 0.3) transparent;
 }
 
-/* Убираем стандартные контуры Ant в темной теме, если они лезут */
 .ant-table-container {
   scrollbar-gutter: stable;
 }
 
-/* Изолируем отрисовку тяжелых компонентов */
 .ant-table-container, .ant-table-content {
   contain: paint;
   backface-visibility: hidden;
   transform: translateZ(0); /* Принудительный вынос на GPU */
 }
 
-/* Отключаем все внутренние CSS-переходы Ant Design строго на время смены темы */
 html.view-transitioning * {
   transition: none !important;
   animation-duration: 0s !important;
+}
+
+/* Скругление всего приложения для эффекта прозрачности */
+#root {
+  border-radius: 12px;
+  overflow: hidden;
+  height: 100vh;
+}
+
+/* Зона перетаскивания для Tauri */
+.custom-titlebar {
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  user-select: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 9999;
+}
+
+/* Кнопки управления окном (Windows style) */
+.window-control-btn {
+  width: 46px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.window-control-btn:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.window-control-btn.close:hover {
+  background: #e81123;
 }

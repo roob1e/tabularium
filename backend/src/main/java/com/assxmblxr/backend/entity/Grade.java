@@ -7,6 +7,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 @Entity
 @Table(name = "grades")
@@ -22,14 +24,17 @@ public class Grade {
 
   @ManyToOne
   @JoinColumn(name = "student_id", nullable = false)
+  @OnDelete(action = OnDeleteAction.CASCADE)
   private Student student;
 
   @ManyToOne
   @JoinColumn(name = "subject_id", nullable = false)
+  @OnDelete(action = OnDeleteAction.CASCADE)
   private Subject subject;
 
   @ManyToOne
   @JoinColumn(name = "teacher_id")
+  @OnDelete(action = OnDeleteAction.CASCADE)
   private Teacher teacher;
 
   @Min(0)

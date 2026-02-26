@@ -32,5 +32,6 @@ public class Teacher {
   )
   @ToString.Exclude
   @EqualsAndHashCode.Exclude
+
   private Set<Subject> subjects;
 }

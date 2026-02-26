@@ -5,6 +5,7 @@ import { Teacher, Subject } from "../types/types.ts";
 import { fetchTeachers, createTeacher, deleteTeacher, updateTeacher } from "../api/teachers.ts";
 import { fetchSubjects } from "../api/subjects.ts";
 import { SortOrder } from "antd/es/table/interface";
+import { useSearchHighlight } from "../hooks/useSearchHighlight.ts";
 
 const { Option } = Select;
 
@@ -12,9 +13,10 @@ interface Props {
     highlightId?: number | null;
     onHighlightClear?: () => void;
     onTagClick?: (tableKey: string, id: number) => void;
+    searchQuery?: string;
 }
 
-const TeachersTable: React.FC<Props> = ({ highlightId, onHighlightClear, onTagClick }) => {
+const TeachersTable: React.FC<Props> = ({ highlightId, onHighlightClear, onTagClick, searchQuery = "" }) => {
     const { token } = theme.useToken();
     const [teachers, setTeachers] = useState<Teacher[]>([]);
     const [subjects, setSubjects] = useState<Subject[]>([]);
@@ -37,6 +39,13 @@ const TeachersTable: React.FC<Props> = ({ highlightId, onHighlightClear, onTagCl
     const isMac = typeof window !== 'undefined' && /Mac|iPod|iPhone|iPad/.test(navigator.platform);
     const shortcutSubmit = isMac ? "shift + return" : "Shift + Enter";
     const shortcutAdd = isMac ? "shift + n" : "Shift + N";
+
+    const { getRowClassName: getSearchRowClass } = useSearchHighlight(
+        teachers,
+        searchQuery,
+        (t, q) => t.fullname.toLowerCase().includes(q),
+        tableRef
+    );
 
     const formatPhoneForTable = (phoneStr: string) => {
         if (!phoneStr) return "";
@@ -68,26 +77,16 @@ const TeachersTable: React.FC<Props> = ({ highlightId, onHighlightClear, onTagCl
         }
     };
 
-    useEffect(() => {
-        loadTeachers();
-        loadSubjects();
-    }, []);
+    useEffect(() => { loadTeachers(); loadSubjects(); }, []);
 
     useEffect(() => {
         if (!highlightId || loading) return;
-
         setActiveHighlightId(highlightId);
-
         setTimeout(() => {
             const row = tableRef.current?.querySelector(`[data-row-key="${highlightId}"]`);
             if (row) row.scrollIntoView({ behavior: "smooth", block: "center" });
         }, 100);
-
-        const timer = setTimeout(() => {
-            setActiveHighlightId(null);
-            onHighlightClear?.();
-        }, 2000);
-
+        const timer = setTimeout(() => { setActiveHighlightId(null); onHighlightClear?.(); }, 2000);
         return () => clearTimeout(timer);
     }, [highlightId]);
 
@@ -95,11 +94,7 @@ const TeachersTable: React.FC<Props> = ({ highlightId, onHighlightClear, onTagCl
         const handleGlobalKeyDown = (e: KeyboardEvent) => {
             const key = e.key.toLowerCase();
             if (e.shiftKey && (key === 'n' || key === 'т')) {
-                if (!isModalOpen && !isEditModalOpen) {
-                    e.preventDefault();
-                    form.resetFields();
-                    setIsModalOpen(true);
-                }
+                if (!isModalOpen && !isEditModalOpen) { e.preventDefault(); form.resetFields(); setIsModalOpen(true); }
             }
         };
         window.addEventListener('keydown', handleGlobalKeyDown);
@@ -123,10 +118,7 @@ const TeachersTable: React.FC<Props> = ({ highlightId, onHighlightClear, onTagCl
     const handleFormKeyDown = (e: React.KeyboardEvent<HTMLFormElement>) => {
         if (e.key === "Enter") {
             e.preventDefault();
-            if (e.shiftKey) {
-                e.currentTarget.requestSubmit();
-                return;
-            }
+            if (e.shiftKey) { e.currentTarget.requestSubmit(); return; }
             const target = e.target as HTMLElement;
             if (target.tagName === "TEXTAREA" || (target as any).type === "submit") return;
             const allElements = Array.from(e.currentTarget.querySelectorAll("input, select, .ant-select-selection-search-input")) as HTMLElement[];
@@ -136,31 +128,17 @@ const TeachersTable: React.FC<Props> = ({ highlightId, onHighlightClear, onTagCl
                 return !isPrefix && !isHidden;
             });
             const index = filteredElements.indexOf(target);
-            if (index > -1 && index < filteredElements.length - 1) {
-                filteredElements[index + 1].focus();
-            }
+            if (index > -1 && index < filteredElements.length - 1) filteredElements[index + 1].focus();
         }
     };
 
     const processSubmit = (values: any) => {
         const cleanPhone = values.phone ? values.phone.replace(/[^\d]/g, "") : "";
-        return {
-            fullname: values.fullname,
-            phone: `${values.prefix}${cleanPhone}`,
-            subjectIds: values.subjectIds || []
-        };
+        return { fullname: values.fullname, phone: `${values.prefix}${cleanPhone}`, subjectIds: values.subjectIds || [] };
     };
 
-    const closeAddModal = () => {
-        setIsModalOpen(false);
-        form.resetFields();
-    };
-
-    const closeEditModal = () => {
-        setIsEditModalOpen(false);
-        editForm.resetFields();
-        setEditingTeacher(null);
-    };
+    const closeAddModal = () => { setIsModalOpen(false); form.resetFields(); };
+    const closeEditModal = () => { setIsEditModalOpen(false); editForm.resetFields(); setEditingTeacher(null); };
 
     const onFinish = async (values: any) => {
         try {
@@ -179,18 +157,9 @@ const TeachersTable: React.FC<Props> = ({ highlightId, onHighlightClear, onTagCl
         let phonePart = cleanPhone;
         const prefixes = ["375", "380", "48", "7"];
         for (const p of prefixes) {
-            if (cleanPhone.startsWith(p)) {
-                prefix = `+${p}`;
-                phonePart = cleanPhone.slice(p.length);
-                break;
-            }
+            if (cleanPhone.startsWith(p)) { prefix = `+${p}`; phonePart = cleanPhone.slice(p.length); break; }
         }
-        setEditingTeacher({
-            ...teacher,
-            ui_prefix: prefix,
-            ui_phone: phonePart,
-            ui_subjectIds: teacher.subjectIds || []
-        });
+        setEditingTeacher({ ...teacher, ui_prefix: prefix, ui_phone: phonePart, ui_subjectIds: teacher.subjectIds || [] });
         setIsEditModalOpen(true);
     };
 
@@ -224,21 +193,8 @@ const TeachersTable: React.FC<Props> = ({ highlightId, onHighlightClear, onTagCl
                     const s = subjects.find(s => s.id === id);
                     if (!s) return null;
                     return (
-                        <Tooltip
-                            key={id}
-                            mouseEnterDelay={0.6}
-                            title={
-                                <div style={{ fontSize: 13 }}>
-                                    <div><b>Предмет:</b> {s.name}</div>
-                                </div>
-                            }
-                        >
-                            <Tag
-                                style={{ margin: 0, cursor: "pointer" }}
-                                onClick={() => onTagClick?.("3", id)}
-                            >
-                                {s.name}
-                            </Tag>
+                        <Tooltip key={id} mouseEnterDelay={0.6} title={<div style={{ fontSize: 13 }}><div><b>Предмет:</b> {s.name}</div></div>}>
+                            <Tag style={{ margin: 0, cursor: "pointer" }} onClick={() => onTagClick?.("3", id)}>{s.name}</Tag>
                         </Tooltip>
                     );
                 })}
@@ -246,19 +202,18 @@ const TeachersTable: React.FC<Props> = ({ highlightId, onHighlightClear, onTagCl
         );
     };
 
+    const getRowClassName = (record: Teacher) => {
+        if (record.id === activeHighlightId) return "row-highlighted";
+        return getSearchRowClass(record);
+    };
+
     const columns = [
         { title: "ID", dataIndex: "id", key: "id", width: 80, sorter: (a: any, b: any) => a.id - b.id, defaultSortOrder: "ascend" as SortOrder },
         { title: "ФИО", dataIndex: "fullname", key: "fullname" },
         { title: "Телефон", dataIndex: "phone", key: "phone", render: (t: string) => formatPhoneForTable(t) },
+        { title: "Предметы", dataIndex: "subjectIds", key: "subjectIds", render: (ids: number[]) => renderSubjectTags(ids) },
         {
-            title: "Предметы",
-            dataIndex: "subjectIds",
-            key: "subjectIds",
-            render: (subjectIds: number[]) => renderSubjectTags(subjectIds)
-        },
-        {
-            title: "Действия",
-            key: "actions",
+            title: "Действия", key: "actions",
             render: (_: any, record: Teacher) => (
                 <Space>
                     <Button className="edit-btn" onClick={() => openEditModal(record)}>Изменить</Button>
@@ -270,39 +225,15 @@ const TeachersTable: React.FC<Props> = ({ highlightId, onHighlightClear, onTagCl
 
     return (
         <div ref={containerRef} style={{ height: "100%", display: "flex", flexDirection: "column", padding: "10px" }}>
-            <style>
-                {`
-                    .ant-table {
-                        border-bottom-left-radius: 8px !important;
-                        border-bottom-right-radius: 8px !important;
-                        overflow: hidden !important;
-                    }
-                    .ant-table-container {
-                        border-bottom-left-radius: 8px !important;
-                        border-bottom-right-radius: 8px !important;
-                    }
-                    .masked-input-themed {
-                        background-color: ${token.colorBgContainer} !important;
-                        color: ${token.colorText} !important;
-                        border-color: ${token.colorBorder} !important;
-                    }
-                    .masked-input-themed:hover {
-                        border-color: ${token.colorPrimaryHover} !important;
-                    }
-                    .masked-input-themed:focus {
-                        border-color: ${token.colorPrimary} !important;
-                        box-shadow: 0 0 0 2px ${token.controlOutline} !important;
-                        outline: none;
-                    }
-                    .masked-input-themed::placeholder {
-                        color: ${token.colorTextPlaceholder} !important;
-                    }
-                    .row-highlighted td {
-                        background-color: rgba(22, 119, 255, 0.12) !important;
-                        transition: background-color 0.3s ease !important;
-                    }
-                `}
-            </style>
+            <style>{`
+                .ant-table { border-bottom-left-radius: 8px !important; border-bottom-right-radius: 8px !important; overflow: hidden !important; }
+                .ant-table-container { border-bottom-left-radius: 8px !important; border-bottom-right-radius: 8px !important; }
+                .masked-input-themed { background-color: ${token.colorBgContainer} !important; color: ${token.colorText} !important; border-color: ${token.colorBorder} !important; }
+                .masked-input-themed:hover { border-color: ${token.colorPrimaryHover} !important; }
+                .masked-input-themed:focus { border-color: ${token.colorPrimary} !important; box-shadow: 0 0 0 2px ${token.controlOutline} !important; outline: none; }
+                .masked-input-themed::placeholder { color: ${token.colorTextPlaceholder} !important; }
+                .row-highlighted td { background-color: rgba(22, 119, 255, 0.12) !important; transition: background-color 0.3s ease !important; }
+            `}</style>
             <div style={{ marginBottom: 10 }}>
                 <Button type="primary" onClick={() => { form.resetFields(); setIsModalOpen(true); }} style={{ position: 'relative' }}>
                     Добавить учителя
@@ -310,29 +241,12 @@ const TeachersTable: React.FC<Props> = ({ highlightId, onHighlightClear, onTagCl
                 </Button>
             </div>
             <div ref={tableRef}>
-                <Table
-                    dataSource={teachers}
-                    columns={columns}
-                    rowKey="id"
-                    pagination={false}
-                    loading={loading}
-                    scroll={{ y: tableScrollY }}
-                    rowClassName={(record: Teacher) => record.id === activeHighlightId ? "row-highlighted" : ""}
-                />
+                <Table dataSource={teachers} columns={columns} rowKey="id" pagination={false} loading={loading} scroll={{ y: tableScrollY }} rowClassName={getRowClassName} />
             </div>
 
-            <Modal
-                title="Добавить учителя"
-                open={isModalOpen}
-                onCancel={closeAddModal}
-                footer={null}
-                destroyOnClose
-                afterOpenChange={(open) => open && firstInputRef.current?.focus()}
-            >
+            <Modal title="Добавить учителя" open={isModalOpen} onCancel={closeAddModal} footer={null} destroyOnClose afterOpenChange={(open) => open && firstInputRef.current?.focus()}>
                 <Form form={form} onFinish={onFinish} layout="vertical" initialValues={{ prefix: "+375" }} onKeyDown={handleFormKeyDown}>
-                    <Form.Item name="fullname" label="ФИО" rules={[{ required: true }]}>
-                        <Input ref={firstInputRef} autoComplete="off" />
-                    </Form.Item>
+                    <Form.Item name="fullname" label="ФИО" rules={[{ required: true }]}><Input ref={firstInputRef} autoComplete="off" /></Form.Item>
                     <Form.Item label="Телефон" required>
                         <Input.Group compact>
                             {prefixSelector("prefix")}
@@ -342,13 +256,7 @@ const TeachersTable: React.FC<Props> = ({ highlightId, onHighlightClear, onTagCl
                         </Input.Group>
                     </Form.Item>
                     <Form.Item name="subjectIds" label="Предметы" rules={[{ required: true, message: "Выберите хотя бы один предмет" }]}>
-                        <Select
-                            mode="multiple"
-                            options={subjects.map(s => ({ value: s.id, label: s.name }))}
-                            showSearch
-                            optionFilterProp="label"
-                            placeholder="Выберите предметы"
-                        />
+                        <Select mode="multiple" options={subjects.map(s => ({ value: s.id, label: s.name }))} showSearch optionFilterProp="label" placeholder="Выберите предметы" />
                     </Form.Item>
                     <Button type="primary" htmlType="submit" block style={{ display: 'flex', justifyContent: 'center', position: 'relative' }}>
                         <span>Сохранить</span>
@@ -357,31 +265,11 @@ const TeachersTable: React.FC<Props> = ({ highlightId, onHighlightClear, onTagCl
                 </Form>
             </Modal>
 
-            <Modal
-                title="Изменить учителя"
-                open={isEditModalOpen}
-                onCancel={closeEditModal}
-                footer={null}
-                destroyOnClose
-                afterOpenChange={(open) => open && editFirstInputRef.current?.focus()}
-            >
+            <Modal title="Изменить учителя" open={isEditModalOpen} onCancel={closeEditModal} footer={null} destroyOnClose afterOpenChange={(open) => open && editFirstInputRef.current?.focus()}>
                 {editingTeacher && (
-                    <Form
-                        key={editingTeacher.id}
-                        form={editForm}
-                        onFinish={onEditFinish}
-                        layout="vertical"
-                        onKeyDown={handleFormKeyDown}
-                        initialValues={{
-                            fullname: editingTeacher.fullname,
-                            prefix: editingTeacher.ui_prefix,
-                            phone: editingTeacher.ui_phone,
-                            subjectIds: editingTeacher.ui_subjectIds
-                        }}
-                    >
-                        <Form.Item name="fullname" label="ФИО" rules={[{ required: true }]}>
-                            <Input ref={editFirstInputRef} autoComplete="off" />
-                        </Form.Item>
+                    <Form key={editingTeacher.id} form={editForm} onFinish={onEditFinish} layout="vertical" onKeyDown={handleFormKeyDown}
+                          initialValues={{ fullname: editingTeacher.fullname, prefix: editingTeacher.ui_prefix, phone: editingTeacher.ui_phone, subjectIds: editingTeacher.ui_subjectIds }}>
+                        <Form.Item name="fullname" label="ФИО" rules={[{ required: true }]}><Input ref={editFirstInputRef} autoComplete="off" /></Form.Item>
                         <Form.Item label="Телефон" required>
                             <Input.Group compact>
                                 {prefixSelector("prefix")}
@@ -391,13 +279,7 @@ const TeachersTable: React.FC<Props> = ({ highlightId, onHighlightClear, onTagCl
                             </Input.Group>
                         </Form.Item>
                         <Form.Item name="subjectIds" label="Предметы" rules={[{ required: true, message: "Выберите хотя бы один предмет" }]}>
-                            <Select
-                                mode="multiple"
-                                options={subjects.map(s => ({ value: s.id, label: s.name }))}
-                                showSearch
-                                optionFilterProp="label"
-                                placeholder="Выберите предметы"
-                            />
+                            <Select mode="multiple" options={subjects.map(s => ({ value: s.id, label: s.name }))} showSearch optionFilterProp="label" placeholder="Выберите предметы" />
                         </Form.Item>
                         <Button type="primary" htmlType="submit" block style={{ display: 'flex', justifyContent: 'center', position: 'relative' }}>
                             <span>Сохранить изменения</span>

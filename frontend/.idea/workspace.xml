@@ -5,8 +5,32 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="073918de-16ad-41dc-a7be-ae3bc4813620" name="Changes" comment="Added grades' table">
+      <change afterPath="$PROJECT_DIR$/public/icon.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/hooks/useSearchHighlight.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/dto/AuthResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/dto/AuthResponse.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/entity/Grade.java" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/entity/Grade.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/entity/Teacher.java" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/entity/Teacher.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/service/TokenService.java" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/service/TokenService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/@ant-design_icons.js" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/.vite/deps/@ant-design_icons.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/_metadata.json" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/.vite/deps/_metadata.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/antd.js" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/.vite/deps/antd.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/tauri.svg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/public/vite.svg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-tauri/Cargo.lock" beforeDir="false" afterPath="$PROJECT_DIR$/src-tauri/Cargo.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-tauri/Cargo.toml" beforeDir="false" afterPath="$PROJECT_DIR$/src-tauri/Cargo.toml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-tauri/icons/icon.png" beforeDir="false" afterPath="$PROJECT_DIR$/src-tauri/icons/icon.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-tauri/tauri.conf.json" beforeDir="false" afterPath="$PROJECT_DIR$/src-tauri/tauri.conf.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/App.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/App.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/App.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/App.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/assets/react.svg" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/components/GradesTable.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/GradesTable.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/GroupsTable.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/GroupsTable.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/StudentsTable.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/StudentsTable.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/SubjectsTable.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/SubjectsTable.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/TeachersTable.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/TeachersTable.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -57,27 +81,48 @@
     &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
     &quot;git-widget-placeholder&quot;: &quot;master&quot;,
     &quot;javascript.preferred.runtime.type.id&quot;: &quot;node&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/Users/assxmblxr/IT/tabularium/frontend&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/Users/assxmblxr/tabularium/frontend/src-tauri/icons&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
     &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
     &quot;nodejs_interpreter_path&quot;: &quot;/Users/assxmblxr/Library/Application Support/JetBrains/WebStorm2025.3/node/versions/24.13.1/bin/node&quot;,
     &quot;nodejs_package_manager_path&quot;: &quot;pnpm&quot;,
+    &quot;npm.application.executor&quot;: &quot;Run&quot;,
+    &quot;npm.browser.executor&quot;: &quot;Run&quot;,
     &quot;npm.dev.executor&quot;: &quot;Run&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;vcs.Git&quot;,
+    &quot;npm.tauri dev.executor&quot;: &quot;Run&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.externalResources&quot;,
     &quot;ts.external.directory.path&quot;: &quot;/Users/assxmblxr/tabularium/frontend/node_modules/typescript/lib&quot;,
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
 }</component>
   <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src-tauri/icons" />
+    </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/public" />
       <recent name="$PROJECT_DIR$/src/types" />
       <recent name="$PROJECT_DIR$/src/pages" />
     </key>
   </component>
-  <component name="RunManager">
-    <configuration name="dev" type="js.build_tools.npm" nameIsGenerated="true">
+  <component name="RunManager" selected="npm.application">
+    <configuration name="application" type="js.build_tools.npm">
+      <package-json value="$PROJECT_DIR$/package.json" />
+      <command value="run" />
+      <scripts>
+        <script value="tauri" />
+        <script value="dev" />
+      </scripts>
+      <node-interpreter value="project" />
+      <envs />
+      <EXTENSION ID="com.intellij.javascript.debugger.execution.StartBrowserRunConfigurationExtension">
+        <browser with-js-debugger="true" />
+      </EXTENSION>
+      <method v="2" />
+    </configuration>
+    <configuration name="browser" type="js.build_tools.npm">
       <package-json value="$PROJECT_DIR$/package.json" />
       <command value="run" />
       <scripts>
@@ -90,6 +135,10 @@
       </EXTENSION>
       <method v="2" />
     </configuration>
+    <list>
+      <item itemvalue="npm.browser" />
+      <item itemvalue="npm.application" />
+    </list>
   </component>
   <component name="SharedIndexes">
     <attachedChunks>
@@ -126,6 +175,11 @@
       <workItem from="1771960606538" duration="14000" />
       <workItem from="1771960624026" duration="1882000" />
       <workItem from="1771967411691" duration="104000" />
+      <workItem from="1772009363258" duration="1939000" />
+      <workItem from="1772013906919" duration="3980000" />
+      <workItem from="1772018598013" duration="554000" />
+      <workItem from="1772019164366" duration="5365000" />
+      <workItem from="1772089363512" duration="779000" />
     </task>
     <task id="LOCAL-00001" summary="test">
       <option name="closed" value="true" />
@@ -215,7 +269,15 @@
       <option name="project" value="LOCAL" />
       <updated>1771966224092</updated>
     </task>
-    <option name="localTasksCounter" value="12" />
+    <task id="LOCAL-00012" summary="Added grades' table">
+      <option name="closed" value="true" />
+      <created>1772009395736</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1772009395737</updated>
+    </task>
+    <option name="localTasksCounter" value="13" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">

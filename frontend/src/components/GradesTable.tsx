@@ -6,21 +6,24 @@ import { fetchStudents } from "../api/students.ts";
 import { fetchSubjects } from "../api/subjects.ts";
 import { fetchTeachers } from "../api/teachers.ts";
 import { SortOrder } from "antd/es/table/interface";
+import { useSearchHighlight } from "../hooks/useSearchHighlight.ts";
 
 interface Props {
     highlightId?: number | null;
     onHighlightClear?: () => void;
     onTagClick?: (tableKey: string, id: number) => void;
+    searchQuery?: string;
 }
 
 const gradeColor = (grade: number) => {
     if (grade >= 9) return "green";
     if (grade >= 7) return "blue";
     if (grade >= 5) return "orange";
+    if (grade <= 1) return "black";
     return "red";
 };
 
-const GradesTable: React.FC<Props> = ({ highlightId, onHighlightClear, onTagClick }) => {
+const GradesTable: React.FC<Props> = ({ highlightId, onHighlightClear, onTagClick, searchQuery = "" }) => {
     const { token } = theme.useToken();
     const [grades, setGrades] = useState<GradeResponse[]>([]);
     const [students, setStudents] = useState<Student[]>([]);
@@ -48,6 +51,17 @@ const GradesTable: React.FC<Props> = ({ highlightId, onHighlightClear, onTagClic
     const isMac = typeof window !== 'undefined' && /Mac|iPod|iPhone|iPad/.test(navigator.platform);
     const shortcutSubmit = isMac ? "shift + return" : "Shift + Enter";
     const shortcutAdd = isMac ? "shift + n" : "Shift + N";
+
+    // Матчим оценку по ФИО ученика
+    const { getRowClassName: getSearchRowClass } = useSearchHighlight(
+        grades,
+        searchQuery,
+        (g, q) => {
+            const student = students.find(s => s.id === g.studentId);
+            return student ? student.fullname.toLowerCase().includes(q) : false;
+        },
+        tableRef
+    );
 
     const getTeachersForSubject = (subjectId: number | null) => {
         if (!subjectId) return [];
@@ -78,25 +92,16 @@ const GradesTable: React.FC<Props> = ({ highlightId, onHighlightClear, onTagClic
         }
     };
 
-    useEffect(() => {
-        loadAll();
-    }, []);
+    useEffect(() => { loadAll(); }, []);
 
     useEffect(() => {
         if (!highlightId || loading) return;
-
         setActiveHighlightId(highlightId);
-
         setTimeout(() => {
             const row = tableRef.current?.querySelector(`[data-row-key="${highlightId}"]`);
             if (row) row.scrollIntoView({ behavior: "smooth", block: "center" });
         }, 100);
-
-        const timer = setTimeout(() => {
-            setActiveHighlightId(null);
-            onHighlightClear?.();
-        }, 2000);
-
+        const timer = setTimeout(() => { setActiveHighlightId(null); onHighlightClear?.(); }, 2000);
         return () => clearTimeout(timer);
     }, [highlightId]);
 
@@ -104,11 +109,7 @@ const GradesTable: React.FC<Props> = ({ highlightId, onHighlightClear, onTagClic
         const handleGlobalKeyDown = (e: KeyboardEvent) => {
             const key = e.key.toLowerCase();
             if (e.shiftKey && (key === 'n' || key === 'т')) {
-                if (!isModalOpen && !isEditModalOpen) {
-                    e.preventDefault();
-                    form.resetFields();
-                    setIsModalOpen(true);
-                }
+                if (!isModalOpen && !isEditModalOpen) { e.preventDefault(); form.resetFields(); setIsModalOpen(true); }
             }
         };
         window.addEventListener('keydown', handleGlobalKeyDown);
@@ -132,32 +133,17 @@ const GradesTable: React.FC<Props> = ({ highlightId, onHighlightClear, onTagClic
     const handleFormKeyDown = (e: React.KeyboardEvent<HTMLFormElement>) => {
         if (e.key === "Enter") {
             e.preventDefault();
-            if (e.shiftKey) {
-                e.currentTarget.requestSubmit();
-                return;
-            }
+            if (e.shiftKey) { e.currentTarget.requestSubmit(); return; }
             const target = e.target as HTMLElement;
             if ((target as any).type === "submit") return;
             const allElements = Array.from(e.currentTarget.querySelectorAll("input, .ant-select-selection-search-input")) as HTMLElement[];
             const index = allElements.indexOf(target);
-            if (index > -1 && index < allElements.length - 1) {
-                allElements[index + 1].focus();
-            }
+            if (index > -1 && index < allElements.length - 1) allElements[index + 1].focus();
         }
     };
 
-    const closeAddModal = () => {
-        setIsModalOpen(false);
-        form.resetFields();
-        setAddSelectedSubjectId(null);
-    };
-
-    const closeEditModal = () => {
-        setIsEditModalOpen(false);
-        editForm.resetFields();
-        setEditingGrade(null);
-        setEditSelectedSubjectId(null);
-    };
+    const closeAddModal = () => { setIsModalOpen(false); form.resetFields(); setAddSelectedSubjectId(null); };
+    const closeEditModal = () => { setIsEditModalOpen(false); editForm.resetFields(); setEditingGrade(null); setEditSelectedSubjectId(null); };
 
     const onFinish = async (values: any) => {
         try {
@@ -192,18 +178,8 @@ const GradesTable: React.FC<Props> = ({ highlightId, onHighlightClear, onTagClic
         const s = students.find(s => s.id === studentId);
         if (!s) return "—";
         return (
-            <Tooltip
-                mouseEnterDelay={0.6}
-                title={
-                    <div style={{ fontSize: 13 }}>
-                        <div><b>ФИО:</b> {s.fullname}</div>
-                        <div><b>Класс:</b> {s.groupName}</div>
-                    </div>
-                }
-            >
-                <Tag style={{ margin: 0, cursor: "pointer" }} onClick={() => onTagClick?.("1", studentId)}>
-                    {s.fullname}
-                </Tag>
+            <Tooltip mouseEnterDelay={0.6} title={<div style={{ fontSize: 13 }}><div><b>ФИО:</b> {s.fullname}</div><div><b>Класс:</b> {s.groupName}</div></div>}>
+                <Tag style={{ margin: 0, cursor: "pointer" }} onClick={() => onTagClick?.("1", studentId)}>{s.fullname}</Tag>
             </Tooltip>
         );
     };
@@ -212,13 +188,8 @@ const GradesTable: React.FC<Props> = ({ highlightId, onHighlightClear, onTagClic
         const s = subjects.find(s => s.id === subjectId);
         if (!s) return "—";
         return (
-            <Tooltip
-                mouseEnterDelay={0.6}
-                title={<div style={{ fontSize: 13 }}><div><b>Предмет:</b> {s.name}</div></div>}
-            >
-                <Tag style={{ margin: 0, cursor: "pointer" }} onClick={() => onTagClick?.("3", subjectId)}>
-                    {s.name}
-                </Tag>
+            <Tooltip mouseEnterDelay={0.6} title={<div style={{ fontSize: 13 }}><div><b>Предмет:</b> {s.name}</div></div>}>
+                <Tag style={{ margin: 0, cursor: "pointer" }} onClick={() => onTagClick?.("3", subjectId)}>{s.name}</Tag>
             </Tooltip>
         );
     };
@@ -227,64 +198,34 @@ const GradesTable: React.FC<Props> = ({ highlightId, onHighlightClear, onTagClic
         const t = teachers.find(t => t.id === teacherId);
         if (!t) return "—";
         return (
-            <Tooltip
-                mouseEnterDelay={0.6}
-                title={
-                    <div style={{ fontSize: 13 }}>
-                        <div><b>ФИО:</b> {t.fullname}</div>
-                        <div><b>Телефон:</b> {t.phone}</div>
-                    </div>
-                }
-            >
-                <Tag style={{ margin: 0, cursor: "pointer" }} onClick={() => onTagClick?.("4", teacherId)}>
-                    {t.fullname}
-                </Tag>
+            <Tooltip mouseEnterDelay={0.6} title={<div style={{ fontSize: 13 }}><div><b>ФИО:</b> {t.fullname}</div><div><b>Телефон:</b> {t.phone}</div></div>}>
+                <Tag style={{ margin: 0, cursor: "pointer" }} onClick={() => onTagClick?.("4", teacherId)}>{t.fullname}</Tag>
             </Tooltip>
         );
     };
 
+    const getRowClassName = (record: GradeResponse) => {
+        if (record.id === activeHighlightId) return "row-highlighted";
+        return getSearchRowClass(record);
+    };
+
     const columns = [
+        { title: "ID", dataIndex: "id", key: "id", width: 80, sorter: (a: GradeResponse, b: GradeResponse) => a.id - b.id, defaultSortOrder: "ascend" as SortOrder },
+        { title: "Ученик", dataIndex: "studentId", key: "studentId", render: (id: number) => renderStudentTag(id) },
+        { title: "Предмет", dataIndex: "subjectId", key: "subjectId", render: (id: number) => renderSubjectTag(id) },
+        { title: "Учитель", dataIndex: "teacherId", key: "teacherId", render: (id: number) => renderTeacherTag(id) },
         {
-            title: "ID",
-            dataIndex: "id",
-            key: "id",
-            width: 80,
-            sorter: (a: GradeResponse, b: GradeResponse) => a.id - b.id,
-            defaultSortOrder: "ascend" as SortOrder
-        },
-        {
-            title: "Ученик",
-            dataIndex: "studentId",
-            key: "studentId",
-            render: (id: number) => renderStudentTag(id)
-        },
-        {
-            title: "Предмет",
-            dataIndex: "subjectId",
-            key: "subjectId",
-            render: (id: number) => renderSubjectTag(id)
-        },
-        {
-            title: "Учитель",
-            dataIndex: "teacherId",
-            key: "teacherId",
-            render: (id: number) => renderTeacherTag(id)
-        },
-        {
-            title: "Оценка",
-            dataIndex: "grade",
-            key: "grade",
-            width: 110,
+            title: "Оценка", dataIndex: "grade", key: "grade", width: 120,
+            align: "center" as const,
             sorter: (a: GradeResponse, b: GradeResponse) => a.grade - b.grade,
             render: (grade: number) => (
-                <Tag color={gradeColor(grade)} style={{ fontWeight: 600, fontSize: 14 }}>
-                    {grade}
-                </Tag>
+                <div style={{ display: "flex", justifyContent: "center" }}>
+                    <Tag color={gradeColor(grade)} style={{ fontWeight: 600, fontSize: 14, margin: 0 }}>{grade}</Tag>
+                </div>
             )
         },
         {
-            title: "Действия",
-            key: "actions",
+            title: "Действия", key: "actions",
             render: (_: any, record: GradeResponse) => (
                 <Space>
                     <Button className="edit-btn" onClick={() => openEditModal(record)}>Изменить</Button>
@@ -297,36 +238,13 @@ const GradesTable: React.FC<Props> = ({ highlightId, onHighlightClear, onTagClic
     return (
         <div ref={containerRef} style={{ height: "100%", display: "flex", flexDirection: "column", padding: "10px" }}>
             <style>{`
-                .ant-table {
-                    border-bottom-left-radius: 8px !important;
-                    border-bottom-right-radius: 8px !important;
-                    overflow: hidden !important;
-                }
-                .ant-table-container {
-                    border-bottom-left-radius: 8px !important;
-                    border-bottom-right-radius: 8px !important;
-                }
-                .ant-input-number {
-                    background-color: ${token.colorBgContainer} !important;
-                    color: ${token.colorText} !important;
-                    border-color: ${token.colorBorder} !important;
-                    width: 100%;
-                }
-                .ant-input-number:hover {
-                    border-color: ${token.colorPrimaryHover} !important;
-                }
-                .ant-input-number-focused, .ant-input-number:focus {
-                    border-color: ${token.colorPrimary} !important;
-                    box-shadow: 0 0 0 2px ${token.controlOutline} !important;
-                }
-                .ant-input-number-input {
-                    background-color: ${token.colorBgContainer} !important;
-                    color: ${token.colorText} !important;
-                }
-                .row-highlighted td {
-                    background-color: rgba(22, 119, 255, 0.12) !important;
-                    transition: background-color 0.3s ease !important;
-                }
+                .ant-table { border-bottom-left-radius: 8px !important; border-bottom-right-radius: 8px !important; overflow: hidden !important; }
+                .ant-table-container { border-bottom-left-radius: 8px !important; border-bottom-right-radius: 8px !important; }
+                .ant-input-number { background-color: ${token.colorBgContainer} !important; color: ${token.colorText} !important; border-color: ${token.colorBorder} !important; width: 100%; }
+                .ant-input-number:hover { border-color: ${token.colorPrimaryHover} !important; }
+                .ant-input-number-focused, .ant-input-number:focus { border-color: ${token.colorPrimary} !important; box-shadow: 0 0 0 2px ${token.controlOutline} !important; }
+                .ant-input-number-input { background-color: ${token.colorBgContainer} !important; color: ${token.colorText} !important; }
+                .row-highlighted td { background-color: rgba(22, 119, 255, 0.12) !important; transition: background-color 0.3s ease !important; }
             `}</style>
 
             <div style={{ marginBottom: 10 }}>
@@ -337,56 +255,23 @@ const GradesTable: React.FC<Props> = ({ highlightId, onHighlightClear, onTagClic
             </div>
 
             <div ref={tableRef}>
-                <Table
-                    dataSource={grades}
-                    columns={columns}
-                    rowKey="id"
-                    pagination={false}
-                    loading={loading}
-                    scroll={{ y: tableScrollY }}
-                    rowClassName={(record: GradeResponse) => record.id === activeHighlightId ? "row-highlighted" : ""}
-                />
+                <Table dataSource={grades} columns={columns} rowKey="id" pagination={false} loading={loading} scroll={{ y: tableScrollY }} rowClassName={getRowClassName} />
             </div>
 
-            {/* Модал добавления */}
-            <Modal
-                title="Добавить оценку"
-                open={isModalOpen}
-                onCancel={closeAddModal}
-                footer={null}
-                destroyOnClose
-                afterOpenChange={(open) => open && firstInputRef.current?.focus()}
-            >
+            <Modal title="Добавить оценку" open={isModalOpen} onCancel={closeAddModal} footer={null} destroyOnClose afterOpenChange={(open) => open && firstInputRef.current?.focus()}>
                 <Form form={form} onFinish={onFinish} layout="vertical" onKeyDown={handleFormKeyDown}>
                     <Form.Item name="studentId" label="Ученик" rules={[{ required: true }]}>
-                        <Select
-                            ref={firstInputRef}
-                            showSearch
-                            optionFilterProp="label"
-                            placeholder="Выберите ученика"
-                            options={students.map(s => ({ value: s.id, label: s.fullname }))}
-                        />
+                        <Select ref={firstInputRef} showSearch optionFilterProp="label" placeholder="Выберите ученика" options={students.map(s => ({ value: s.id, label: s.fullname }))} />
                     </Form.Item>
                     <Form.Item name="subjectId" label="Предмет" rules={[{ required: true }]}>
-                        <Select
-                            showSearch
-                            optionFilterProp="label"
-                            placeholder="Выберите предмет"
-                            options={subjects.map(s => ({ value: s.id, label: s.name }))}
-                            onChange={(val) => {
-                                setAddSelectedSubjectId(val);
-                                form.setFieldValue("teacherId", undefined);
-                            }}
-                        />
+                        <Select showSearch optionFilterProp="label" placeholder="Выберите предмет" options={subjects.map(s => ({ value: s.id, label: s.name }))}
+                                onChange={(val) => { setAddSelectedSubjectId(val); form.setFieldValue("teacherId", undefined); }} />
                     </Form.Item>
                     <Form.Item name="teacherId" label="Учитель" rules={[{ required: true }]}>
-                        <Select
-                            showSearch
-                            optionFilterProp="label"
-                            placeholder={addSelectedSubjectId ? "Выберите учителя" : "Сначала выберите предмет"}
-                            disabled={!addSelectedSubjectId}
-                            options={getTeachersForSubject(addSelectedSubjectId).map(t => ({ value: t.id, label: t.fullname }))}
-                        />
+                        <Select showSearch optionFilterProp="label"
+                                placeholder={addSelectedSubjectId ? "Выберите учителя" : "Сначала выберите предмет"}
+                                disabled={!addSelectedSubjectId}
+                                options={getTeachersForSubject(addSelectedSubjectId).map(t => ({ value: t.id, label: t.fullname }))} />
                     </Form.Item>
                     <Form.Item name="grade" label="Оценка" rules={[{ required: true }]}>
                         <InputNumber min={0} max={10} style={{ width: "100%" }} placeholder="От 0 до 10" />
@@ -398,58 +283,22 @@ const GradesTable: React.FC<Props> = ({ highlightId, onHighlightClear, onTagClic
                 </Form>
             </Modal>
 
-            {/* Модал редактирования */}
-            <Modal
-                title="Изменить оценку"
-                open={isEditModalOpen}
-                onCancel={closeEditModal}
-                footer={null}
-                destroyOnClose
-                afterOpenChange={(open) => open && editFirstInputRef.current?.focus()}
-            >
+            <Modal title="Изменить оценку" open={isEditModalOpen} onCancel={closeEditModal} footer={null} destroyOnClose afterOpenChange={(open) => open && editFirstInputRef.current?.focus()}>
                 {editingGrade && (
-                    <Form
-                        key={editingGrade.id}
-                        form={editForm}
-                        onFinish={onEditFinish}
-                        layout="vertical"
-                        onKeyDown={handleFormKeyDown}
-                        initialValues={{
-                            studentId: editingGrade.studentId,
-                            subjectId: editingGrade.subjectId,
-                            teacherId: editingGrade.teacherId,
-                            grade: editingGrade.grade,
-                        }}
-                    >
+                    <Form key={editingGrade.id} form={editForm} onFinish={onEditFinish} layout="vertical" onKeyDown={handleFormKeyDown}
+                          initialValues={{ studentId: editingGrade.studentId, subjectId: editingGrade.subjectId, teacherId: editingGrade.teacherId, grade: editingGrade.grade }}>
                         <Form.Item name="studentId" label="Ученик" rules={[{ required: true }]}>
-                            <Select
-                                ref={editFirstInputRef}
-                                showSearch
-                                optionFilterProp="label"
-                                placeholder="Выберите ученика"
-                                options={students.map(s => ({ value: s.id, label: s.fullname }))}
-                            />
+                            <Select ref={editFirstInputRef} showSearch optionFilterProp="label" placeholder="Выберите ученика" options={students.map(s => ({ value: s.id, label: s.fullname }))} />
                         </Form.Item>
                         <Form.Item name="subjectId" label="Предмет" rules={[{ required: true }]}>
-                            <Select
-                                showSearch
-                                optionFilterProp="label"
-                                placeholder="Выберите предмет"
-                                options={subjects.map(s => ({ value: s.id, label: s.name }))}
-                                onChange={(val) => {
-                                    setEditSelectedSubjectId(val);
-                                    editForm.setFieldValue("teacherId", undefined);
-                                }}
-                            />
+                            <Select showSearch optionFilterProp="label" placeholder="Выберите предмет" options={subjects.map(s => ({ value: s.id, label: s.name }))}
+                                    onChange={(val) => { setEditSelectedSubjectId(val); editForm.setFieldValue("teacherId", undefined); }} />
                         </Form.Item>
                         <Form.Item name="teacherId" label="Учитель" rules={[{ required: true }]}>
-                            <Select
-                                showSearch
-                                optionFilterProp="label"
-                                placeholder={editSelectedSubjectId ? "Выберите учителя" : "Сначала выберите предмет"}
-                                disabled={!editSelectedSubjectId}
-                                options={getTeachersForSubject(editSelectedSubjectId).map(t => ({ value: t.id, label: t.fullname }))}
-                            />
+                            <Select showSearch optionFilterProp="label"
+                                    placeholder={editSelectedSubjectId ? "Выберите учителя" : "Сначала выберите предмет"}
+                                    disabled={!editSelectedSubjectId}
+                                    options={getTeachersForSubject(editSelectedSubjectId).map(t => ({ value: t.id, label: t.fullname }))} />
                         </Form.Item>
                         <Form.Item name="grade" label="Оценка" rules={[{ required: true }]}>
                             <InputNumber min={0} max={10} style={{ width: "100%" }} placeholder="От 0 до 10" />

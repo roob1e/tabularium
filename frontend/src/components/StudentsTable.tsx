@@ -5,6 +5,7 @@ import { Student, Group } from "../types/types.ts";
 import { fetchStudents, createStudent, deleteStudent, updateStudent } from "../api/students.ts";
 import { getAllGroups } from "../api/groups.ts";
 import { SortOrder } from "antd/es/table/interface";
+import { useSearchHighlight } from "../hooks/useSearchHighlight.ts";
 import dayjs from "dayjs";
 import customParseFormat from "dayjs/plugin/customParseFormat";
 
@@ -16,9 +17,10 @@ interface Props {
     highlightId?: number | null;
     onHighlightClear?: () => void;
     onTagClick?: (tableKey: string, id: number) => void;
+    searchQuery?: string;
 }
 
-const StudentsTable: React.FC<Props> = ({ highlightId, onHighlightClear, onTagClick }) => {
+const StudentsTable: React.FC<Props> = ({ highlightId, onHighlightClear, onTagClick, searchQuery = "" }) => {
     const { token } = theme.useToken();
     const [students, setStudents] = useState<Student[]>([]);
     const [groups, setGroups] = useState<Group[]>([]);
@@ -41,6 +43,13 @@ const StudentsTable: React.FC<Props> = ({ highlightId, onHighlightClear, onTagCl
     const isMac = typeof window !== 'undefined' && /Mac|iPod|iPhone|iPad/.test(navigator.platform);
     const shortcutSubmit = isMac ? "shift + return" : "Shift + Enter";
     const shortcutAdd = isMac ? "shift + n" : "Shift + N";
+
+    const { getRowClassName: getSearchRowClass } = useSearchHighlight(
+        students,
+        searchQuery,
+        (s, q) => s.fullname.toLowerCase().includes(q),
+        tableRef
+    );
 
     const formatPhoneForTable = (phoneStr: string) => {
         if (!phoneStr) return "";
@@ -88,19 +97,15 @@ const StudentsTable: React.FC<Props> = ({ highlightId, onHighlightClear, onTagCl
 
     useEffect(() => {
         if (!highlightId || loading) return;
-
         setActiveHighlightId(highlightId);
-
         setTimeout(() => {
             const row = tableRef.current?.querySelector(`[data-row-key="${highlightId}"]`);
             if (row) row.scrollIntoView({ behavior: "smooth", block: "center" });
         }, 100);
-
         const timer = setTimeout(() => {
             setActiveHighlightId(null);
             onHighlightClear?.();
         }, 2000);
-
         return () => clearTimeout(timer);
     }, [highlightId]);
 
@@ -137,26 +142,16 @@ const StudentsTable: React.FC<Props> = ({ highlightId, onHighlightClear, onTagCl
         const target = e.target as HTMLInputElement;
         const key = e.key;
         if (["Backspace", "Delete", "Tab", "Escape", "Enter", "ArrowLeft", "ArrowRight"].includes(key)) return;
-        if (!/[0-9]/.test(key)) {
-            e.preventDefault();
-            return;
-        }
+        if (!/[0-9]/.test(key)) { e.preventDefault(); return; }
         const value = target.value;
-        if (value.length === 2 || value.length === 5) {
-            target.value += ".";
-        }
-        if (value.length >= 10) {
-            e.preventDefault();
-        }
+        if (value.length === 2 || value.length === 5) target.value += ".";
+        if (value.length >= 10) e.preventDefault();
     };
 
     const handleFormKeyDown = (e: React.KeyboardEvent<HTMLFormElement>) => {
         if (e.key === "Enter") {
             e.preventDefault();
-            if (e.shiftKey) {
-                e.currentTarget.requestSubmit();
-                return;
-            }
+            if (e.shiftKey) { e.currentTarget.requestSubmit(); return; }
             const target = e.target as HTMLElement;
             if (target.tagName === "TEXTAREA" || (target as any).type === "submit") return;
             const allElements = Array.from(e.currentTarget.querySelectorAll("input, select, .ant-select-selection-search-input")) as HTMLElement[];
@@ -166,9 +161,7 @@ const StudentsTable: React.FC<Props> = ({ highlightId, onHighlightClear, onTagCl
                 return !isPrefix && !isHidden;
             });
             const index = filteredElements.indexOf(target);
-            if (index > -1 && index < filteredElements.length - 1) {
-                filteredElements[index + 1].focus();
-            }
+            if (index > -1 && index < filteredElements.length - 1) filteredElements[index + 1].focus();
         }
     };
 
@@ -181,16 +174,8 @@ const StudentsTable: React.FC<Props> = ({ highlightId, onHighlightClear, onTagCl
         };
     };
 
-    const closeAddModal = () => {
-        setIsModalOpen(false);
-        form.resetFields();
-    };
-
-    const closeEditModal = () => {
-        setIsEditModalOpen(false);
-        editForm.resetFields();
-        setEditingStudent(null);
-    };
+    const closeAddModal = () => { setIsModalOpen(false); form.resetFields(); };
+    const closeEditModal = () => { setIsEditModalOpen(false); editForm.resetFields(); setEditingStudent(null); };
 
     const onFinish = async (values: any) => {
         try {
@@ -209,18 +194,9 @@ const StudentsTable: React.FC<Props> = ({ highlightId, onHighlightClear, onTagCl
         let phonePart = cleanPhone;
         const prefixes = ["375", "380", "48", "7"];
         for (const p of prefixes) {
-            if (cleanPhone.startsWith(p)) {
-                prefix = `+${p}`;
-                phonePart = cleanPhone.slice(p.length);
-                break;
-            }
+            if (cleanPhone.startsWith(p)) { prefix = `+${p}`; phonePart = cleanPhone.slice(p.length); break; }
         }
-        setEditingStudent({
-            ...student,
-            ui_prefix: prefix,
-            ui_phone: phonePart,
-            ui_birthdate: student.birthdate ? dayjs(student.birthdate) : null
-        });
+        setEditingStudent({ ...student, ui_prefix: prefix, ui_phone: phonePart, ui_birthdate: student.birthdate ? dayjs(student.birthdate) : null });
         setIsEditModalOpen(true);
     };
 
@@ -250,23 +226,15 @@ const StudentsTable: React.FC<Props> = ({ highlightId, onHighlightClear, onTagCl
         const group = groups.find(g => g.id === record.groupId);
         if (!group) return record.groupName || "—";
         return (
-            <Tooltip
-                mouseEnterDelay={0.6}
-                title={
-                    <div style={{ fontSize: 13 }}>
-                        <div><b>Класс:</b> {group.name}</div>
-                        <div><b>Учеников:</b> {group.amount}</div>
-                    </div>
-                }
-            >
-                <Tag
-                    style={{ margin: 0, cursor: "pointer" }}
-                    onClick={() => onTagClick?.("2", group.id)}
-                >
-                    {group.name}
-                </Tag>
+            <Tooltip mouseEnterDelay={0.6} title={<div style={{ fontSize: 13 }}><div><b>Класс:</b> {group.name}</div><div><b>Учеников:</b> {group.amount}</div></div>}>
+                <Tag style={{ margin: 0, cursor: "pointer" }} onClick={() => onTagClick?.("2", group.id)}>{group.name}</Tag>
             </Tooltip>
         );
+    };
+
+    const getRowClassName = (record: Student) => {
+        if (record.id === activeHighlightId) return "row-highlighted";
+        return getSearchRowClass(record);
     };
 
     const columns = [
@@ -275,15 +243,9 @@ const StudentsTable: React.FC<Props> = ({ highlightId, onHighlightClear, onTagCl
         { title: "Возраст", dataIndex: "age", key: "age", width: 100 },
         { title: "Телефон", dataIndex: "phone", key: "phone", render: (t: string) => formatPhoneForTable(t) },
         { title: "Дата рождения", dataIndex: "birthdate", key: "birthdate", render: (t: string) => formatDateForTable(t) },
+        { title: "Класс", dataIndex: "groupName", key: "groupName", render: (_: string, record: Student) => renderGroupTag(record) },
         {
-            title: "Класс",
-            dataIndex: "groupName",
-            key: "groupName",
-            render: (_: string, record: Student) => renderGroupTag(record)
-        },
-        {
-            title: "Действия",
-            key: "actions",
+            title: "Действия", key: "actions",
             render: (_: any, record: Student) => (
                 <Space>
                     <Button className="edit-btn" onClick={() => openEditModal(record)}>Изменить</Button>
@@ -295,39 +257,15 @@ const StudentsTable: React.FC<Props> = ({ highlightId, onHighlightClear, onTagCl
 
     return (
         <div ref={containerRef} style={{ height: "100%", display: "flex", flexDirection: "column", padding: "10px" }}>
-            <style>
-                {`
-                    .ant-table {
-                        border-bottom-left-radius: 8px !important;
-                        border-bottom-right-radius: 8px !important;
-                        overflow: hidden !important;
-                    }
-                    .ant-table-container {
-                        border-bottom-left-radius: 8px !important;
-                        border-bottom-right-radius: 8px !important;
-                    }
-                    .masked-input-themed {
-                        background-color: ${token.colorBgContainer} !important;
-                        color: ${token.colorText} !important;
-                        border-color: ${token.colorBorder} !important;
-                    }
-                    .masked-input-themed:hover {
-                        border-color: ${token.colorPrimaryHover} !important;
-                    }
-                    .masked-input-themed:focus {
-                        border-color: ${token.colorPrimary} !important;
-                        box-shadow: 0 0 0 2px ${token.controlOutline} !important;
-                        outline: none;
-                    }
-                    .masked-input-themed::placeholder {
-                        color: ${token.colorTextPlaceholder} !important;
-                    }
-                    .row-highlighted td {
-                        background-color: rgba(22, 119, 255, 0.12) !important;
-                        transition: background-color 0.3s ease !important;
-                    }
-                `}
-            </style>
+            <style>{`
+                .ant-table { border-bottom-left-radius: 8px !important; border-bottom-right-radius: 8px !important; overflow: hidden !important; }
+                .ant-table-container { border-bottom-left-radius: 8px !important; border-bottom-right-radius: 8px !important; }
+                .masked-input-themed { background-color: ${token.colorBgContainer} !important; color: ${token.colorText} !important; border-color: ${token.colorBorder} !important; }
+                .masked-input-themed:hover { border-color: ${token.colorPrimaryHover} !important; }
+                .masked-input-themed:focus { border-color: ${token.colorPrimary} !important; box-shadow: 0 0 0 2px ${token.controlOutline} !important; outline: none; }
+                .masked-input-themed::placeholder { color: ${token.colorTextPlaceholder} !important; }
+                .row-highlighted td { background-color: rgba(22, 119, 255, 0.12) !important; transition: background-color 0.3s ease !important; }
+            `}</style>
             <div style={{ marginBottom: 10 }}>
                 <Button type="primary" onClick={() => { form.resetFields(); setIsModalOpen(true); }} style={{ position: 'relative' }}>
                     Добавить ученика
@@ -335,25 +273,10 @@ const StudentsTable: React.FC<Props> = ({ highlightId, onHighlightClear, onTagCl
                 </Button>
             </div>
             <div ref={tableRef}>
-                <Table
-                    dataSource={students}
-                    columns={columns}
-                    rowKey="id"
-                    pagination={false}
-                    loading={loading}
-                    scroll={{ y: tableScrollY }}
-                    rowClassName={(record: Student) => record.id === activeHighlightId ? "row-highlighted" : ""}
-                />
+                <Table dataSource={students} columns={columns} rowKey="id" pagination={false} loading={loading} scroll={{ y: tableScrollY }} rowClassName={getRowClassName} />
             </div>
 
-            <Modal
-                title="Добавить ученика"
-                open={isModalOpen}
-                onCancel={closeAddModal}
-                footer={null}
-                destroyOnClose
-                afterOpenChange={(open) => open && firstInputRef.current?.focus()}
-            >
+            <Modal title="Добавить ученика" open={isModalOpen} onCancel={closeAddModal} footer={null} destroyOnClose afterOpenChange={(open) => open && firstInputRef.current?.focus()}>
                 <Form form={form} onFinish={onFinish} layout="vertical" initialValues={{ prefix: "+375" }} onKeyDown={handleFormKeyDown}>
                     <Form.Item name="fullname" label="ФИО" rules={[{ required: true }]}><Input ref={firstInputRef} autoComplete="off" /></Form.Item>
                     <Form.Item label="Телефон" required>
@@ -377,29 +300,10 @@ const StudentsTable: React.FC<Props> = ({ highlightId, onHighlightClear, onTagCl
                 </Form>
             </Modal>
 
-            <Modal
-                title="Изменить ученика"
-                open={isEditModalOpen}
-                onCancel={closeEditModal}
-                footer={null}
-                destroyOnClose
-                afterOpenChange={(open) => open && editFirstInputRef.current?.focus()}
-            >
+            <Modal title="Изменить ученика" open={isEditModalOpen} onCancel={closeEditModal} footer={null} destroyOnClose afterOpenChange={(open) => open && editFirstInputRef.current?.focus()}>
                 {editingStudent && (
-                    <Form
-                        key={editingStudent.id}
-                        form={editForm}
-                        onFinish={onEditFinish}
-                        layout="vertical"
-                        onKeyDown={handleFormKeyDown}
-                        initialValues={{
-                            fullname: editingStudent.fullname,
-                            prefix: editingStudent.ui_prefix,
-                            phone: editingStudent.ui_phone,
-                            birthdate: editingStudent.ui_birthdate,
-                            groupId: editingStudent.groupId
-                        }}
-                    >
+                    <Form key={editingStudent.id} form={editForm} onFinish={onEditFinish} layout="vertical" onKeyDown={handleFormKeyDown}
+                          initialValues={{ fullname: editingStudent.fullname, prefix: editingStudent.ui_prefix, phone: editingStudent.ui_phone, birthdate: editingStudent.ui_birthdate, groupId: editingStudent.groupId }}>
                         <Form.Item name="fullname" label="ФИО" rules={[{ required: true }]}><Input ref={editFirstInputRef} autoComplete="off" /></Form.Item>
                         <Form.Item label="Телефон" required>
                             <Input.Group compact>
