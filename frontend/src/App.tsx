@@ -1,14 +1,17 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Layout, Menu, Spin, Switch, ConfigProvider, theme, Button, Input } from "antd";
-import { LogoutOutlined, SunOutlined, MoonOutlined, UserOutlined, SearchOutlined } from "@ant-design/icons";
+import { Layout, Menu, Spin, Switch, ConfigProvider, theme, Button, Input, Modal, Form } from "antd";
+import { LogoutOutlined, SunOutlined, MoonOutlined, UserOutlined, SearchOutlined, GlobalOutlined } from "@ant-design/icons";
 import { motion, AnimatePresence } from "framer-motion";
+import { ToastContainer, toast } from 'react-toastify';
+import axios from "axios";
+import 'react-toastify/dist/ReactToastify.css';
+
 import StudentsTable from "./components/StudentsTable";
 import GroupsTable from "./components/GroupsTable";
 import SubjectsTable from "./components/SubjectsTable";
 import TeachersTable from "./components/TeachersTable";
 import GradesTable from "./components/GradesTable";
 import AuthPage from "./pages/AuthPage";
-import { pingServer } from "./api/auth.ts";
 import { useThemeTransition } from "./hooks/useThemeTransition";
 import "./styles/themeTransition.css";
 
@@ -21,6 +24,11 @@ const App: React.FC = () => {
     const [initializing, setInitializing] = useState(true);
     const [fullname, setFullname] = useState<string | null>(() => localStorage.getItem('fullname'));
     const [searchQuery, setSearchQuery] = useState("");
+
+    const [serverUrl, setServerUrl] = useState<string | null>(() => localStorage.getItem('server'));
+    const [isServerModalOpen, setIsServerModalOpen] = useState(false);
+    const [serverForm] = Form.useForm();
+
     const isStarted = useRef(false);
 
     const [highlightId, setHighlightId] = useState<number | null>(null);
@@ -30,7 +38,6 @@ const App: React.FC = () => {
     const headerColor = isDarkMode ? darkBlue : "#1677ff";
     const selectionBg = isDarkMode ? "rgba(255, 255, 255, 0.08)" : "rgba(0, 0, 0, 0.04)";
 
-    // Стили поиска зависят от темы
     const searchBg = isDarkMode ? "rgba(255,255,255,0.08)" : "rgba(255,255,255,0.92)";
     const searchBorder = isDarkMode ? "rgba(255,255,255,0.2)" : "rgba(255,255,255,0.6)";
     const searchBorderFocus = isDarkMode ? "rgba(255,255,255,0.6)" : "#fff";
@@ -49,7 +56,38 @@ const App: React.FC = () => {
         localStorage.removeItem('fullname');
         setToken(null);
         setFullname(null);
-        setInitializing(false);
+    };
+
+    const handleServerSubmit = async (values: { url: string }) => {
+        let formattedUrl = values.url.trim();
+        if (!/^https?:\/\//i.test(formattedUrl)) {
+            formattedUrl = `http://${formattedUrl}`;
+        }
+        if (!formattedUrl.endsWith('/')) {
+            formattedUrl += '/';
+        }
+
+        try {
+            setInitializing(true);
+            await axios.get(formattedUrl, { timeout: 3000 });
+            localStorage.setItem('server', formattedUrl);
+            setServerUrl(formattedUrl);
+            setIsServerModalOpen(false);
+            toast.success("Сервер доступен");
+        } catch (err: any) {
+            if (err.response) {
+                localStorage.setItem('server', formattedUrl);
+                setServerUrl(formattedUrl);
+                setIsServerModalOpen(false);
+                toast.success("Сервер найден");
+            } else {
+                localStorage.removeItem('server');
+                setServerUrl(null);
+                toast.error("Сервер не отвечает по этому адресу");
+            }
+        } finally {
+            setInitializing(false);
+        }
     };
 
     useEffect(() => {
@@ -60,11 +98,23 @@ const App: React.FC = () => {
 
         if (!isStarted.current) {
             isStarted.current = true;
+
             const initAuth = async () => {
+                if (!serverUrl) {
+                    setIsServerModalOpen(true);
+                    setInitializing(false);
+                    return;
+                }
+
                 try {
-                    await pingServer();
-                } catch (err) {
-                    if (!localStorage.getItem('accessToken')) handleLogout();
+                    await axios.get(serverUrl, { timeout: 3000 });
+                } catch (err: any) {
+                    if (!err.response) {
+                        toast.error("Сервер недоступен. Проверьте настройки.");
+                        setServerUrl(null);
+                        localStorage.removeItem('server');
+                        setIsServerModalOpen(true);
+                    }
                 } finally {
                     setInitializing(false);
                 }
@@ -75,7 +125,7 @@ const App: React.FC = () => {
             window.removeEventListener("force-logout", handleForceLogout);
             window.removeEventListener("token-refreshed", handleTokenRefreshed as EventListener);
         };
-    }, []);
+    }, [serverUrl]);
 
     const handleLoginSuccess = (data: { accessToken: string; fullname: string }) => {
         localStorage.setItem('accessToken', data.accessToken);
@@ -87,11 +137,12 @@ const App: React.FC = () => {
     useEffect(() => {
         const handleKeys = (e: KeyboardEvent) => {
             if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
-            if (e.key === "1") setSelectedKey("1");
-            if (e.key === "2") setSelectedKey("2");
-            if (e.key === "3") setSelectedKey("3");
-            if (e.key === "4") setSelectedKey("4");
-            if (e.key === "5") setSelectedKey("5");
+            const keys: Record<string, string> = { "1": "1", "2": "2", "3": "3", "4": "4", "5": "5" };
+            if (keys[e.key]) setSelectedKey(keys[e.key]);
+            if (e.key.toLowerCase() === "g" && e.ctrlKey) {
+                e.preventDefault();
+                setIsServerModalOpen(true);
+            }
         };
         window.addEventListener("keydown", handleKeys);
         return () => window.removeEventListener("keydown", handleKeys);
@@ -128,6 +179,38 @@ const App: React.FC = () => {
         { key: "5", label: <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}><span>Оценки</span><span style={{ opacity: 0.4, fontSize: '0.8em' }}>5</span></div> },
     ];
 
+    if (!serverUrl) {
+        return (
+            <ConfigProvider theme={{ algorithm: isDarkMode ? theme.darkAlgorithm : theme.defaultAlgorithm }}>
+                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', background: isDarkMode ? "#141414" : "#f5f5f5" }}>
+                    <Modal
+                        title="Настройка сервера"
+                        open={isServerModalOpen}
+                        closable={false}
+                        footer={null}
+                        centered
+                    >
+                        <Form form={serverForm} onFinish={handleServerSubmit} layout="vertical">
+                            <Form.Item
+                                name="url"
+                                label="Адрес API сервера"
+                                rules={[{ required: true, message: 'Введите адрес сервера' }]}
+                            >
+                                <Input prefix={<GlobalOutlined />} placeholder="http://localhost:8000" autoFocus disabled={initializing} />
+                            </Form.Item>
+                            <Form.Item style={{ marginBottom: 0, textAlign: 'right' }}>
+                                <Button type="primary" htmlType="submit" loading={initializing}>
+                                    Проверить и сохранить
+                                </Button>
+                            </Form.Item>
+                        </Form>
+                    </Modal>
+                </div>
+                <ToastContainer position="top-right" theme={isDarkMode ? "dark" : "light"} />
+            </ConfigProvider>
+        );
+    }
+
     if (initializing) {
         return (
             <ConfigProvider theme={{ algorithm: isDarkMode ? theme.darkAlgorithm : theme.defaultAlgorithm }}>
@@ -142,6 +225,7 @@ const App: React.FC = () => {
         return (
             <ConfigProvider theme={{ algorithm: isDarkMode ? theme.darkAlgorithm : theme.defaultAlgorithm }}>
                 <AuthPage onLoginSuccess={handleLoginSuccess} />
+                <ToastContainer position="top-right" theme={isDarkMode ? "dark" : "light"} />
             </ConfigProvider>
         );
     }
@@ -161,6 +245,8 @@ const App: React.FC = () => {
                 }
             }}
         >
+            <ToastContainer position="top-right" theme={isDarkMode ? "dark" : "light"} />
+
             <style>{`
                 .ant-table { border-bottom-left-radius: 8px !important; border-bottom-right-radius: 8px !important; overflow: hidden !important; }
                 .ant-table-container { border-bottom-left-radius: 8px !important; border-bottom-right-radius: 8px !important; }
@@ -172,6 +258,12 @@ const App: React.FC = () => {
                     transition: background-color 0.3s ease !important;
                 }
 
+                [data-theme='dark'] .ant-btn-primary:hover {
+                    background-color: #434343 !important;
+                    border-color: #434343 !important;
+                    color: rgba(255, 255, 255, 0.85) !important;
+                }
+
                 .header-search .ant-input-affix-wrapper {
                     background: ${searchBg} !important;
                     border: 1px solid ${searchBorder} !important;
@@ -179,50 +271,21 @@ const App: React.FC = () => {
                     box-shadow: none !important;
                     transition: border-color 0.2s, background 0.4s !important;
                 }
-                .header-search .ant-input-affix-wrapper:hover {
-                    border-color: ${searchBorderFocus} !important;
-                }
+                .header-search .ant-input-affix-wrapper:hover { border-color: ${searchBorderFocus} !important; }
                 .header-search .ant-input-affix-wrapper-focused {
                     border-color: ${searchBorderFocus} !important;
                     box-shadow: 0 0 0 2px ${isDarkMode ? "rgba(255,255,255,0.1)" : "rgba(255,255,255,0.5)"} !important;
                 }
-                .header-search .ant-input {
-                    background: transparent !important;
-                    color: ${searchText} !important;
-                    transition: color 0.4s !important;
-                }
-                .header-search .ant-input::placeholder {
-                    color: ${searchPlaceholderColor} !important;
-                }
-                .header-search .ant-input-prefix {
-                    color: ${searchIconColor} !important;
-                    margin-right: 6px;
-                    transition: color 0.4s !important;
-                }
-                .header-search .ant-input-clear-icon {
-                    color: ${searchIconColor} !important;
-                }
-                .header-search .ant-input-clear-icon:hover {
-                    color: ${searchText} !important;
-                }
+                .header-search .ant-input { background: transparent !important; color: ${searchText} !important; }
+                .header-search .ant-input::placeholder { color: ${searchPlaceholderColor} !important; }
+                .header-search .ant-input-prefix { color: ${searchIconColor} !important; }
             `}</style>
 
             <Layout style={{ height: "100vh" }}>
-                <Header style={{
-                    display: "flex",
-                    alignItems: "center",
-                    padding: "0 20px",
-                    background: headerColor,
-                    zIndex: 1,
-                    gap: 16,
-                }}
-                        data-tauri-drag-region
-                        className="h-12 flex items-center px-4"
-                >
+                <Header style={{ display: "flex", alignItems: "center", padding: "0 20px", background: headerColor, zIndex: 1, gap: 16 }} data-tauri-drag-region>
                     <span style={{ color: "white", fontSize: '18px', fontWeight: 'bold', whiteSpace: 'nowrap', marginRight: 8 }}>
                         Tabularium
                     </span>
-
                     <div style={{ flex: 1, display: 'flex', justifyContent: 'center' }}>
                         <Input
                             className="header-search"
@@ -234,7 +297,6 @@ const App: React.FC = () => {
                             style={{ width: 300 }}
                         />
                     </div>
-
                     <div style={{ display: "flex", alignItems: "center", gap: 16, whiteSpace: 'nowrap' }}>
                         <Switch
                             checked={isDarkMode}
@@ -268,32 +330,43 @@ const App: React.FC = () => {
                             items={menuItems}
                             onClick={(e) => setSelectedKey(e.key)}
                         />
+                        <div style={{ position: 'absolute', bottom: 20, width: '100%', padding: '0 20px' }}>
+                            <Button
+                                block
+                                type="primary"
+                                icon={<GlobalOutlined/>}
+                                onClick={() => setIsServerModalOpen(true)}
+                                style={{ position: 'relative', display: 'flex', justifyContent: 'center', alignItems: 'center' }}
+                            >
+                                Сменить сервер
+                            </Button>
+                        </div>
                     </Sider>
                     <Layout style={{ padding: "24px" }}>
                         <Content style={{ background: isDarkMode ? "#141414" : "#fff", padding: 24, margin: 0, minHeight: 280, borderRadius: 8 }}>
                             <AnimatePresence mode="wait">
                                 {selectedKey === "1" && (
-                                    <motion.div key="students" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.2 }} style={{ height: "100%" }}>
+                                    <motion.div key="1" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.2 }} style={{ height: "100%" }}>
                                         <StudentsTable highlightId={highlightTable === "1" ? highlightId : null} onHighlightClear={clearHighlight} onTagClick={handleTagClick} searchQuery={searchQuery} />
                                     </motion.div>
                                 )}
                                 {selectedKey === "2" && (
-                                    <motion.div key="groups" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.2 }} style={{ height: "100%" }}>
+                                    <motion.div key="2" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.2 }} style={{ height: "100%" }}>
                                         <GroupsTable highlightId={highlightTable === "2" ? highlightId : null} onHighlightClear={clearHighlight} searchQuery={searchQuery} />
                                     </motion.div>
                                 )}
                                 {selectedKey === "3" && (
-                                    <motion.div key="subjects" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.2 }} style={{ height: "100%" }}>
+                                    <motion.div key="3" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.2 }} style={{ height: "100%" }}>
                                         <SubjectsTable highlightId={highlightTable === "3" ? highlightId : null} onHighlightClear={clearHighlight} onTagClick={handleTagClick} searchQuery={searchQuery} />
                                     </motion.div>
                                 )}
                                 {selectedKey === "4" && (
-                                    <motion.div key="teachers" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.2 }} style={{ height: "100%" }}>
+                                    <motion.div key="4" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.2 }} style={{ height: "100%" }}>
                                         <TeachersTable highlightId={highlightTable === "4" ? highlightId : null} onHighlightClear={clearHighlight} onTagClick={handleTagClick} searchQuery={searchQuery} />
                                     </motion.div>
                                 )}
                                 {selectedKey === "5" && (
-                                    <motion.div key="grades" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.2 }} style={{ height: "100%" }}>
+                                    <motion.div key="5" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.2 }} style={{ height: "100%" }}>
                                         <GradesTable highlightId={highlightTable === "5" ? highlightId : null} onHighlightClear={clearHighlight} onTagClick={handleTagClick} searchQuery={searchQuery} />
                                     </motion.div>
                                 )}
@@ -301,6 +374,24 @@ const App: React.FC = () => {
                         </Content>
                     </Layout>
                 </Layout>
+
+                <Modal
+                    title="Настройка сервера"
+                    open={isServerModalOpen}
+                    onCancel={() => serverUrl && setIsServerModalOpen(false)}
+                    footer={null}
+                    centered
+                >
+                    <Form form={serverForm} onFinish={handleServerSubmit} layout="vertical" initialValues={{ url: serverUrl }}>
+                        <Form.Item name="url" label="Адрес API сервера" rules={[{ required: true, message: 'Введите адрес сервера' }]}>
+                            <Input prefix={<GlobalOutlined />} placeholder="http://localhost:8000" />
+                        </Form.Item>
+                        <Form.Item style={{ marginBottom: 0, textAlign: 'right' }}>
+                            <Button onClick={() => setIsServerModalOpen(false)} style={{ marginRight: 8 }} disabled={!serverUrl || initializing}>Отмена</Button>
+                            <Button type="primary" htmlType="submit" loading={initializing}>Сохранить</Button>
+                        </Form.Item>
+                    </Form>
+                </Modal>
             </Layout>
         </ConfigProvider>
     );

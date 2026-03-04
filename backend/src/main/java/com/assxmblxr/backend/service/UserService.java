@@ -1,5 +1,6 @@
 package com.assxmblxr.backend.service;
 
+import com.assxmblxr.backend.entity.Role;
 import com.assxmblxr.backend.entity.User;
 import com.assxmblxr.backend.exceptions.UserException;
 import com.assxmblxr.backend.repository.UserRepository;
@@ -22,12 +23,16 @@ public class UserService implements UserDetailsService {
   @Override
   public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
     User user = userRepository.findByUsername(username)
-            .orElseThrow(() -> new UsernameNotFoundException("User not found with username " + username));
+            .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+    if (!user.isApproved()) {
+      throw new UsernameNotFoundException("User not approved");
+    }
 
     return org.springframework.security.core.userdetails.User.builder()
             .username(user.getUsername())
             .password(user.getPassword())
-            .authorities(new ArrayList<>())
+            .roles(user.getRole().name())
             .build();
   }
 
@@ -35,13 +40,15 @@ public class UserService implements UserDetailsService {
     if (userRepository.existsByUsername(username)) {
       throw new UserException("User already exists");
     }
-      return userRepository.save(User.builder()
-              .username(username)
-              .fullname(fullname)
-              .password(passwordEncoder.encode(password))
-              .refreshTokens(new ArrayList<>())
-              .build());
-
+    boolean isFirst = userRepository.count() == 0;
+    return userRepository.save(User.builder()
+            .username(username)
+            .fullname(fullname)
+            .password(passwordEncoder.encode(password))
+            .role(isFirst ? Role.ADMIN : Role.TEACHER)
+            .approved(isFirst)
+            .refreshTokens(new ArrayList<>())
+            .build());
   }
 
   public Optional<User> login(String username, String password) {

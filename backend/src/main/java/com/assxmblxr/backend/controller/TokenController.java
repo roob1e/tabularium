@@ -37,7 +37,8 @@ public class TokenController {
                       user.getUsername(),
                       user.getFullname(),
                       accessToken,
-                      requestRefreshToken
+                      requestRefreshToken,
+                      user.getRole().name()
               ));
             })
             .orElseThrow(() -> new RuntimeException("Refresh token is not in database!"));

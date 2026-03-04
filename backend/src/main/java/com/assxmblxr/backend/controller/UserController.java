@@ -39,16 +39,17 @@ public class UserController {
               request.getFullname(),
               request.getPassword()
       );
+      if (!user.isApproved()) {
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body("Ожидайте одобрения администратора");
+      }
       String accessToken = jwtUtils.generateTokenFromUsername(user.getUsername());
       RefreshToken refreshToken = tokenService.createRefreshToken(user);
-
       return ResponseEntity.ok(new AuthResponse(
               user.getUsername(),
               user.getFullname(),
               accessToken,
-              refreshToken.getToken()
-              )
-      );
+              refreshToken.getToken(),
+              user.getRole().name()));
     } catch (UserException e) {
       return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
     }
@@ -67,7 +68,8 @@ public class UserController {
                 user.getUsername(),
                 user.getFullname(),
                 accessToken,
-                refreshToken.getToken()
+                refreshToken.getToken(),
+                user.getRole().name()
         ));
       } catch (UserException e) {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();

@@ -1,13 +1,16 @@
 import axios from "axios";
 
-const BASE_URL = "http://localhost:8080";
+const api = axios.create();
 
-const api = axios.create({
-    baseURL: BASE_URL,
-});
+const getBaseUrl = () => {
+    const savedUrl = localStorage.getItem("server");
+    if (!savedUrl) return "http://localhost:8080";
+    return savedUrl;
+};
 
 api.interceptors.request.use(
     (config) => {
+        config.baseURL = getBaseUrl();
         const token = localStorage.getItem("accessToken");
         if (token) {
             config.headers.Authorization = `Bearer ${token}`;
@@ -39,7 +42,8 @@ api.interceptors.response.use(
             }
 
             try {
-                const res = await axios.post(`${BASE_URL}/auth/refresh`, {
+                const currentBaseUrl = getBaseUrl();
+                const res = await axios.post(`${currentBaseUrl}auth/refresh`, {
                     refreshToken: rToken,
                 });
 
@@ -50,11 +54,13 @@ api.interceptors.response.use(
                 if (fullname) localStorage.setItem("fullname", fullname);
 
                 window.dispatchEvent(new CustomEvent("token-refreshed", {
-                    detail: { accessToken, fullname }
+                    detail: accessToken
                 }));
 
                 originalRequest.headers.Authorization = `Bearer ${accessToken}`;
-                return api(originalRequest);
+                originalRequest.baseURL = currentBaseUrl;
+
+                return axios(originalRequest);
             } catch (refreshError) {
                 handleCriticalAuthError();
                 return Promise.reject(refreshError);

@@ -36,4 +36,13 @@ public class User {
 
   @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<RefreshToken> refreshTokens = new ArrayList<>();
+
+  @Enumerated(EnumType.STRING)
+  @Column(name = "role")
+  @Builder.Default
+  private Role role = Role.TEACHER;
+
+  @Column(name = "approved")
+  @Builder.Default
+  private boolean approved = false;
 }
