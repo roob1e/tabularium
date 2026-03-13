@@ -1,4 +1,5 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
+mod installer;
 
 use serde::{Deserialize, Serialize};
 use std::{
@@ -379,7 +380,9 @@ fn main() {
             stop_spring,
             check_jar_exists,
             check_yml_exists,
-            detect_server_jar
+            detect_server_jar,
+            installer::check_dependencies,
+            installer::install_all,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

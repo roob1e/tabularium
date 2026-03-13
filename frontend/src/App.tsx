@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Layout, Menu, Spin, Switch, ConfigProvider, theme, Button, Input, Modal, Form } from "antd";
-import { LogoutOutlined, SunOutlined, MoonOutlined, UserOutlined, SearchOutlined, GlobalOutlined } from "@ant-design/icons";
+import { LogoutOutlined, SunOutlined, MoonOutlined, UserOutlined, SearchOutlined, GlobalOutlined, SettingOutlined } from "@ant-design/icons";
 import { motion, AnimatePresence } from "framer-motion";
 import { ToastContainer, toast } from 'react-toastify';
 import axios from "axios";
@@ -11,11 +11,14 @@ import GroupsTable from "./components/GroupsTable";
 import SubjectsTable from "./components/SubjectsTable";
 import TeachersTable from "./components/TeachersTable";
 import GradesTable from "./components/GradesTable";
+import AdminPanel from "./components/AdminPanel";
 import AuthPage from "./pages/AuthPage";
 import { useThemeTransition } from "./hooks/useThemeTransition";
 import "./styles/themeTransition.css";
 
 const { Header, Sider, Content } = Layout;
+
+type Role = "ADMIN" | "TEACHER";
 
 const App: React.FC = () => {
     const { isDarkMode, toggleTheme } = useThemeTransition();
@@ -23,7 +26,9 @@ const App: React.FC = () => {
     const [selectedKey, setSelectedKey] = useState("1");
     const [initializing, setInitializing] = useState(true);
     const [fullname, setFullname] = useState<string | null>(() => localStorage.getItem('fullname'));
+    const [role, setRole] = useState<Role | null>(() => localStorage.getItem('role') as Role | null);
     const [searchQuery, setSearchQuery] = useState("");
+    const [isAdminOpen, setIsAdminOpen] = useState(false);
 
     const [serverUrl, setServerUrl] = useState<string | null>(() => localStorage.getItem('server'));
     const [isServerModalOpen, setIsServerModalOpen] = useState(false);
@@ -54,18 +59,16 @@ const App: React.FC = () => {
         localStorage.removeItem('accessToken');
         localStorage.removeItem('refreshToken');
         localStorage.removeItem('fullname');
+        localStorage.removeItem('role');
         setToken(null);
         setFullname(null);
+        setRole(null);
     };
 
     const handleServerSubmit = async (values: { url: string }) => {
         let formattedUrl = values.url.trim();
-        if (!/^https?:\/\//i.test(formattedUrl)) {
-            formattedUrl = `http://${formattedUrl}`;
-        }
-        if (!formattedUrl.endsWith('/')) {
-            formattedUrl += '/';
-        }
+        if (!/^https?:\/\//i.test(formattedUrl)) formattedUrl = `http://${formattedUrl}`;
+        if (!formattedUrl.endsWith('/')) formattedUrl += '/';
 
         try {
             setInitializing(true);
@@ -98,14 +101,12 @@ const App: React.FC = () => {
 
         if (!isStarted.current) {
             isStarted.current = true;
-
             const initAuth = async () => {
                 if (!serverUrl) {
                     setIsServerModalOpen(true);
                     setInitializing(false);
                     return;
                 }
-
                 try {
                     await axios.get(serverUrl, { timeout: 3000 });
                 } catch (err: any) {
@@ -127,11 +128,13 @@ const App: React.FC = () => {
         };
     }, [serverUrl]);
 
-    const handleLoginSuccess = (data: { accessToken: string; fullname: string }) => {
+    const handleLoginSuccess = (data: { accessToken: string; fullname: string; role: string }) => {
         localStorage.setItem('accessToken', data.accessToken);
         localStorage.setItem('fullname', data.fullname);
+        localStorage.setItem('role', data.role);
         setToken(data.accessToken);
         setFullname(data.fullname);
+        setRole(data.role as Role);
     };
 
     useEffect(() => {
@@ -148,9 +151,7 @@ const App: React.FC = () => {
         return () => window.removeEventListener("keydown", handleKeys);
     }, []);
 
-    useEffect(() => {
-        setSearchQuery("");
-    }, [selectedKey]);
+    useEffect(() => { setSearchQuery(""); }, [selectedKey]);
 
     const handleTagClick = (tableKey: string, id: number) => {
         setHighlightId(id);
@@ -183,25 +184,13 @@ const App: React.FC = () => {
         return (
             <ConfigProvider theme={{ algorithm: isDarkMode ? theme.darkAlgorithm : theme.defaultAlgorithm }}>
                 <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', background: isDarkMode ? "#141414" : "#f5f5f5" }}>
-                    <Modal
-                        title="Настройка сервера"
-                        open={isServerModalOpen}
-                        closable={false}
-                        footer={null}
-                        centered
-                    >
+                    <Modal title="Настройка сервера" open={isServerModalOpen} closable={false} footer={null} centered>
                         <Form form={serverForm} onFinish={handleServerSubmit} layout="vertical">
-                            <Form.Item
-                                name="url"
-                                label="Адрес API сервера"
-                                rules={[{ required: true, message: 'Введите адрес сервера' }]}
-                            >
+                            <Form.Item name="url" label="Адрес API сервера" rules={[{ required: true, message: 'Введите адрес сервера' }]}>
                                 <Input prefix={<GlobalOutlined />} placeholder="http://localhost:8000" autoFocus disabled={initializing} />
                             </Form.Item>
                             <Form.Item style={{ marginBottom: 0, textAlign: 'right' }}>
-                                <Button type="primary" htmlType="submit" loading={initializing}>
-                                    Проверить и сохранить
-                                </Button>
+                                <Button type="primary" htmlType="submit" loading={initializing}>Проверить и сохранить</Button>
                             </Form.Item>
                         </Form>
                     </Modal>
@@ -257,13 +246,11 @@ const App: React.FC = () => {
                     background-color: rgba(22, 119, 255, 0.12) !important;
                     transition: background-color 0.3s ease !important;
                 }
-
                 [data-theme='dark'] .ant-btn-primary:hover {
                     background-color: #434343 !important;
                     border-color: #434343 !important;
                     color: rgba(255, 255, 255, 0.85) !important;
                 }
-
                 .header-search .ant-input-affix-wrapper {
                     background: ${searchBg} !important;
                     border: 1px solid ${searchBorder} !important;
@@ -279,6 +266,7 @@ const App: React.FC = () => {
                 .header-search .ant-input { background: transparent !important; color: ${searchText} !important; }
                 .header-search .ant-input::placeholder { color: ${searchPlaceholderColor} !important; }
                 .header-search .ant-input-prefix { color: ${searchIconColor} !important; }
+                .header-search .ant-input-clear-icon { color: ${searchIconColor} !important; }
             `}</style>
 
             <Layout style={{ height: "100vh" }}>
@@ -310,6 +298,16 @@ const App: React.FC = () => {
                                 {fullname.split(' ').slice(0, 2).join(' ')}
                             </span>
                         )}
+                        {role === "ADMIN" && (
+                            <Button
+                                type="text"
+                                icon={<SettingOutlined />}
+                                onClick={() => setIsAdminOpen(true)}
+                                style={{ color: "white", background: "rgba(255, 255, 255, 0.15)" }}
+                            >
+                                Админ
+                            </Button>
+                        )}
                         <Button
                             type="text"
                             icon={<LogoutOutlined />}
@@ -334,14 +332,15 @@ const App: React.FC = () => {
                             <Button
                                 block
                                 type="primary"
-                                icon={<GlobalOutlined/>}
+                                icon={<GlobalOutlined />}
                                 onClick={() => setIsServerModalOpen(true)}
-                                style={{ position: 'relative', display: 'flex', justifyContent: 'center', alignItems: 'center' }}
+                                style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}
                             >
                                 Сменить сервер
                             </Button>
                         </div>
                     </Sider>
+
                     <Layout style={{ padding: "24px" }}>
                         <Content style={{ background: isDarkMode ? "#141414" : "#fff", padding: 24, margin: 0, minHeight: 280, borderRadius: 8 }}>
                             <AnimatePresence mode="wait">
@@ -375,6 +374,7 @@ const App: React.FC = () => {
                     </Layout>
                 </Layout>
 
+                {/* Модал сервера */}
                 <Modal
                     title="Настройка сервера"
                     open={isServerModalOpen}
@@ -391,6 +391,18 @@ const App: React.FC = () => {
                             <Button type="primary" htmlType="submit" loading={initializing}>Сохранить</Button>
                         </Form.Item>
                     </Form>
+                </Modal>
+
+                {/* Модал админ-панели */}
+                <Modal
+                    title="Панель администратора"
+                    open={isAdminOpen}
+                    onCancel={() => setIsAdminOpen(false)}
+                    footer={null}
+                    width={800}
+                    centered
+                >
+                    <AdminPanel />
                 </Modal>
             </Layout>
         </ConfigProvider>

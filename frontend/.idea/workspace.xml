@@ -5,15 +5,18 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="073918de-16ad-41dc-a7be-ae3bc4813620" name="Changes" comment="Improved UI">
+      <change afterPath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/components/DataInitializer.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/api/admin.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/components/AdminPanel.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/controller/UserController.java" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/controller/UserController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/security/AuthTokenFilter.java" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/security/AuthTokenFilter.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/security/CorsConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/security/CorsConfig.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/security/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/security/SecurityConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/service/UserService.java" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/service/UserService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/@ant-design_icons.js" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/.vite/deps/@ant-design_icons.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/@ant-design_icons.js.map" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/.vite/deps/@ant-design_icons.js.map" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/_metadata.json" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/.vite/deps/_metadata.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/antd.js" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/.vite/deps/antd.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/App.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/App.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/api/api.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/api/api.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/pages/AuthPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/AuthPage.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -167,6 +170,11 @@
       <workItem from="1772440131315" duration="599000" />
       <workItem from="1772452905972" duration="1689000" />
       <workItem from="1772470640159" duration="20000" />
+      <workItem from="1772709575819" duration="433000" />
+      <workItem from="1773228272638" duration="1141000" />
+      <workItem from="1773296414395" duration="689000" />
+      <workItem from="1773309958915" duration="3069000" />
+      <workItem from="1773391957699" duration="301000" />
     </task>
     <task id="LOCAL-00001" summary="test">
       <option name="closed" value="true" />

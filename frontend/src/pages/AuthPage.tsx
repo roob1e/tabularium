@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { Card, Input, Button, Form, message, Tabs, Switch, ConfigProvider, theme } from 'antd';
 import { UserOutlined, LockOutlined, LoginOutlined, UserAddOutlined, SunOutlined, MoonOutlined } from '@ant-design/icons';
-import axios from 'axios';
 import { useThemeTransition } from "../hooks/useThemeTransition";
+import api from "../api/api.ts";
+import {toast} from "react-toastify";
 
 interface AuthPageProps {
-    onLoginSuccess: (data: { accessToken: string; refreshToken: string; fullname: string }) => void;
+    onLoginSuccess: (data: { accessToken: string; refreshToken: string; fullname: string; role: string }) => void;
 }
 
 const AuthPage: React.FC<AuthPageProps> = ({ onLoginSuccess }) => {
@@ -15,27 +16,35 @@ const AuthPage: React.FC<AuthPageProps> = ({ onLoginSuccess }) => {
 
     const onFinish = async (values: any) => {
         setLoading(true);
-        const url = activeTab === 'login'
-            ? "http://localhost:8080/auth/login"
-            : "http://localhost:8080/auth/register";
+        const url = activeTab === 'login' ? "/auth/login" : "/auth/register";
 
         try {
-            const response = await axios.post(url, values);
+            const response = await api.post(url, values);
+            console.log("Register response status:", response.status, response.data);
 
             if (activeTab === 'login') {
-                const { accessToken, refreshToken, fullname } = response.data;
+                const { accessToken, refreshToken, fullname, role } = response.data;
                 localStorage.setItem('accessToken', accessToken);
                 localStorage.setItem('refreshToken', refreshToken);
                 localStorage.setItem('fullname', fullname || '');
-
-                onLoginSuccess({ accessToken, refreshToken, fullname });
+                localStorage.setItem('role', role || '');
+                onLoginSuccess({ accessToken, refreshToken, fullname, role });
                 message.success("Вход выполнен");
             } else {
-                message.success("Регистрация успешна! Теперь войдите");
-                setActiveTab('login');
+                if (response.status === 202) {
+                    message.info("Заявка отправлена. Ожидайте одобрения администратором.");
+                } else {
+                    message.success("Регистрация успешна! Теперь войдите");
+                    setActiveTab('login');
+                }
             }
         } catch (error: any) {
-            message.error(error.response?.data?.message || "Ошибка операции");
+            console.log("Error:", error.response?.status, error.response?.data);
+            if (error.response?.status === 403) {
+                toast.warning(error.response.data);
+            } else {
+                message.error(error.response?.data?.message || "Ошибка операции");
+            }
         } finally {
             setLoading(false);
         }

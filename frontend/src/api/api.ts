@@ -11,9 +11,12 @@ const getBaseUrl = () => {
 api.interceptors.request.use(
     (config) => {
         config.baseURL = getBaseUrl();
-        const token = localStorage.getItem("accessToken");
-        if (token) {
-            config.headers.Authorization = `Bearer ${token}`;
+        const isAuthRoute = config.url?.startsWith('/auth/');
+        if (!isAuthRoute) {
+            const token = localStorage.getItem("accessToken");
+            if (token) {
+                config.headers.Authorization = `Bearer ${token}`;
+            }
         }
         return config;
     },

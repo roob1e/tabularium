@@ -16,6 +16,7 @@ import {
     Grid
 } from "antd";
 import { CopyOutlined, GlobalOutlined, MenuOutlined } from "@ant-design/icons";
+import InstallWizard from "./components/InstallWizard";
 
 const { Title, Text } = Typography;
 const { useBreakpoint } = Grid;
@@ -34,6 +35,7 @@ const App: React.FC = () => {
         password: '',
         jar_path: '',
     });
+    const [needsInstall, setNeedsInstall] = useState<boolean | null>(null);
     const [logs, setLogs] = useState<string[]>([]);
     const [status, setStatus] = useState<"stopped" | "starting" | "running">("stopped");
     const [jarDetected, setJarDetected] = useState<boolean>(false);
@@ -47,6 +49,11 @@ const App: React.FC = () => {
     useEffect(() => {
         const initializeApp = async () => {
             try {
+                const isReady = await core.invoke<boolean>("check_dependencies");
+                setNeedsInstall(!isReady);
+
+                if (!isReady) return;
+
                 const jarExists = await core.invoke<boolean>("check_jar_exists");
                 setJarDetected(jarExists);
 
@@ -198,7 +205,6 @@ const App: React.FC = () => {
         running: "РАБОТАЕТ",
     } as const;
 
-    // Адаптивные настройки
     const isMobile = !screens.md;
     const cardPadding = isMobile ? 12 : 16;
     const formLayout = "vertical";
@@ -213,7 +219,10 @@ const App: React.FC = () => {
             boxSizing: 'border-box',
             overflow: 'hidden'
         }}>
-            {/* Хедер для мобильных устройств */}
+            {needsInstall === true && (
+                <InstallWizard onComplete={() => setNeedsInstall(false)} />
+            )}
+
             {isMobile && (
                 <div style={{
                     display: 'flex',
@@ -264,7 +273,6 @@ const App: React.FC = () => {
                     margin: 0
                 }}
             >
-                {/* Панель конфигурации */}
                 <Col
                     xs={24}
                     md={8}
@@ -358,7 +366,6 @@ const App: React.FC = () => {
                                     </Space>
                                 </div>
 
-                                {/* Кнопки управления */}
                                 <div>
                                     <Space
                                         direction={isMobile ? "vertical" : "horizontal"}
@@ -421,7 +428,6 @@ const App: React.FC = () => {
                                         </Tag>
                                     </Space>
 
-                                    {/* Ссылка на сервер */}
                                     {status === "running" && (
                                         <Card
                                             size="small"
@@ -465,7 +471,6 @@ const App: React.FC = () => {
                     </Card>
                 </Col>
 
-                {/* Панель логов - ЕДИНСТВЕННЫЙ скролл */}
                 <Col xs={24} md={16} style={{ height: '100%' }}>
                     <Card
                         title={

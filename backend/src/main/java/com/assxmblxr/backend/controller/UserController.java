@@ -57,26 +57,20 @@ public class UserController {
 
   @PostMapping("/login")
   public HttpEntity<?> login(@RequestBody UserLogin request) {
-    Optional<User> userOptional = userService.login(request.getUsername(), request.getPassword());
-    if (userOptional.isPresent()) {
-      try {
+    try {
+      Optional<User> userOptional = userService.login(request.getUsername(), request.getPassword());
+      if (userOptional.isPresent()) {
         User user = userOptional.get();
         String accessToken = jwtUtils.generateTokenFromUsername(user.getUsername());
         RefreshToken refreshToken = tokenService.createRefreshToken(user);
-
         return ResponseEntity.ok(new AuthResponse(
-                user.getUsername(),
-                user.getFullname(),
-                accessToken,
-                refreshToken.getToken(),
-                user.getRole().name()
+                user.getUsername(), user.getFullname(),
+                accessToken, refreshToken.getToken(), user.getRole().name()
         ));
-      } catch (UserException e) {
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
       }
-    } else {
-        return ResponseEntity.notFound().build();
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    } catch (UserException e) {
+      return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
     }
   }
-
 }

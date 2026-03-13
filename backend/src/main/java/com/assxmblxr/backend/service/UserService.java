@@ -5,6 +5,7 @@ import com.assxmblxr.backend.entity.User;
 import com.assxmblxr.backend.exceptions.UserException;
 import com.assxmblxr.backend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Optional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserService implements UserDetailsService {
@@ -28,7 +30,7 @@ public class UserService implements UserDetailsService {
     if (!user.isApproved()) {
       throw new UsernameNotFoundException("User not approved");
     }
-
+    log.info("Loading user: {}, role: {}, approved: {}", user.getUsername(), user.getRole(), user.isApproved());
     return org.springframework.security.core.userdetails.User.builder()
             .username(user.getUsername())
             .password(user.getPassword())
@@ -40,13 +42,12 @@ public class UserService implements UserDetailsService {
     if (userRepository.existsByUsername(username)) {
       throw new UserException("User already exists");
     }
-    boolean isFirst = userRepository.count() == 0;
     return userRepository.save(User.builder()
             .username(username)
             .fullname(fullname)
             .password(passwordEncoder.encode(password))
-            .role(isFirst ? Role.ADMIN : Role.TEACHER)
-            .approved(isFirst)
+            .role(Role.TEACHER)
+            .approved(false)
             .refreshTokens(new ArrayList<>())
             .build());
   }
@@ -55,6 +56,9 @@ public class UserService implements UserDetailsService {
     Optional<User> userOptional = userRepository.findByUsername(username);
     if (userOptional.isPresent()) {
       User user = userOptional.get();
+      if (!user.isApproved()) {
+        throw new UserException("Ваша заявка не одобрена администратором");
+      }
       if (passwordEncoder.matches(password, user.getPassword())) {
         return Optional.of(user);
       }
