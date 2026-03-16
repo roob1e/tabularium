@@ -3,3 +3,8 @@ spring:
     url: jdbc:postgresql://localhost:5432/students_db
     username: admin
     password: 1234
+server:
+  port: 8080
+jwt:
+  secret: 0cd17ac2a87fd978ec7bc0fcaa04446179f58f31387437c9daa19f0f1d5d30f39d451e300b1ea0d3d7a2ac5f8ac13874c703b2dd50c887cd67f905cd4136538d
+  access-token-expiration: 86400000

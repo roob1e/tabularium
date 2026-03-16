@@ -7,3 +7,5 @@ jwt:
   secret: yourVerySecretKeyForTabulariumProject2026SpecificLongEnough
   access-token-expiration: 3600000
   refresh-token-expiration: 604800000
+server:
+  port: 8080
