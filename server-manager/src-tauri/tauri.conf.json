@@ -1,7 +1,7 @@
 {
   "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
-  "productName": "server-manager",
-  "version": "0.1.0",
+  "productName": "Tabularium Сервер",
+  "version": "1.0.0",
   "identifier": "com.assxmblxr.dev",
   "build": {
     "frontendDist": "../dist",
@@ -12,7 +12,7 @@
   "app": {
     "windows": [
       {
-        "title": "server-manager",
+        "title": "Tabularium Сервер",
         "resizable": true,
         "fullscreen": false
       }
@@ -25,11 +25,7 @@
     "active": true,
     "targets": "all",
     "icon": [
-      "icons/32x32.png",
-      "icons/128x128.png",
-      "icons/128x128@2x.png",
-      "icons/icon.icns",
-      "icons/icon.ico"
+      "icons/icon.png"
     ]
   }
 }

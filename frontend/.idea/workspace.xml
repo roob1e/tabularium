@@ -5,23 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="073918de-16ad-41dc-a7be-ae3bc4813620" name="Changes" comment="Improved UI">
-      <change afterPath="$PROJECT_DIR$/../server-manager/check_install.sh" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../server-manager/emulate_clean.sh" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../server-manager/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/../server-manager/application.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../server-manager/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/../server-manager/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../server-manager/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/../server-manager/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../server-manager/src-tauri/Cargo.lock" beforeDir="false" afterPath="$PROJECT_DIR$/../server-manager/src-tauri/Cargo.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../server-manager/src-tauri/Cargo.toml" beforeDir="false" afterPath="$PROJECT_DIR$/../server-manager/src-tauri/Cargo.toml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../server-manager/src-tauri/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/../server-manager/src-tauri/application.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../server-manager/src-tauri/build.rs" beforeDir="false" afterPath="$PROJECT_DIR$/../server-manager/src-tauri/build.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../server-manager/src-tauri/capabilities/default.json" beforeDir="false" afterPath="$PROJECT_DIR$/../server-manager/src-tauri/capabilities/default.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../server-manager/src-tauri/src/installer.rs" beforeDir="false" afterPath="$PROJECT_DIR$/../server-manager/src-tauri/src/installer.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../server-manager/src-tauri/src/lib.rs" beforeDir="false" afterPath="$PROJECT_DIR$/../server-manager/src-tauri/src/lib.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../server-manager/src-tauri/src/main.rs" beforeDir="false" afterPath="$PROJECT_DIR$/../server-manager/src-tauri/src/main.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../server-manager/src/App.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../server-manager/src/App.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../server-manager/src/components/InstallWizard.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../server-manager/src/components/InstallWizard.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../server-manager/src/main.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../server-manager/src/main.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -182,6 +166,7 @@
       <workItem from="1773391957699" duration="301000" />
       <workItem from="1773393789481" duration="7000" />
       <workItem from="1773654621437" duration="169000" />
+      <workItem from="1773691385637" duration="504000" />
     </task>
     <task id="LOCAL-00001" summary="test">
       <option name="closed" value="true" />
