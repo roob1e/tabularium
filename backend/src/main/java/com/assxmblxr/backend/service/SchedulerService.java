@@ -22,8 +22,10 @@ public class SchedulerService {
 
   public SchedulerService(ThreadPoolTaskScheduler scheduler, AutoGradeUpdate autoGradeUpdate) {
     this.scheduler = scheduler;
-    scheduleTask(cronExpression);
+    // BUG FIX: сначала присваиваем поле, потом вызываем scheduleTask,
+    // иначе autoGradeUpdate = null в момент вызова executeTask при старте
     this.autoGradeUpdate = autoGradeUpdate;
+    scheduleTask(cronExpression);
   }
 
   public void setCronByDate(String dateString) {
@@ -49,16 +51,16 @@ public class SchedulerService {
   }
 
   private String toCron(LocalDate date) {
-    // CRON: секунда, минута, час, день, месяц, день недели (*)
-    System.out.println("Cron expression: " + String.format("0 0 0 %d %d *", date.getDayOfMonth(), date.getMonthValue()));
-    return String.format("0 0 0 %d %d *", date.getDayOfMonth(), date.getMonthValue());
+    String cron = String.format("0 0 0 %d %d *", date.getDayOfMonth(), date.getMonthValue());
+    System.out.println("Cron expression: " + cron);
+    return cron;
   }
 
   public LocalDate parseDate(String dateString) {
     try {
       if (dateString == null) return null;
       dateString = dateString.trim().replace("\"", "");
-      String fullDate = dateString + "." + Year.now().getValue(); // "30.07.2025"
+      String fullDate = dateString + "." + Year.now().getValue();
 
       DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
       return LocalDate.parse(fullDate, formatter);

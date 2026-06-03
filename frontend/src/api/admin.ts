@@ -1,4 +1,4 @@
-import api from "./api.ts";
+import api from "./api";
 
 export interface UserResponse {
     id: number;
@@ -16,13 +16,14 @@ export const fetchAllUsers = async (): Promise<UserResponse[]> => {
 export const approveUser = async (id: number): Promise<UserResponse> => {
     const res = await api.patch(`/api/admin/users/${id}/approve`);
     return res.data;
-}
+};
 
+// BUG FIX: исправлен URL (была лишняя "}" в конце)
 export const setUserRole = async (id: number, role: "ADMIN" | "TEACHER"): Promise<UserResponse> => {
-    const res = await api.patch(`api/admin/users/${id}/role}`, null, {params: {role}});
+    const res = await api.patch(`/api/admin/users/${id}/role`, null, { params: { role } });
     return res.data;
-}
+};
 
 export const deleteUser = async (id: number): Promise<void> => {
     await api.delete(`/api/admin/users/${id}`);
-}
+};

@@ -4,10 +4,9 @@ import com.assxmblxr.backend.dto.GradeRequest;
 import com.assxmblxr.backend.dto.GradeResponse;
 import com.assxmblxr.backend.exceptions.GradeException;
 import com.assxmblxr.backend.service.GradeService;
-
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,69 +22,54 @@ public class GradeController {
   private final GradeService gradeService;
 
   @GetMapping
-  public ResponseEntity<List<GradeResponse>> getAll() {
-    try {
-      log.info("Fetching all grades");
-      var grades = gradeService.getAllGrades();
-      return ResponseEntity.ok(grades);
-    } catch (Exception e) {
-      log.error("GOT AN ERROR WHEN FETCHING ALL TEACHERS: {}", e.getMessage(), e);
-      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+  public ResponseEntity<List<GradeResponse>> getAll(
+          @RequestParam(required = false) Long studentId,
+          @RequestParam(required = false) Long subjectId
+  ) {
+    if (studentId != null && subjectId != null) {
+      return ResponseEntity.ok(gradeService.getGradesByStudentAndSubject(studentId, subjectId));
     }
+    if (studentId != null) {
+      return ResponseEntity.ok(gradeService.getGradesByStudent(studentId));
+    }
+    return ResponseEntity.ok(gradeService.getAllGrades());
   }
 
   @GetMapping("/{id}")
-  public ResponseEntity<GradeResponse> getById(
-          @PathVariable Long id
-  ) {
+  public ResponseEntity<GradeResponse> getById(@PathVariable Long id) {
     try {
-      log.info("Fetching grade by id: {}", id);
       return ResponseEntity.ok(gradeService.getGrade(id));
     } catch (GradeException e) {
-      log.error("Grade not found: {}", id);
       return ResponseEntity.notFound().build();
     }
   }
 
   @PostMapping
-  public ResponseEntity<GradeResponse> create(
-          @RequestBody GradeRequest request
-  ) {
+  public ResponseEntity<GradeResponse> create(@Valid @RequestBody GradeRequest request) {
     try {
-      log.info("Creating grade: {}", request);
-      var createdGrade = gradeService.createGrade(request);
-      return ResponseEntity.status(HttpStatus.CREATED).body(createdGrade);
+      return ResponseEntity.status(HttpStatus.CREATED).body(gradeService.createGrade(request));
     } catch (Exception e) {
-      log.error("GOT AN ERROR WHEN CREATING GRADE: {}", e.getMessage(), e);
+      log.error("Error creating grade: {}", e.getMessage(), e);
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
   }
 
   @PutMapping("/{id}")
-  public ResponseEntity<GradeResponse> update(
-          @PathVariable Long id,
-          @RequestBody GradeRequest request
-  ) {
+  public ResponseEntity<GradeResponse> update(@PathVariable Long id, @Valid @RequestBody GradeRequest request) {
     try {
-      log.info("Updating grade: {}", request);
-      GradeResponse updatedGrade = gradeService.updateGrade(id, request);
-      return ResponseEntity.ok(updatedGrade);
+      return ResponseEntity.ok(gradeService.updateGrade(id, request));
     } catch (GradeException e) {
-      log.error("Grade not found: {}", id);
       return ResponseEntity.notFound().build();
     } catch (Exception e) {
-      log.error("GOT AN ERROR WHEN UPDATING GRADE: {}", e.getMessage(), e);
+      log.error("Error updating grade: {}", e.getMessage(), e);
       return ResponseEntity.internalServerError().build();
     }
   }
 
   @DeleteMapping("/{id}")
-  public ResponseEntity<GradeResponse> delete(
-          @PathVariable Long id
-  ) {
-    log.info("Deleting grade: {}", id);
-    boolean deleted = gradeService.deleteGrade(id);
-    return deleted ? ResponseEntity.noContent().build()
-            : ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+  public ResponseEntity<Void> delete(@PathVariable Long id) {
+    return gradeService.deleteGrade(id)
+            ? ResponseEntity.noContent().build()
+            : ResponseEntity.notFound().build();
   }
 }

@@ -1,39 +1,43 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Layout, Menu, Spin, Switch, ConfigProvider, theme, Button, Input, Modal, Form } from "antd";
-import { LogoutOutlined, SunOutlined, MoonOutlined, UserOutlined, SearchOutlined, GlobalOutlined, SettingOutlined } from "@ant-design/icons";
+import {
+    Layout, Menu, Spin, Switch, ConfigProvider, theme,
+    Button, Input, Modal, Form
+} from "antd";
+import {
+    LogoutOutlined, SunOutlined, MoonOutlined, UserOutlined,
+    SearchOutlined, GlobalOutlined, SettingOutlined
+} from "@ant-design/icons";
 import { motion, AnimatePresence } from "framer-motion";
-import { ToastContainer, toast } from 'react-toastify';
+import { ToastContainer, toast } from "react-toastify";
 import axios from "axios";
-import 'react-toastify/dist/ReactToastify.css';
+import "react-toastify/dist/ReactToastify.css";
 
-import StudentsTable from "./components/StudentsTable";
-import GroupsTable from "./components/GroupsTable";
+import ClassroomExplorer from "./components/ClassroomExplorer";
 import SubjectsTable from "./components/SubjectsTable";
 import TeachersTable from "./components/TeachersTable";
 import GradesTable from "./components/GradesTable";
+import AttendanceTable from "./components/AttendanceTable";
+import ScheduleTable from "./components/ScheduleTable";
 import AdminPanel from "./components/AdminPanel";
 import AuthPage from "./pages/AuthPage";
 import { useThemeTransition } from "./hooks/useThemeTransition";
 import "./styles/themeTransition.css";
 
 const { Header, Sider, Content } = Layout;
-
 type Role = "ADMIN" | "TEACHER";
 
 const App: React.FC = () => {
     const { isDarkMode, toggleTheme } = useThemeTransition();
-    const [token, setToken] = useState<string | null>(() => localStorage.getItem('accessToken'));
+    const [token, setToken] = useState<string | null>(() => localStorage.getItem("accessToken"));
     const [selectedKey, setSelectedKey] = useState("1");
     const [initializing, setInitializing] = useState(true);
-    const [fullname, setFullname] = useState<string | null>(() => localStorage.getItem('fullname'));
-    const [role, setRole] = useState<Role | null>(() => localStorage.getItem('role') as Role | null);
+    const [fullname, setFullname] = useState<string | null>(() => localStorage.getItem("fullname"));
+    const [role, setRole] = useState<Role | null>(() => localStorage.getItem("role") as Role | null);
     const [searchQuery, setSearchQuery] = useState("");
     const [isAdminOpen, setIsAdminOpen] = useState(false);
-
-    const [serverUrl, setServerUrl] = useState<string | null>(() => localStorage.getItem('server'));
+    const [serverUrl, setServerUrl] = useState<string | null>(() => localStorage.getItem("server"));
     const [isServerModalOpen, setIsServerModalOpen] = useState(false);
     const [serverForm] = Form.useForm();
-
     const isStarted = useRef(false);
 
     const [highlightId, setHighlightId] = useState<number | null>(null);
@@ -41,8 +45,7 @@ const App: React.FC = () => {
 
     const darkBlue = "#1d39c4";
     const headerColor = isDarkMode ? darkBlue : "#1677ff";
-    const selectionBg = isDarkMode ? "rgba(255, 255, 255, 0.08)" : "rgba(0, 0, 0, 0.04)";
-
+    const selectionBg = isDarkMode ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.04)";
     const searchBg = isDarkMode ? "rgba(255,255,255,0.08)" : "rgba(255,255,255,0.92)";
     const searchBorder = isDarkMode ? "rgba(255,255,255,0.2)" : "rgba(255,255,255,0.6)";
     const searchBorderFocus = isDarkMode ? "rgba(255,255,255,0.6)" : "#fff";
@@ -51,42 +54,36 @@ const App: React.FC = () => {
     const searchIconColor = isDarkMode ? "rgba(255,255,255,0.5)" : "rgba(0,0,0,0.4)";
 
     useEffect(() => {
-        const initialTheme = localStorage.getItem('theme') || 'light';
-        document.documentElement.setAttribute('data-theme', initialTheme);
+        const t = localStorage.getItem("theme") || "light";
+        document.documentElement.setAttribute("data-theme", t);
     }, []);
 
     const handleLogout = () => {
-        localStorage.removeItem('accessToken');
-        localStorage.removeItem('refreshToken');
-        localStorage.removeItem('fullname');
-        localStorage.removeItem('role');
-        setToken(null);
-        setFullname(null);
-        setRole(null);
+        ["accessToken", "refreshToken", "fullname", "role"].forEach(k => localStorage.removeItem(k));
+        setToken(null); setFullname(null); setRole(null);
     };
 
     const handleServerSubmit = async (values: { url: string }) => {
-        let formattedUrl = values.url.trim();
-        if (!/^https?:\/\//i.test(formattedUrl)) formattedUrl = `http://${formattedUrl}`;
-        if (!formattedUrl.endsWith('/')) formattedUrl += '/';
-
+        let url = values.url.trim();
+        if (!/^https?:\/\//i.test(url)) url = `http://${url}`;
+        if (!url.endsWith("/")) url += "/";
         try {
             setInitializing(true);
-            await axios.get(formattedUrl, { timeout: 3000 });
-            localStorage.setItem('server', formattedUrl);
-            setServerUrl(formattedUrl);
+            await axios.get(url, { timeout: 3000 });
+            localStorage.setItem("server", url);
+            setServerUrl(url);
             setIsServerModalOpen(false);
             toast.success("Сервер доступен");
         } catch (err: any) {
             if (err.response) {
-                localStorage.setItem('server', formattedUrl);
-                setServerUrl(formattedUrl);
+                localStorage.setItem("server", url);
+                setServerUrl(url);
                 setIsServerModalOpen(false);
                 toast.success("Сервер найден");
             } else {
-                localStorage.removeItem('server');
+                localStorage.removeItem("server");
                 setServerUrl(null);
-                toast.error("Сервер не отвечает по этому адресу");
+                toast.error("Сервер не отвечает");
             }
         } finally {
             setInitializing(false);
@@ -94,187 +91,152 @@ const App: React.FC = () => {
     };
 
     useEffect(() => {
-        const handleForceLogout = () => handleLogout();
-        const handleTokenRefreshed = (e: any) => setToken(e.detail);
-        window.addEventListener("force-logout", handleForceLogout);
-        window.addEventListener("token-refreshed", handleTokenRefreshed as EventListener);
-
+        const onLogout = () => handleLogout();
+        const onRefresh = (e: any) => setToken(e.detail);
+        window.addEventListener("force-logout", onLogout);
+        window.addEventListener("token-refreshed", onRefresh as EventListener);
         if (!isStarted.current) {
             isStarted.current = true;
-            const initAuth = async () => {
-                if (!serverUrl) {
-                    setIsServerModalOpen(true);
-                    setInitializing(false);
-                    return;
-                }
+            (async () => {
+                if (!serverUrl) { setIsServerModalOpen(true); setInitializing(false); return; }
                 try {
                     await axios.get(serverUrl, { timeout: 3000 });
                 } catch (err: any) {
                     if (!err.response) {
-                        toast.error("Сервер недоступен. Проверьте настройки.");
+                        toast.error("Сервер недоступен");
                         setServerUrl(null);
-                        localStorage.removeItem('server');
+                        localStorage.removeItem("server");
                         setIsServerModalOpen(true);
                     }
-                } finally {
-                    setInitializing(false);
-                }
-            };
-            initAuth();
+                } finally { setInitializing(false); }
+            })();
         }
         return () => {
-            window.removeEventListener("force-logout", handleForceLogout);
-            window.removeEventListener("token-refreshed", handleTokenRefreshed as EventListener);
+            window.removeEventListener("force-logout", onLogout);
+            window.removeEventListener("token-refreshed", onRefresh as EventListener);
         };
     }, [serverUrl]);
 
     const handleLoginSuccess = (data: { accessToken: string; fullname: string; role: string }) => {
-        localStorage.setItem('accessToken', data.accessToken);
-        localStorage.setItem('fullname', data.fullname);
-        localStorage.setItem('role', data.role);
+        localStorage.setItem("accessToken", data.accessToken);
+        localStorage.setItem("fullname", data.fullname);
+        localStorage.setItem("role", data.role);
         setToken(data.accessToken);
         setFullname(data.fullname);
         setRole(data.role as Role);
     };
 
     useEffect(() => {
-        const handleKeys = (e: KeyboardEvent) => {
+        const handle = (e: KeyboardEvent) => {
             if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
-            const keys: Record<string, string> = { "1": "1", "2": "2", "3": "3", "4": "4", "5": "5" };
-            if (keys[e.key]) setSelectedKey(keys[e.key]);
-            if (e.key.toLowerCase() === "g" && e.ctrlKey) {
-                e.preventDefault();
-                setIsServerModalOpen(true);
-            }
+            const num = ["1", "2", "3", "4", "5", "6"];
+            if (num.includes(e.key)) setSelectedKey(e.key);
+            if (e.key.toLowerCase() === "g" && e.ctrlKey) { e.preventDefault(); setIsServerModalOpen(true); }
         };
-        window.addEventListener("keydown", handleKeys);
-        return () => window.removeEventListener("keydown", handleKeys);
+        window.addEventListener("keydown", handle);
+        return () => window.removeEventListener("keydown", handle);
     }, []);
 
     useEffect(() => { setSearchQuery(""); }, [selectedKey]);
 
     const handleTagClick = (tableKey: string, id: number) => {
-        setHighlightId(id);
-        setHighlightTable(tableKey);
-        setSelectedKey(tableKey);
+        setHighlightId(id); setHighlightTable(tableKey); setSelectedKey(tableKey);
     };
-
-    const clearHighlight = () => {
-        setHighlightId(null);
-        setHighlightTable(null);
-    };
+    const clearHighlight = () => { setHighlightId(null); setHighlightTable(null); };
 
     const searchPlaceholders: Record<string, string> = {
-        "1": "Поиск по ФИО...",
+        "1": "Поиск по ФИО / группе...",
         "2": "Поиск по названию...",
-        "3": "Поиск по названию...",
-        "4": "Поиск по ФИО...",
-        "5": "Поиск по ФИО ученика...",
+        "3": "Поиск по ФИО...",
+        "4": "Поиск по ФИО ученика...",
+        "5": "Поиск по ФИО...",
+        "6": "Поиск по группе / предмету...",
     };
 
     const menuItems = [
-        { key: "1", label: <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}><span>Учащиеся</span><span style={{ opacity: 0.4, fontSize: '0.8em' }}>1</span></div> },
-        { key: "2", label: <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}><span>Группы</span><span style={{ opacity: 0.4, fontSize: '0.8em' }}>2</span></div> },
-        { key: "3", label: <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}><span>Предметы</span><span style={{ opacity: 0.4, fontSize: '0.8em' }}>3</span></div> },
-        { key: "4", label: <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}><span>Учителя</span><span style={{ opacity: 0.4, fontSize: '0.8em' }}>4</span></div> },
-        { key: "5", label: <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}><span>Оценки</span><span style={{ opacity: 0.4, fontSize: '0.8em' }}>5</span></div> },
+        { key: "1", label: <div style={{ display: "flex", justifyContent: "space-between" }}><span>Классы и учащиеся</span><span style={{ opacity: 0.4, fontSize: "0.8em" }}>1</span></div> },
+        { key: "2", label: <div style={{ display: "flex", justifyContent: "space-between" }}><span>Предметы</span><span style={{ opacity: 0.4, fontSize: "0.8em" }}>2</span></div> },
+        { key: "3", label: <div style={{ display: "flex", justifyContent: "space-between" }}><span>Учителя</span><span style={{ opacity: 0.4, fontSize: "0.8em" }}>3</span></div> },
+        { key: "4", label: <div style={{ display: "flex", justifyContent: "space-between" }}><span>Оценки</span><span style={{ opacity: 0.4, fontSize: "0.8em" }}>4</span></div> },
+        { key: "5", label: <div style={{ display: "flex", justifyContent: "space-between" }}><span>Посещаемость</span><span style={{ opacity: 0.4, fontSize: "0.8em" }}>5</span></div> },
+        { key: "6", label: <div style={{ display: "flex", justifyContent: "space-between" }}><span>Расписание</span><span style={{ opacity: 0.4, fontSize: "0.8em" }}>6</span></div> },
     ];
 
-    if (!serverUrl) {
-        return (
-            <ConfigProvider theme={{ algorithm: isDarkMode ? theme.darkAlgorithm : theme.defaultAlgorithm }}>
-                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', background: isDarkMode ? "#141414" : "#f5f5f5" }}>
-                    <Modal title="Настройка сервера" open={isServerModalOpen} closable={false} footer={null} centered>
-                        <Form form={serverForm} onFinish={handleServerSubmit} layout="vertical">
-                            <Form.Item name="url" label="Адрес API сервера" rules={[{ required: true, message: 'Введите адрес сервера' }]}>
-                                <Input prefix={<GlobalOutlined />} placeholder="http://localhost:8000" autoFocus disabled={initializing} />
-                            </Form.Item>
-                            <Form.Item style={{ marginBottom: 0, textAlign: 'right' }}>
-                                <Button type="primary" htmlType="submit" loading={initializing}>Проверить и сохранить</Button>
-                            </Form.Item>
-                        </Form>
-                    </Modal>
-                </div>
-                <ToastContainer position="top-right" theme={isDarkMode ? "dark" : "light"} />
-            </ConfigProvider>
-        );
-    }
+    const serverModal = (
+        <Modal title="Настройка сервера" open={isServerModalOpen}
+               onCancel={() => serverUrl && setIsServerModalOpen(false)} footer={null} centered>
+            <Form form={serverForm} onFinish={handleServerSubmit} layout="vertical" initialValues={{ url: serverUrl }}>
+                <Form.Item name="url" label="Адрес API сервера" rules={[{ required: true }]}>
+                    <Input prefix={<GlobalOutlined />} placeholder="http://localhost:8080" />
+                </Form.Item>
+                <Form.Item style={{ marginBottom: 0, textAlign: "right" }}>
+                    <Button onClick={() => setIsServerModalOpen(false)} style={{ marginRight: 8 }} disabled={!serverUrl || initializing}>Отмена</Button>
+                    <Button type="primary" htmlType="submit" loading={initializing}>Сохранить</Button>
+                </Form.Item>
+            </Form>
+        </Modal>
+    );
 
-    if (initializing) {
-        return (
-            <ConfigProvider theme={{ algorithm: isDarkMode ? theme.darkAlgorithm : theme.defaultAlgorithm }}>
-                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', background: isDarkMode ? "#141414" : "#f5f5f5" }}>
-                    <Spin size="large" />
-                </div>
-            </ConfigProvider>
-        );
-    }
+    if (!serverUrl) return (
+        <ConfigProvider theme={{ algorithm: isDarkMode ? theme.darkAlgorithm : theme.defaultAlgorithm }}>
+            <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh" }}>
+                {serverModal}
+            </div>
+            <ToastContainer position="top-right" theme={isDarkMode ? "dark" : "light"} />
+        </ConfigProvider>
+    );
 
-    if (!token) {
-        return (
-            <ConfigProvider theme={{ algorithm: isDarkMode ? theme.darkAlgorithm : theme.defaultAlgorithm }}>
-                <AuthPage onLoginSuccess={handleLoginSuccess} />
-                <ToastContainer position="top-right" theme={isDarkMode ? "dark" : "light"} />
-            </ConfigProvider>
-        );
-    }
+    if (initializing) return (
+        <ConfigProvider theme={{ algorithm: isDarkMode ? theme.darkAlgorithm : theme.defaultAlgorithm }}>
+            <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh" }}>
+                <Spin size="large" />
+            </div>
+        </ConfigProvider>
+    );
+
+    if (!token) return (
+        <ConfigProvider theme={{ algorithm: isDarkMode ? theme.darkAlgorithm : theme.defaultAlgorithm }}>
+            <AuthPage onLoginSuccess={handleLoginSuccess} />
+            <ToastContainer position="top-right" theme={isDarkMode ? "dark" : "light"} />
+        </ConfigProvider>
+    );
+
+    const fade = { initial: { opacity: 0, y: 10 }, animate: { opacity: 1, y: 0 }, exit: { opacity: 0, y: -10 }, transition: { duration: 0.18 } };
 
     return (
-        <ConfigProvider
-            theme={{
-                algorithm: isDarkMode ? theme.darkAlgorithm : theme.defaultAlgorithm,
-                token: { colorPrimary: headerColor },
-                components: {
-                    Menu: {
-                        colorItemBgSelected: selectionBg,
-                        colorItemBgHover: selectionBg,
-                        colorItemTextSelected: isDarkMode ? "rgba(255, 255, 255, 0.65)" : "rgba(0, 0, 0, 0.88)",
-                        colorItemTextHover: isDarkMode ? "rgba(255, 255, 255, 0.65)" : "rgba(0, 0, 0, 0.88)",
-                    }
-                }
-            }}
-        >
+        <ConfigProvider theme={{
+            algorithm: isDarkMode ? theme.darkAlgorithm : theme.defaultAlgorithm,
+            token: { colorPrimary: headerColor },
+            components: {
+                Menu: {
+                    colorItemBgSelected: selectionBg,
+                    colorItemBgHover: selectionBg,
+                    colorItemTextSelected: isDarkMode ? "rgba(255,255,255,0.65)" : "rgba(0,0,0,0.88)",
+                    colorItemTextHover: isDarkMode ? "rgba(255,255,255,0.65)" : "rgba(0,0,0,0.88)",
+                },
+            },
+        }}>
             <ToastContainer position="top-right" theme={isDarkMode ? "dark" : "light"} />
-
             <style>{`
                 .ant-table { border-bottom-left-radius: 8px !important; border-bottom-right-radius: 8px !important; overflow: hidden !important; }
-                .ant-table-container { border-bottom-left-radius: 8px !important; border-bottom-right-radius: 8px !important; }
-                .ant-layout, .ant-layout-header, .ant-layout-sider, .ant-table, .ant-table-thead > tr > th, .ant-table-tbody > tr > td {
-                    transition: background-color 0.4s ease !important;
-                }
-                .row-highlighted td {
-                    background-color: rgba(22, 119, 255, 0.12) !important;
-                    transition: background-color 0.3s ease !important;
-                }
-                [data-theme='dark'] .ant-btn-primary:hover {
-                    background-color: #434343 !important;
-                    border-color: #434343 !important;
-                    color: rgba(255, 255, 255, 0.85) !important;
-                }
-                .header-search .ant-input-affix-wrapper {
-                    background: ${searchBg} !important;
-                    border: 1px solid ${searchBorder} !important;
-                    border-radius: 6px !important;
-                    box-shadow: none !important;
-                    transition: border-color 0.2s, background 0.4s !important;
-                }
-                .header-search .ant-input-affix-wrapper:hover { border-color: ${searchBorderFocus} !important; }
-                .header-search .ant-input-affix-wrapper-focused {
-                    border-color: ${searchBorderFocus} !important;
-                    box-shadow: 0 0 0 2px ${isDarkMode ? "rgba(255,255,255,0.1)" : "rgba(255,255,255,0.5)"} !important;
-                }
+                .row-highlighted td { background-color: rgba(22,119,255,0.12) !important; transition: background-color 0.3s !important; }
+                .header-search .ant-input-affix-wrapper { background: ${searchBg} !important; border: 1px solid ${searchBorder} !important; border-radius: 6px !important; box-shadow: none !important; }
+                .header-search .ant-input-affix-wrapper-focused { border-color: ${searchBorderFocus} !important; }
                 .header-search .ant-input { background: transparent !important; color: ${searchText} !important; }
                 .header-search .ant-input::placeholder { color: ${searchPlaceholderColor} !important; }
-                .header-search .ant-input-prefix { color: ${searchIconColor} !important; }
-                .header-search .ant-input-clear-icon { color: ${searchIconColor} !important; }
+                .header-search .ant-input-prefix, .header-search .ant-input-clear-icon { color: ${searchIconColor} !important; }
+                .delete-btn { color: #ff4d4f !important; border: 1px solid #ff4d4f !important; background: transparent !important; }
+                .delete-btn:hover { background: #ff4d4f !important; color: #fff !important; }
+                .edit-btn { color: #1677ff !important; border: 1px solid #1677ff !important; background: transparent !important; }
+                .edit-btn:hover { background: #1677ff !important; color: #fff !important; }
             `}</style>
 
             <Layout style={{ height: "100vh" }}>
                 <Header style={{ display: "flex", alignItems: "center", padding: "0 20px", background: headerColor, zIndex: 1, gap: 16 }} data-tauri-drag-region>
-                    <span style={{ color: "white", fontSize: '18px', fontWeight: 'bold', whiteSpace: 'nowrap', marginRight: 8 }}>
+                    <span style={{ color: "white", fontSize: 18, fontWeight: "bold", whiteSpace: "nowrap", marginRight: 8 }}>
                         Tabularium
                     </span>
-                    <div style={{ flex: 1, display: 'flex', justifyContent: 'center' }}>
+                    <div style={{ flex: 1, display: "flex", justifyContent: "center" }}>
                         <Input
                             className="header-search"
                             prefix={<SearchOutlined />}
@@ -285,35 +247,23 @@ const App: React.FC = () => {
                             style={{ width: 300 }}
                         />
                     </div>
-                    <div style={{ display: "flex", alignItems: "center", gap: 16, whiteSpace: 'nowrap' }}>
-                        <Switch
-                            checked={isDarkMode}
-                            onChange={(checked, event) => toggleTheme(checked, event)}
-                            checkedChildren={<MoonOutlined />}
-                            unCheckedChildren={<SunOutlined />}
-                        />
+                    <div style={{ display: "flex", alignItems: "center", gap: 16, whiteSpace: "nowrap" }}>
+                        <Switch checked={isDarkMode} onChange={(c, e) => toggleTheme(c, e)}
+                                checkedChildren={<MoonOutlined />} unCheckedChildren={<SunOutlined />} />
                         {fullname && (
                             <span style={{ color: "white", display: "flex", alignItems: "center", gap: 8 }}>
-                                <UserOutlined style={{ fontSize: '16px' }} />
-                                {fullname.split(' ').slice(0, 2).join(' ')}
+                                <UserOutlined style={{ fontSize: 16 }} />
+                                {fullname.split(" ").slice(0, 2).join(" ")}
                             </span>
                         )}
                         {role === "ADMIN" && (
-                            <Button
-                                type="text"
-                                icon={<SettingOutlined />}
-                                onClick={() => setIsAdminOpen(true)}
-                                style={{ color: "white", background: "rgba(255, 255, 255, 0.15)" }}
-                            >
+                            <Button type="text" icon={<SettingOutlined />} onClick={() => setIsAdminOpen(true)}
+                                    style={{ color: "white", background: "rgba(255,255,255,0.15)" }}>
                                 Админ
                             </Button>
                         )}
-                        <Button
-                            type="text"
-                            icon={<LogoutOutlined />}
-                            onClick={handleLogout}
-                            style={{ color: "white", background: "rgba(255, 255, 255, 0.15)" }}
-                        >
+                        <Button type="text" icon={<LogoutOutlined />} onClick={handleLogout}
+                                style={{ color: "white", background: "rgba(255,255,255,0.15)" }}>
                             Выйти
                         </Button>
                     </div>
@@ -321,52 +271,49 @@ const App: React.FC = () => {
 
                 <Layout>
                     <Sider width={250} theme={isDarkMode ? "dark" : "light"}>
-                        <Menu
-                            mode="inline"
-                            selectedKeys={[selectedKey]}
-                            style={{ height: "100%", borderRight: 0, paddingTop: "10px" }}
-                            items={menuItems}
-                            onClick={(e) => setSelectedKey(e.key)}
-                        />
-                        <div style={{ position: 'absolute', bottom: 20, width: '100%', padding: '0 20px' }}>
-                            <Button
-                                block
-                                type="primary"
-                                icon={<GlobalOutlined />}
-                                onClick={() => setIsServerModalOpen(true)}
-                                style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}
-                            >
+                        <Menu mode="inline" selectedKeys={[selectedKey]}
+                              style={{ height: "100%", borderRight: 0, paddingTop: 10 }}
+                              items={menuItems} onClick={e => setSelectedKey(e.key)} />
+                        <div style={{ position: "absolute", bottom: 20, width: "100%", padding: "0 20px" }}>
+                            <Button block type="primary" icon={<GlobalOutlined />}
+                                    onClick={() => setIsServerModalOpen(true)}
+                                    style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
                                 Сменить сервер
                             </Button>
                         </div>
                     </Sider>
 
-                    <Layout style={{ padding: "24px" }}>
-                        <Content style={{ background: isDarkMode ? "#141414" : "#fff", padding: 24, margin: 0, minHeight: 280, borderRadius: 8 }}>
+                    <Layout style={{ padding: 24 }}>
+                        <Content style={{ background: isDarkMode ? "#141414" : "#fff", padding: 24, borderRadius: 8, minHeight: 280 }}>
                             <AnimatePresence mode="wait">
                                 {selectedKey === "1" && (
-                                    <motion.div key="1" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.2 }} style={{ height: "100%" }}>
-                                        <StudentsTable highlightId={highlightTable === "1" ? highlightId : null} onHighlightClear={clearHighlight} onTagClick={handleTagClick} searchQuery={searchQuery} />
+                                    <motion.div key="1" {...fade} style={{ height: "100%" }}>
+                                        <ClassroomExplorer searchQuery={searchQuery} role={role} />
                                     </motion.div>
                                 )}
                                 {selectedKey === "2" && (
-                                    <motion.div key="2" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.2 }} style={{ height: "100%" }}>
-                                        <GroupsTable highlightId={highlightTable === "2" ? highlightId : null} onHighlightClear={clearHighlight} searchQuery={searchQuery} />
+                                    <motion.div key="2" {...fade} style={{ height: "100%" }}>
+                                        <SubjectsTable highlightId={highlightTable === "2" ? highlightId : null} onHighlightClear={clearHighlight} onTagClick={handleTagClick} searchQuery={searchQuery} />
                                     </motion.div>
                                 )}
                                 {selectedKey === "3" && (
-                                    <motion.div key="3" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.2 }} style={{ height: "100%" }}>
-                                        <SubjectsTable highlightId={highlightTable === "3" ? highlightId : null} onHighlightClear={clearHighlight} onTagClick={handleTagClick} searchQuery={searchQuery} />
+                                    <motion.div key="3" {...fade} style={{ height: "100%" }}>
+                                        <TeachersTable highlightId={highlightTable === "3" ? highlightId : null} onHighlightClear={clearHighlight} onTagClick={handleTagClick} searchQuery={searchQuery} />
                                     </motion.div>
                                 )}
                                 {selectedKey === "4" && (
-                                    <motion.div key="4" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.2 }} style={{ height: "100%" }}>
-                                        <TeachersTable highlightId={highlightTable === "4" ? highlightId : null} onHighlightClear={clearHighlight} onTagClick={handleTagClick} searchQuery={searchQuery} />
+                                    <motion.div key="4" {...fade} style={{ height: "100%" }}>
+                                        <GradesTable highlightId={highlightTable === "4" ? highlightId : null} onHighlightClear={clearHighlight} onTagClick={handleTagClick} searchQuery={searchQuery} />
                                     </motion.div>
                                 )}
                                 {selectedKey === "5" && (
-                                    <motion.div key="5" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.2 }} style={{ height: "100%" }}>
-                                        <GradesTable highlightId={highlightTable === "5" ? highlightId : null} onHighlightClear={clearHighlight} onTagClick={handleTagClick} searchQuery={searchQuery} />
+                                    <motion.div key="5" {...fade} style={{ height: "100%" }}>
+                                        <AttendanceTable searchQuery={searchQuery} onTagClick={handleTagClick} />
+                                    </motion.div>
+                                )}
+                                {selectedKey === "6" && (
+                                    <motion.div key="6" {...fade} style={{ height: "100%" }}>
+                                        <ScheduleTable searchQuery={searchQuery} onTagClick={handleTagClick} />
                                     </motion.div>
                                 )}
                             </AnimatePresence>
@@ -374,34 +321,10 @@ const App: React.FC = () => {
                     </Layout>
                 </Layout>
 
-                {/* Модал сервера */}
-                <Modal
-                    title="Настройка сервера"
-                    open={isServerModalOpen}
-                    onCancel={() => serverUrl && setIsServerModalOpen(false)}
-                    footer={null}
-                    centered
-                >
-                    <Form form={serverForm} onFinish={handleServerSubmit} layout="vertical" initialValues={{ url: serverUrl }}>
-                        <Form.Item name="url" label="Адрес API сервера" rules={[{ required: true, message: 'Введите адрес сервера' }]}>
-                            <Input prefix={<GlobalOutlined />} placeholder="http://localhost:8000" />
-                        </Form.Item>
-                        <Form.Item style={{ marginBottom: 0, textAlign: 'right' }}>
-                            <Button onClick={() => setIsServerModalOpen(false)} style={{ marginRight: 8 }} disabled={!serverUrl || initializing}>Отмена</Button>
-                            <Button type="primary" htmlType="submit" loading={initializing}>Сохранить</Button>
-                        </Form.Item>
-                    </Form>
-                </Modal>
+                {serverModal}
 
-                {/* Модал админ-панели */}
-                <Modal
-                    title="Панель администратора"
-                    open={isAdminOpen}
-                    onCancel={() => setIsAdminOpen(false)}
-                    footer={null}
-                    width={800}
-                    centered
-                >
+                <Modal title="Панель администратора" open={isAdminOpen}
+                       onCancel={() => setIsAdminOpen(false)} footer={null} width={850} centered>
                     <AdminPanel />
                 </Modal>
             </Layout>

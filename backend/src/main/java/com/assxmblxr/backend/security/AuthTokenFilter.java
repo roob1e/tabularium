@@ -6,8 +6,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -19,14 +18,18 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
+@Slf4j
 @Configuration
-@RequiredArgsConstructor
 public class AuthTokenFilter extends OncePerRequestFilter {
   private final JwtUtils jwtUtils;
-
-  @Autowired
-  @Lazy
   private final UserService userService;
+
+  // Явный конструктор с @Lazy на UserService — разрывает циклическую зависимость
+  // (SecurityConfig -> AuthTokenFilter -> UserService -> PasswordEncoder <- SecurityConfig)
+  public AuthTokenFilter(JwtUtils jwtUtils, @Lazy UserService userService) {
+    this.jwtUtils = jwtUtils;
+    this.userService = userService;
+  }
 
   @Override
   protected void doFilterInternal(
@@ -41,13 +44,13 @@ public class AuthTokenFilter extends OncePerRequestFilter {
         UserDetails userDetails = userService.loadUserByUsername(username);
 
         UsernamePasswordAuthenticationToken authentication =
-              new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
 
         authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
         SecurityContextHolder.getContext().setAuthentication(authentication);
       }
     } catch (Exception e) {
-      logger.error("Cannot set user authentication: " + e.getMessage());
+      log.error("Cannot set user authentication: {}", e.getMessage());
     }
     filterChain.doFilter(request, response);
   }
@@ -60,11 +63,9 @@ public class AuthTokenFilter extends OncePerRequestFilter {
 
   private String parseJwt(HttpServletRequest request) {
     String headerAuth = request.getHeader("Authorization");
-
     if (StringUtils.hasText(headerAuth) && headerAuth.startsWith("Bearer ")) {
       return headerAuth.substring(7);
     }
-
     return null;
   }
 }

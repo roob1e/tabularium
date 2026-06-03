@@ -48,7 +48,12 @@ public class SecurityConfig {
             .cors(cors -> cors.configurationSource(corsConfigurationSource))
             .authorizeHttpRequests(auth -> auth
                     .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                    // Открытые эндпоинты
                     .requestMatchers("/auth/**", "/").permitAll()
+                    // Только администратор
+                    .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                    .requestMatchers("/scheduler/**").hasRole("ADMIN")
+                    // Все остальные — любой аутентифицированный пользователь (RBAC через @PreAuthorize)
                     .anyRequest().authenticated()
             );
 

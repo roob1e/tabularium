@@ -26,7 +26,7 @@ public class DataSourceConfig {
     dataSource.setJdbcUrl(url);
     dataSource.setUsername(username);
     dataSource.setPassword(password);
-    dataSource.setDriverClassName("org.postgresql.Driver"); // драйвер фиксируем
+    dataSource.setDriverClassName("org.postgresql.Driver");
 
     log.info("application.yml is configured");
     return dataSource;

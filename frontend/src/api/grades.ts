@@ -1,26 +1,45 @@
 import api from "./api";
 
+export type WorkType = "CURRENT" | "CONTROL" | "INDEPENDENT" | "TEST" | "EXAM" | "FINAL";
+
+export const WORK_TYPE_LABELS: Record<WorkType, string> = {
+    CURRENT: "Текущая",
+    CONTROL: "Контрольная",
+    INDEPENDENT: "Самостоятельная",
+    TEST: "Зачёт",
+    EXAM: "Экзамен",
+    FINAL: "Итоговая",
+};
+
 export interface GradeRequest {
     studentId: number;
     subjectId: number;
     teacherId: number;
     grade: number;
+    workType?: WorkType;
+    gradeDate?: string;
+    comment?: string;
 }
 
 export interface GradeResponse {
     id: number;
     studentId: number;
+    studentName?: string;
     subjectId: number;
+    subjectName?: string;
     teacherId: number;
+    teacherName?: string;
     grade: number;
+    workType?: WorkType;
+    gradeDate?: string;
+    comment?: string;
 }
 
-export const fetchGrades = async (): Promise<GradeResponse[]> => {
+export const fetchGrades = async (params?: { studentId?: number; subjectId?: number }): Promise<GradeResponse[]> => {
     try {
-        const response = await api.get("/api/grades");
-        const data = response.data;
-        return Array.isArray(data) ? data : [];
-    } catch (error) {
+        const response = await api.get("/api/grades", { params });
+        return Array.isArray(response.data) ? response.data : [];
+    } catch {
         return [];
     }
 };

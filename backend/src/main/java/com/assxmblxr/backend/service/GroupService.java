@@ -9,57 +9,40 @@ import java.util.List;
 
 @Service
 public class GroupService {
-
   private final GroupRepository groupRepository;
 
   public GroupService(GroupRepository groupRepository) {
     this.groupRepository = groupRepository;
   }
 
-
   public Group getGroupByName(String name) {
     return groupRepository.findByName(name).orElse(null);
   }
 
-  /**
-   * Получить группу по ID.
-   * @param id ID группы.
-   * @return Найденная группа.
-   * @throws GroupException если группа не найдена.
-   */
   public Group getGroup(Long id) {
     return groupRepository.findById(id)
             .orElseThrow(() -> new GroupException("Группа не найдена", id));
   }
 
-  /**
-   * Получить все группы.
-   * @return список всех групп.
-   */
   public List<Group> getAllGroups() {
     return groupRepository.findAll();
   }
 
-  /**
-   * Создать новую группу.
-   * @param group объект Group.
-   * @return сохранённая группа.
-   */
   public Group createGroup(Group group) {
     return groupRepository.save(group);
   }
 
-  /**
-   * Удалить группу по ID.
-   * @param id ID группы.
-   * @return true, если удалено, иначе false.
-   */
+  /** Обновление названия группы — нужно для ТЗ (управление учебными группами) */
+  public Group updateGroup(Long id, Group updated) {
+    Group existing = groupRepository.findById(id)
+            .orElseThrow(() -> new GroupException("Группа не найдена", id));
+    existing.setName(updated.getName());
+    return groupRepository.save(existing);
+  }
+
   public boolean deleteGroup(Long id) {
     return groupRepository.findById(id)
-            .map(group -> {
-              groupRepository.delete(group);
-              return true;
-            })
+            .map(group -> { groupRepository.delete(group); return true; })
             .orElse(false);
   }
 }

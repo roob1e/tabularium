@@ -1,12 +1,12 @@
 package com.assxmblxr.backend.dto;
 
-import com.assxmblxr.backend.entity.WorkType;
+import com.assxmblxr.backend.entity.AttendanceStatus;
 import lombok.Data;
 
 import java.time.LocalDate;
 
 @Data
-public class GradeResponse {
+public class AttendanceResponse {
   private Long id;
   private Long studentId;
   private String studentName;
@@ -14,8 +14,7 @@ public class GradeResponse {
   private String subjectName;
   private Long teacherId;
   private String teacherName;
-  private int grade;
-  private WorkType workType;
-  private LocalDate gradeDate;
-  private String comment;
+  private LocalDate attendanceDate;
+  private AttendanceStatus status;
+  private String note;
 }

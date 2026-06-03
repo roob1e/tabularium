@@ -39,12 +39,20 @@ export interface SubjectRequest {
     teacherIds?: number[];
 }
 
+export type WorkType = "CURRENT" | "CONTROL" | "INDEPENDENT" | "TEST" | "EXAM" | "FINAL";
+
 export interface Grade {
     id: number;
     studentId: number;
+    studentName?: string;
     subjectId: number;
+    subjectName?: string;
     teacherId: number;
+    teacherName?: string;
     grade: number;
+    workType?: WorkType;
+    gradeDate?: string;
+    comment?: string;
 }
 
 export interface GradeRequest {
@@ -52,4 +60,37 @@ export interface GradeRequest {
     subjectId: number;
     teacherId: number;
     grade: number;
+    workType?: WorkType;
+    gradeDate?: string;
+    comment?: string;
+}
+
+export type AttendanceStatus = "PRESENT" | "ABSENT" | "LATE" | "EXCUSED";
+
+export interface Attendance {
+    id: number;
+    studentId: number;
+    studentName?: string;
+    subjectId: number;
+    subjectName?: string;
+    teacherId?: number;
+    teacherName?: string;
+    attendanceDate: string;
+    status: AttendanceStatus;
+    note?: string;
+}
+
+export type DayOfWeek = "MONDAY" | "TUESDAY" | "WEDNESDAY" | "THURSDAY" | "FRIDAY" | "SATURDAY";
+
+export interface Schedule {
+    id: number;
+    groupId: number;
+    groupName?: string;
+    subjectId: number;
+    subjectName?: string;
+    teacherId?: number;
+    teacherName?: string;
+    dayOfWeek: DayOfWeek;
+    lessonNumber: number;
+    classroom?: string;
 }
