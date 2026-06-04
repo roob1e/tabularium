@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import {
     Table, Button, Modal, Form, Select, DatePicker,
     Input, message, Space, Tag
@@ -6,7 +6,8 @@ import {
 import { Student, Subject, Teacher } from "../types/types";
 import {
     fetchAttendance, createAttendance, updateAttendance, deleteAttendance,
-    AttendanceResponse, ATTENDANCE_STATUS_LABELS, ATTENDANCE_STATUS_COLORS
+    AttendanceResponse, ATTENDANCE_STATUS_LABELS, ATTENDANCE_STATUS_COLORS,
+    isPageResponse
 } from "../api/attendance";
 import { fetchStudents } from "../api/students";
 import { fetchSubjects } from "../api/subjects";
@@ -19,12 +20,15 @@ interface Props {
 }
 
 const statusOptions = (Object.keys(ATTENDANCE_STATUS_LABELS) as (keyof typeof ATTENDANCE_STATUS_LABELS)[]).map(k => ({
-    value: k,
-    label: ATTENDANCE_STATUS_LABELS[k],
+    value: k, label: ATTENDANCE_STATUS_LABELS[k],
 }));
+
+const PAGE_SIZE = 50;
 
 const AttendanceTable: React.FC<Props> = ({ searchQuery = "", onTagClick }) => {
     const [records, setRecords] = useState<AttendanceResponse[]>([]);
+    const [totalElements, setTotalElements] = useState(0);
+    const [currentPage, setCurrentPage] = useState(1);
     const [students, setStudents] = useState<Student[]>([]);
     const [subjects, setSubjects] = useState<Subject[]>([]);
     const [teachers, setTeachers] = useState<Teacher[]>([]);
@@ -34,46 +38,36 @@ const AttendanceTable: React.FC<Props> = ({ searchQuery = "", onTagClick }) => {
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [editing, setEditing] = useState<AttendanceResponse | null>(null);
 
-    const [tableScrollY, setTableScrollY] = useState(0);
-    const containerRef = useRef<HTMLDivElement>(null);
-
     const [form] = Form.useForm();
     const [editForm] = Form.useForm();
 
     const isMac = /Mac|iPod|iPhone|iPad/.test(navigator.platform);
 
-    const loadAll = async () => {
+    const loadPage = useCallback(async (page: number) => {
         setLoading(true);
         try {
-            const [recs, studs, subs, tchs] = await Promise.all([
-                fetchAttendance(), fetchStudents(), fetchSubjects(), fetchTeachers()
-            ]);
-            setRecords(recs);
-            setStudents(studs.map((s: any) => ({
-                ...s,
-                groupName: s.group?.name || s.groupName || "",
-                groupId: s.group?.id || s.groupId,
-            })));
-            setSubjects(subs);
-            setTeachers(tchs);
+            const res = await fetchAttendance({ page: page - 1, size: PAGE_SIZE });
+            if (isPageResponse(res)) {
+                setRecords(res.content);
+                setTotalElements(res.totalElements);
+            } else {
+                setRecords(res as AttendanceResponse[]);
+                setTotalElements((res as AttendanceResponse[]).length);
+            }
         } catch (e: any) { message.error(e.message); }
         finally { setLoading(false); }
-    };
-
-    useEffect(() => { loadAll(); }, []);
-
-    useEffect(() => {
-        const update = () => {
-            if (containerRef.current) {
-                const h = containerRef.current.clientHeight;
-                const top = containerRef.current.querySelector("div");
-                setTableScrollY(h - (top ? (top as HTMLElement).clientHeight + 8 : 0) - 60);
-            }
-        };
-        update();
-        window.addEventListener("resize", update);
-        return () => window.removeEventListener("resize", update);
     }, []);
+
+    const loadMeta = useCallback(async () => {
+        const [studs, subs, tchs] = await Promise.all([fetchStudents(), fetchSubjects(), fetchTeachers()]);
+        setStudents(studs.map((s: any) => ({
+            ...s, groupName: s.group?.name || s.groupName || "", groupId: s.group?.id || s.groupId,
+        })));
+        setSubjects(subs);
+        setTeachers(tchs);
+    }, []);
+
+    useEffect(() => { loadPage(1); loadMeta(); }, []);
 
     useEffect(() => {
         const handle = (e: KeyboardEvent) => {
@@ -92,19 +86,15 @@ const AttendanceTable: React.FC<Props> = ({ searchQuery = "", onTagClick }) => {
         try {
             await createAttendance({ ...values, attendanceDate: values.attendanceDate.format("YYYY-MM-DD") });
             message.success("Запись добавлена");
-            closeAdd(); loadAll();
+            closeAdd(); loadPage(currentPage);
         } catch (e: any) { message.error(e.message); }
     };
 
     const openEdit = (r: AttendanceResponse) => {
         setEditing(r);
         editForm.setFieldsValue({
-            studentId: r.studentId,
-            subjectId: r.subjectId,
-            teacherId: r.teacherId,
-            attendanceDate: dayjs(r.attendanceDate),
-            status: r.status,
-            note: r.note,
+            studentId: r.studentId, subjectId: r.subjectId, teacherId: r.teacherId,
+            attendanceDate: dayjs(r.attendanceDate), status: r.status, note: r.note,
         });
         setIsEditModalOpen(true);
     };
@@ -114,17 +104,18 @@ const AttendanceTable: React.FC<Props> = ({ searchQuery = "", onTagClick }) => {
         try {
             await updateAttendance(editing.id, { ...values, attendanceDate: values.attendanceDate.format("YYYY-MM-DD") });
             message.success("Запись обновлена");
-            closeEdit(); loadAll();
+            closeEdit(); loadPage(currentPage);
         } catch (e: any) { message.error(e.message); }
     };
 
-    const filtered = records.filter(r => {
-        if (!searchQuery) return true;
-        const q = searchQuery.toLowerCase();
-        const sName = r.studentName || students.find(s => s.id === r.studentId)?.fullname || "";
-        const subName = r.subjectName || subjects.find(s => s.id === r.subjectId)?.name || "";
-        return sName.toLowerCase().includes(q) || subName.toLowerCase().includes(q);
-    });
+    const filtered = searchQuery
+        ? records.filter(r => {
+            const q = searchQuery.toLowerCase();
+            const sName = r.studentName || students.find(s => s.id === r.studentId)?.fullname || "";
+            const subName = r.subjectName || subjects.find(s => s.id === r.subjectId)?.name || "";
+            return sName.toLowerCase().includes(q) || subName.toLowerCase().includes(q);
+        })
+        : records;
 
     const AttendanceForm = ({ f, onFin, label }: { f: any; onFin: any; label: string }) => (
         <Form form={f} onFinish={onFin} layout="vertical">
@@ -185,22 +176,37 @@ const AttendanceTable: React.FC<Props> = ({ searchQuery = "", onTagClick }) => {
             render: (_: any, r: AttendanceResponse) => (
                 <Space>
                     <Button className="edit-btn" onClick={() => openEdit(r)}>Изменить</Button>
-                    <Button className="delete-btn" danger onClick={() => deleteAttendance(r.id).then(loadAll)}>Удалить</Button>
+                    <Button className="delete-btn" danger onClick={() => deleteAttendance(r.id).then(() => loadPage(currentPage))}>Удалить</Button>
                 </Space>
             ),
         },
     ];
 
     return (
-        <div ref={containerRef} style={{ height: "100%", display: "flex", flexDirection: "column", padding: 10 }}>
+        <div style={{ height: "100%", display: "flex", flexDirection: "column", padding: 10 }}>
             <div style={{ marginBottom: 10 }}>
                 <Button type="primary" onClick={() => { form.resetFields(); setIsModalOpen(true); }} style={{ position: "relative" }}>
                     Добавить запись
                     <span style={{ opacity: 0.45, marginLeft: 12, fontSize: "0.8em" }}>{isMac ? "⇧N" : "Shift+N"}</span>
                 </Button>
             </div>
-            <Table dataSource={filtered} columns={columns} rowKey="id" pagination={false}
-                   loading={loading} scroll={{ y: tableScrollY }} />
+            <div style={{ flex: 1, overflowY: "auto" }}>
+                <Table
+                    dataSource={filtered}
+                    columns={columns}
+                    rowKey="id"
+                    loading={loading}
+                    scroll={{ x: "max-content" }}
+                    pagination={{
+                        current: currentPage,
+                        pageSize: PAGE_SIZE,
+                        total: totalElements,
+                        showSizeChanger: false,
+                        showTotal: (total) => `Всего ${total} записей`,
+                        onChange: (page) => { setCurrentPage(page); loadPage(page); },
+                    }}
+                />
+            </div>
             <Modal title="Добавить запись посещаемости" open={isModalOpen} onCancel={closeAdd} footer={null} destroyOnClose width={500}>
                 <AttendanceForm f={form} onFin={onFinish} label="Сохранить" />
             </Modal>

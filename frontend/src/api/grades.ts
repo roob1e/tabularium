@@ -3,12 +3,12 @@ import api from "./api";
 export type WorkType = "CURRENT" | "CONTROL" | "INDEPENDENT" | "TEST" | "EXAM" | "FINAL";
 
 export const WORK_TYPE_LABELS: Record<WorkType, string> = {
-    CURRENT: "Текущая",
-    CONTROL: "Контрольная",
+    CURRENT:     "Текущая",
+    CONTROL:     "Контрольная",
     INDEPENDENT: "Самостоятельная",
-    TEST: "Зачёт",
-    EXAM: "Экзамен",
-    FINAL: "Итоговая",
+    TEST:        "Зачёт",
+    EXAM:        "Экзамен",
+    FINAL:       "Итоговая",
 };
 
 export interface GradeRequest {
@@ -35,13 +35,25 @@ export interface GradeResponse {
     comment?: string;
 }
 
-export const fetchGrades = async (params?: { studentId?: number; subjectId?: number }): Promise<GradeResponse[]> => {
-    try {
-        const response = await api.get("/api/grades", { params });
-        return Array.isArray(response.data) ? response.data : [];
-    } catch {
-        return [];
-    }
+export interface PageResponse<T> {
+    content: T[];
+    page: number;
+    size: number;
+    totalElements: number;
+    totalPages: number;
+    last: boolean;
+}
+
+export interface FetchGradesParams {
+    studentId?: number;
+    subjectId?: number;
+    page?: number;
+    size?: number;
+}
+
+export const fetchGrades = async (params?: FetchGradesParams): Promise<PageResponse<GradeResponse>> => {
+    const response = await api.get("/api/grades", { params: { page: 0, size: 50, ...params } });
+    return response.data;
 };
 
 export const createGrade = async (data: GradeRequest): Promise<GradeResponse> => {

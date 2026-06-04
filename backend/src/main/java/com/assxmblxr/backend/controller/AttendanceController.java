@@ -2,6 +2,7 @@ package com.assxmblxr.backend.controller;
 
 import com.assxmblxr.backend.dto.AttendanceRequest;
 import com.assxmblxr.backend.dto.AttendanceResponse;
+import com.assxmblxr.backend.dto.PageResponse;
 import com.assxmblxr.backend.exceptions.AttendanceException;
 import com.assxmblxr.backend.service.AttendanceService;
 import jakarta.validation.Valid;
@@ -22,21 +23,37 @@ import java.util.List;
 public class AttendanceController {
   private final AttendanceService attendanceService;
 
-  /** GET /api/attendance — все записи, или фильтр: ?studentId=&subjectId=&date= */
+  /**
+   * GET /api/attendance?page=0&size=50&studentId=&groupId=&date=
+   * Без фильтров — серверная пагинация.
+   * С фильтром groupId+date или subjectId+date — возвращает List (обычно небольшой).
+   * С фильтром studentId+from+to — тоже List.
+   */
   @GetMapping
-  public ResponseEntity<List<AttendanceResponse>> getAll(
+  public ResponseEntity<?> getAll(
           @RequestParam(required = false) Long studentId,
           @RequestParam(required = false) Long subjectId,
           @RequestParam(required = false) Long groupId,
           @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
           @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
-          @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to
+          @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to,
+          @RequestParam(defaultValue = "0")  int page,
+          @RequestParam(defaultValue = "50") int size
   ) {
-    if (groupId != null && date != null) return ResponseEntity.ok(attendanceService.getByGroupAndDate(groupId, date));
-    if (subjectId != null && date != null) return ResponseEntity.ok(attendanceService.getBySubjectAndDate(subjectId, date));
-    if (studentId != null && from != null && to != null) return ResponseEntity.ok(attendanceService.getByStudentDateRange(studentId, from, to));
-    if (studentId != null) return ResponseEntity.ok(attendanceService.getByStudent(studentId));
-    return ResponseEntity.ok(attendanceService.getAll());
+    // Специфические фильтры → маленький ответ, пагинация не нужна
+    if (groupId != null && date != null)
+      return ResponseEntity.ok(attendanceService.getByGroupAndDate(groupId, date));
+    if (subjectId != null && date != null)
+      return ResponseEntity.ok(attendanceService.getBySubjectAndDate(subjectId, date));
+    if (studentId != null && from != null && to != null)
+      return ResponseEntity.ok(attendanceService.getByStudentDateRange(studentId, from, to));
+
+    // По студенту — пагинация
+    if (studentId != null)
+      return ResponseEntity.ok(attendanceService.getByStudentPaged(studentId, page, size));
+
+    // Все записи — пагинация
+    return ResponseEntity.ok(attendanceService.getAllPaged(page, size));
   }
 
   @GetMapping("/{id}")
@@ -48,7 +65,6 @@ public class AttendanceController {
     }
   }
 
-  /** GET /api/attendance/absences?studentId=&subjectId= — количество пропусков */
   @GetMapping("/absences")
   public ResponseEntity<Long> countAbsences(@RequestParam Long studentId, @RequestParam Long subjectId) {
     return ResponseEntity.ok(attendanceService.countAbsences(studentId, subjectId));

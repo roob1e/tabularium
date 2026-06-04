@@ -4,72 +4,31 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="073918de-16ad-41dc-a7be-ae3bc4813620" name="Changes" comment="Improved UI">
-      <change afterPath="$PROJECT_DIR$/../backend/fill_db.sh" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/controller/AnalyticsController.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/controller/AttendanceController.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/controller/ExportController.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/dto/AttendanceRequest.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/dto/AttendanceResponse.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/dto/GroupAnalyticsResponse.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/dto/ScheduleRequest.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/dto/ScheduleResponse.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/dto/StudentAnalyticsResponse.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/entity/Attendance.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/entity/AttendanceStatus.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/entity/DayOfWeek.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/entity/Schedule.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/entity/WorkType.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/exceptions/AttendanceException.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/exceptions/ScheduleException.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/repository/AttendanceRepository.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/repository/ScheduleRepository.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/service/AnalyticsService.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/service/AttendanceService.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/service/ExportService.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/service/ScheduleService.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/api/attendance.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/api/schedule.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/components/AttendanceTable.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/components/ClassroomExplorer.tsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/components/ScheduleTable.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../backend/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/components/DataInitializer.java" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/components/DataInitializer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/config/DataSourceConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/config/DataSourceConfig.java" afterDir="false" />
+    <list default="true" id="073918de-16ad-41dc-a7be-ae3bc4813620" name="Changes" comment="Added attendace, schedule, reworked marks ans so on...">
+      <change afterPath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/controller/SchedulerController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/dto/PageResponse.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../backend/src/main/resources/fonts/FreeSans.ttf" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/components/ExportPanel.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/controller/AttendanceController.java" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/controller/AttendanceController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/controller/ExportController.java" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/controller/ExportController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/controller/GradeController.java" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/controller/GradeController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/controller/GroupController.java" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/controller/GroupController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/controller/SchedulerController.java" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/controller/ScheduleController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/controller/StudentController.java" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/controller/StudentController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/dto/GradeRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/dto/GradeRequest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/dto/GradeResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/dto/GradeResponse.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/dto/RefreshTokenRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/dto/RefreshTokenRequest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/dto/StudentResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/dto/StudentResponse.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/entity/Grade.java" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/entity/Grade.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/entity/RefreshToken.java" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/entity/RefreshToken.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/entity/Student.java" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/entity/Student.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/entity/User.java" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/entity/User.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/controller/TokenController.java" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/controller/TokenController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/repository/AttendanceRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/repository/AttendanceRepository.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/repository/GradeRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/repository/GradeRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/repository/RefreshTokenRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/repository/RefreshTokenRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/security/AuthTokenFilter.java" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/security/AuthTokenFilter.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/security/PasswordConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/security/PasswordConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/repository/StudentRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/repository/StudentRepository.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/security/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/security/SecurityConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/service/AttendanceService.java" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/service/AttendanceService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/service/ExportService.java" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/service/ExportService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/service/GradeService.java" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/service/GradeService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/service/GroupService.java" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/service/GroupService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/service/SchedulerService.java" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/service/SchedulerService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/service/UserService.java" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/service/UserService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/utils/DatasourceLogger.java" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/utils/DatasourceLogger.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/utils/JwtUtils.java" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/utils/JwtUtils.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../backend/src/test/java/com/assxmblxr/backend/AutoGradeUpdateTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/src/test/java/com/assxmblxr/backend/AutoGradeUpdateTest.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/App.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/App.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/api/admin.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/api/admin.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/api/api.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/api/api.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/api/attendance.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/api/attendance.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/api/grades.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/api/grades.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/api/groups.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/api/groups.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/components/AdminPanel.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/AdminPanel.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/AttendanceTable.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/AttendanceTable.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/ClassroomExplorer.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/ClassroomExplorer.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/components/GradesTable.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/GradesTable.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/GroupsTable.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/StudentsTable.tsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/types/types.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/types/types.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -79,8 +38,8 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="TypeScript JSX File" />
         <option value="TypeScript File" />
+        <option value="TypeScript JSX File" />
       </list>
     </option>
   </component>
@@ -231,7 +190,9 @@
       <workItem from="1773393789481" duration="7000" />
       <workItem from="1773654621437" duration="169000" />
       <workItem from="1773691385637" duration="504000" />
-      <workItem from="1780503351440" duration="2302000" />
+      <workItem from="1780503351440" duration="3171000" />
+      <workItem from="1780594587098" duration="3870000" />
+      <workItem from="1780598639925" duration="39000" />
     </task>
     <task id="LOCAL-00001" summary="test">
       <option name="closed" value="true" />
@@ -337,7 +298,15 @@
       <option name="project" value="LOCAL" />
       <updated>1772090349864</updated>
     </task>
-    <option name="localTasksCounter" value="14" />
+    <task id="LOCAL-00014" summary="Added attendace, schedule, reworked marks ans so on...">
+      <option name="closed" value="true" />
+      <created>1780505907433</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1780505907434</updated>
+    </task>
+    <option name="localTasksCounter" value="15" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -370,6 +339,7 @@
     <MESSAGE value="Added subjects' and teachers' tables; navigation by clicking on related tags." />
     <MESSAGE value="Added grades' table" />
     <MESSAGE value="Improved UI" />
-    <option name="LAST_COMMIT_MESSAGE" value="Improved UI" />
+    <MESSAGE value="Added attendace, schedule, reworked marks ans so on..." />
+    <option name="LAST_COMMIT_MESSAGE" value="Added attendace, schedule, reworked marks ans so on..." />
   </component>
 </project>

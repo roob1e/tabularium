@@ -2,6 +2,7 @@ package com.assxmblxr.backend.controller;
 
 import com.assxmblxr.backend.dto.GradeRequest;
 import com.assxmblxr.backend.dto.GradeResponse;
+import com.assxmblxr.backend.dto.PageResponse;
 import com.assxmblxr.backend.exceptions.GradeException;
 import com.assxmblxr.backend.service.GradeService;
 import jakarta.validation.Valid;
@@ -11,9 +12,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
-@SuppressWarnings("LoggingSimilarMessage")
 @Slf4j
 @AllArgsConstructor
 @RestController
@@ -21,18 +19,24 @@ import java.util.List;
 public class GradeController {
   private final GradeService gradeService;
 
+  /**
+   * GET /api/grades?page=0&size=50&studentId=&subjectId=
+   * Возвращает PageResponse<GradeResponse> — content + totalElements + totalPages
+   */
   @GetMapping
-  public ResponseEntity<List<GradeResponse>> getAll(
+  public ResponseEntity<PageResponse<GradeResponse>> getAll(
           @RequestParam(required = false) Long studentId,
-          @RequestParam(required = false) Long subjectId
+          @RequestParam(required = false) Long subjectId,
+          @RequestParam(defaultValue = "0")  int page,
+          @RequestParam(defaultValue = "50") int size
   ) {
     if (studentId != null && subjectId != null) {
-      return ResponseEntity.ok(gradeService.getGradesByStudentAndSubject(studentId, subjectId));
+      return ResponseEntity.ok(gradeService.getGradesByStudentAndSubjectPaged(studentId, subjectId, page, size));
     }
     if (studentId != null) {
-      return ResponseEntity.ok(gradeService.getGradesByStudent(studentId));
+      return ResponseEntity.ok(gradeService.getGradesByStudentPaged(studentId, page, size));
     }
-    return ResponseEntity.ok(gradeService.getAllGrades());
+    return ResponseEntity.ok(gradeService.getAllGradesPaged(page, size));
   }
 
   @GetMapping("/{id}")

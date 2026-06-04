@@ -50,10 +50,14 @@ public class SecurityConfig {
                     .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                     // Открытые эндпоинты
                     .requestMatchers("/auth/**", "/").permitAll()
-                    // Только администратор
+                    // /scheduler/cron — GET доступен любому аутентифицированному пользователю
+                    // (нужен для отображения даты в AdminPanel)
+                    .requestMatchers(HttpMethod.GET, "/scheduler/cron").authenticated()
+                    // Изменение расписания автоперевода — только ADMIN
+                    .requestMatchers(HttpMethod.POST, "/scheduler/date").hasRole("ADMIN")
+                    // Панель администратора — только ADMIN
                     .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                    .requestMatchers("/scheduler/**").hasRole("ADMIN")
-                    // Все остальные — любой аутентифицированный пользователь (RBAC через @PreAuthorize)
+                    // Все остальные — любой аутентифицированный
                     .anyRequest().authenticated()
             );
 

@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useCallback } from "react";
 import {
     Table, Button, Modal, Form, Select, Space, Tag,
     Tooltip, InputNumber, message, DatePicker, Input
@@ -6,13 +6,12 @@ import {
 import { Student, Subject, Teacher } from "../types/types";
 import {
     fetchGrades, createGrade, deleteGrade, updateGrade,
-    GradeResponse, WorkType, WORK_TYPE_LABELS
+    GradeResponse, WorkType, WORK_TYPE_LABELS, PageResponse
 } from "../api/grades";
 import { fetchStudents } from "../api/students";
 import { fetchSubjects } from "../api/subjects";
 import { fetchTeachers } from "../api/teachers";
 import { SortOrder } from "antd/es/table/interface";
-import { useSearchHighlight } from "../hooks/useSearchHighlight";
 import dayjs from "dayjs";
 
 interface Props {
@@ -31,12 +30,15 @@ const gradeColor = (g: number) => {
 };
 
 const workTypeOptions = (Object.keys(WORK_TYPE_LABELS) as WorkType[]).map(k => ({
-    value: k,
-    label: WORK_TYPE_LABELS[k],
+    value: k, label: WORK_TYPE_LABELS[k],
 }));
+
+const PAGE_SIZE = 50;
 
 const GradesTable: React.FC<Props> = ({ highlightId, onHighlightClear, onTagClick, searchQuery = "" }) => {
     const [grades, setGrades] = useState<GradeResponse[]>([]);
+    const [totalElements, setTotalElements] = useState(0);
+    const [currentPage, setCurrentPage] = useState(1);
     const [students, setStudents] = useState<Student[]>([]);
     const [subjects, setSubjects] = useState<Subject[]>([]);
     const [teachers, setTeachers] = useState<Teacher[]>([]);
@@ -46,14 +48,10 @@ const GradesTable: React.FC<Props> = ({ highlightId, onHighlightClear, onTagClic
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [editingGrade, setEditingGrade] = useState<GradeResponse | null>(null);
-
     const [addSubjectId, setAddSubjectId] = useState<number | null>(null);
     const [editSubjectId, setEditSubjectId] = useState<number | null>(null);
 
-    const [tableScrollY, setTableScrollY] = useState(0);
-    const containerRef = useRef<HTMLDivElement>(null);
     const tableRef = useRef<HTMLDivElement>(null);
-
     const [form] = Form.useForm();
     const [editForm] = Form.useForm();
 
@@ -61,38 +59,29 @@ const GradesTable: React.FC<Props> = ({ highlightId, onHighlightClear, onTagClic
     const shortcutSubmit = isMac ? "⇧↩" : "Shift+Enter";
     const shortcutAdd = isMac ? "⇧N" : "Shift+N";
 
-    const { getRowClassName: getSearchRowClass } = useSearchHighlight(
-        grades, searchQuery,
-        (g, q) => {
-            const s = students.find(s => s.id === g.studentId);
-            const name = g.studentName || s?.fullname || "";
-            return name.toLowerCase().includes(q);
-        },
-        tableRef
-    );
-
     const getTeachersForSubject = (sid: number | null) =>
         sid ? teachers.filter(t => t.subjectIds?.includes(sid)) : [];
 
-    const loadAll = async () => {
+    const loadPage = useCallback(async (page: number) => {
         setLoading(true);
         try {
-            const [gd, sd, subD, td] = await Promise.all([
-                fetchGrades(), fetchStudents(), fetchSubjects(), fetchTeachers()
-            ]);
-            setGrades(gd);
-            setStudents(sd.map((s: any) => ({
-                ...s,
-                groupName: s.group?.name || s.groupName || "",
-                groupId: s.group?.id || s.groupId,
-            })));
-            setSubjects(subD);
-            setTeachers(td);
+            const res: PageResponse<GradeResponse> = await fetchGrades({ page: page - 1, size: PAGE_SIZE });
+            setGrades(res.content);
+            setTotalElements(res.totalElements);
         } catch (e: any) { message.error(e.message); }
         finally { setLoading(false); }
-    };
+    }, []);
 
-    useEffect(() => { loadAll(); }, []);
+    const loadMeta = useCallback(async () => {
+        const [sd, subD, td] = await Promise.all([fetchStudents(), fetchSubjects(), fetchTeachers()]);
+        setStudents(sd.map((s: any) => ({
+            ...s, groupName: s.group?.name || s.groupName || "", groupId: s.group?.id || s.groupId,
+        })));
+        setSubjects(subD);
+        setTeachers(td);
+    }, []);
+
+    useEffect(() => { loadPage(1); loadMeta(); }, []);
 
     useEffect(() => {
         if (!highlightId || loading) return;
@@ -115,19 +104,6 @@ const GradesTable: React.FC<Props> = ({ highlightId, onHighlightClear, onTagClic
         return () => window.removeEventListener("keydown", handle);
     }, [isModalOpen, isEditModalOpen, form]);
 
-    useEffect(() => {
-        const update = () => {
-            if (containerRef.current) {
-                const h = containerRef.current.clientHeight;
-                const top = containerRef.current.querySelector("div");
-                setTableScrollY(h - (top ? (top as HTMLElement).clientHeight + 8 : 0) - 60);
-            }
-        };
-        update();
-        window.addEventListener("resize", update);
-        return () => window.removeEventListener("resize", update);
-    }, []);
-
     const closeAdd = () => { setIsModalOpen(false); form.resetFields(); setAddSubjectId(null); };
     const closeEdit = () => { setIsEditModalOpen(false); editForm.resetFields(); setEditingGrade(null); setEditSubjectId(null); };
 
@@ -135,7 +111,7 @@ const GradesTable: React.FC<Props> = ({ highlightId, onHighlightClear, onTagClic
         try {
             await createGrade({ ...values, gradeDate: values.gradeDate?.format("YYYY-MM-DD") });
             message.success("Оценка добавлена");
-            closeAdd(); loadAll();
+            closeAdd(); loadPage(currentPage);
         } catch (e: any) { message.error(e.message); }
     };
 
@@ -143,11 +119,8 @@ const GradesTable: React.FC<Props> = ({ highlightId, onHighlightClear, onTagClic
         setEditingGrade(grade);
         setEditSubjectId(grade.subjectId);
         editForm.setFieldsValue({
-            studentId: grade.studentId,
-            subjectId: grade.subjectId,
-            teacherId: grade.teacherId,
-            grade: grade.grade,
-            workType: grade.workType,
+            studentId: grade.studentId, subjectId: grade.subjectId, teacherId: grade.teacherId,
+            grade: grade.grade, workType: grade.workType,
             gradeDate: grade.gradeDate ? dayjs(grade.gradeDate) : null,
             comment: grade.comment,
         });
@@ -159,55 +132,55 @@ const GradesTable: React.FC<Props> = ({ highlightId, onHighlightClear, onTagClic
         try {
             await updateGrade(editingGrade.id, { ...values, gradeDate: values.gradeDate?.format("YYYY-MM-DD") });
             message.success("Оценка обновлена");
-            closeEdit(); loadAll();
+            closeEdit(); loadPage(currentPage);
         } catch (e: any) { message.error(e.message); }
     };
 
+    const handleDelete = async (id: number) => {
+        await deleteGrade(id);
+        loadPage(currentPage);
+    };
+
+    const getRowClassName = (r: GradeResponse) => r.id === activeHighlightId ? "row-highlighted" : "";
+
     const renderStudentTag = (studentId: number, name?: string) => {
         const s = students.find(s => s.id === studentId);
-        const displayName = name || s?.fullname || "—";
         return (
             <Tooltip mouseEnterDelay={0.6} title={s ? <><b>ФИО:</b> {s.fullname}<br /><b>Класс:</b> {s.groupName}</> : null}>
-                <Tag style={{ margin: 0, cursor: "pointer" }} onClick={() => onTagClick?.("1", studentId)}>{displayName}</Tag>
+                <Tag style={{ margin: 0, cursor: "pointer" }} onClick={() => onTagClick?.("1", studentId)}>
+                    {name || s?.fullname || "—"}
+                </Tag>
             </Tooltip>
         );
     };
 
-    const renderSubjectTag = (subjectId: number, name?: string) => {
-        const s = subjects.find(s => s.id === subjectId);
-        const displayName = name || s?.name || "—";
-        return (
-            <Tag style={{ margin: 0, cursor: "pointer" }} onClick={() => onTagClick?.("2", subjectId)}>{displayName}</Tag>
-        );
-    };
+    const renderSubjectTag = (subjectId: number, name?: string) => (
+        <Tag style={{ margin: 0, cursor: "pointer" }} onClick={() => onTagClick?.("2", subjectId)}>
+            {name || subjects.find(s => s.id === subjectId)?.name || "—"}
+        </Tag>
+    );
 
     const renderTeacherTag = (teacherId: number, name?: string) => {
         const t = teachers.find(t => t.id === teacherId);
-        const displayName = name || t?.fullname || "—";
         return (
             <Tooltip mouseEnterDelay={0.6} title={t ? <><b>ФИО:</b> {t.fullname}<br /><b>Тел:</b> {t.phone}</> : null}>
-                <Tag style={{ margin: 0, cursor: "pointer" }} onClick={() => onTagClick?.("3", teacherId)}>{displayName}</Tag>
+                <Tag style={{ margin: 0, cursor: "pointer" }} onClick={() => onTagClick?.("3", teacherId)}>
+                    {name || t?.fullname || "—"}
+                </Tag>
             </Tooltip>
         );
     };
 
-    const getRowClassName = (r: GradeResponse) =>
-        r.id === activeHighlightId ? "row-highlighted" : getSearchRowClass(r);
-
-    const GradeForm = ({
-                           f, onFin, subjectId, setSubjectId, submitLabel
-                       }: {
+    const GradeForm = ({ f, onFin, subjectId, setSubjectId, submitLabel }: {
         f: any; onFin: any; subjectId: number | null;
         setSubjectId: (id: number | null) => void; submitLabel: string;
     }) => (
         <Form form={f} onFinish={onFin} layout="vertical">
             <Form.Item name="studentId" label="Учащийся" rules={[{ required: true }]}>
-                <Select showSearch optionFilterProp="label" placeholder="Выберите учащегося"
-                        options={students.map(s => ({ value: s.id, label: s.fullname }))} />
+                <Select showSearch optionFilterProp="label" options={students.map(s => ({ value: s.id, label: s.fullname }))} />
             </Form.Item>
             <Form.Item name="subjectId" label="Предмет" rules={[{ required: true }]}>
-                <Select showSearch optionFilterProp="label" placeholder="Выберите предмет"
-                        options={subjects.map(s => ({ value: s.id, label: s.name }))}
+                <Select showSearch optionFilterProp="label" options={subjects.map(s => ({ value: s.id, label: s.name }))}
                         onChange={val => { setSubjectId(val); f.setFieldValue("teacherId", undefined); }} />
             </Form.Item>
             <Form.Item name="teacherId" label="Учитель" rules={[{ required: true }]}>
@@ -237,18 +210,26 @@ const GradesTable: React.FC<Props> = ({ highlightId, onHighlightClear, onTagClic
         </Form>
     );
 
+    // Клиентский поиск по уже загруженной странице
+    const filtered = searchQuery
+        ? grades.filter(g => {
+            const q = searchQuery.toLowerCase();
+            const sName = g.studentName || students.find(s => s.id === g.studentId)?.fullname || "";
+            return sName.toLowerCase().includes(q);
+        })
+        : grades;
+
     const columns = [
-        { title: "ID", dataIndex: "id", key: "id", width: 70, sorter: (a: GradeResponse, b: GradeResponse) => a.id - b.id, defaultSortOrder: "ascend" as SortOrder },
-        { title: "Учащийся", dataIndex: "studentId", key: "studentId", render: (id: number, r: GradeResponse) => renderStudentTag(id, r.studentName) },
-        { title: "Предмет", dataIndex: "subjectId", key: "subjectId", render: (id: number, r: GradeResponse) => renderSubjectTag(id, r.subjectName) },
-        { title: "Учитель", dataIndex: "teacherId", key: "teacherId", render: (id: number, r: GradeResponse) => renderTeacherTag(id, r.teacherName) },
+        { title: "ID", dataIndex: "id", key: "id", width: 70, defaultSortOrder: "ascend" as SortOrder },
+        { title: "Учащийся",  dataIndex: "studentId",  key: "studentId",  render: (id: number, r: GradeResponse) => renderStudentTag(id, r.studentName) },
+        { title: "Предмет",   dataIndex: "subjectId",  key: "subjectId",  render: (id: number, r: GradeResponse) => renderSubjectTag(id, r.subjectName) },
+        { title: "Учитель",   dataIndex: "teacherId",  key: "teacherId",  render: (id: number, r: GradeResponse) => renderTeacherTag(id, r.teacherName) },
         {
             title: "Тип", dataIndex: "workType", key: "workType", width: 130,
             render: (wt?: WorkType) => wt ? <Tag>{WORK_TYPE_LABELS[wt]}</Tag> : "—",
         },
         {
             title: "Оценка", dataIndex: "grade", key: "grade", width: 100, align: "center" as const,
-            sorter: (a: GradeResponse, b: GradeResponse) => a.grade - b.grade,
             render: (g: number) => (
                 <div style={{ display: "flex", justifyContent: "center" }}>
                     <Tag color={gradeColor(g)} style={{ fontWeight: 600, fontSize: 14, margin: 0 }}>{g}</Tag>
@@ -264,14 +245,14 @@ const GradesTable: React.FC<Props> = ({ highlightId, onHighlightClear, onTagClic
             render: (_: any, r: GradeResponse) => (
                 <Space>
                     <Button className="edit-btn" onClick={() => openEditModal(r)}>Изменить</Button>
-                    <Button className="delete-btn" danger onClick={() => deleteGrade(r.id).then(loadAll)}>Удалить</Button>
+                    <Button className="delete-btn" danger onClick={() => handleDelete(r.id)}>Удалить</Button>
                 </Space>
             ),
         },
     ];
 
     return (
-        <div ref={containerRef} style={{ height: "100%", display: "flex", flexDirection: "column", padding: 10 }}>
+        <div style={{ height: "100%", display: "flex", flexDirection: "column", padding: 10 }}>
             <style>{`.row-highlighted td { background-color: rgba(22,119,255,0.12) !important; }`}</style>
             <div style={{ marginBottom: 10 }}>
                 <Button type="primary" onClick={() => { form.resetFields(); setIsModalOpen(true); }} style={{ position: "relative" }}>
@@ -279,10 +260,25 @@ const GradesTable: React.FC<Props> = ({ highlightId, onHighlightClear, onTagClic
                     <span style={{ opacity: 0.45, marginLeft: 12, fontSize: "0.8em" }}>{shortcutAdd}</span>
                 </Button>
             </div>
-            <div ref={tableRef}>
-                <Table dataSource={grades} columns={columns} rowKey="id" pagination={false}
-                       loading={loading} scroll={{ y: tableScrollY }} rowClassName={getRowClassName} />
+            <div ref={tableRef} style={{ flex: 1, overflowY: "auto" }}>
+                <Table
+                    dataSource={filtered}
+                    columns={columns}
+                    rowKey="id"
+                    loading={loading}
+                    rowClassName={getRowClassName}
+                    scroll={{ x: "max-content" }}
+                    pagination={{
+                        current: currentPage,
+                        pageSize: PAGE_SIZE,
+                        total: totalElements,
+                        showSizeChanger: false,
+                        showTotal: (total) => `Всего ${total} оценок`,
+                        onChange: (page) => { setCurrentPage(page); loadPage(page); },
+                    }}
+                />
             </div>
+
             <Modal title="Добавить оценку" open={isModalOpen} onCancel={closeAdd} footer={null} destroyOnClose width={520}>
                 <GradeForm f={form} onFin={onFinish} subjectId={addSubjectId} setSubjectId={setAddSubjectId} submitLabel="Сохранить" />
             </Modal>

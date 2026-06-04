@@ -2,6 +2,7 @@ package com.assxmblxr.backend.service;
 
 import com.assxmblxr.backend.dto.GradeRequest;
 import com.assxmblxr.backend.dto.GradeResponse;
+import com.assxmblxr.backend.dto.PageResponse;
 import com.assxmblxr.backend.entity.Grade;
 import com.assxmblxr.backend.entity.Student;
 import com.assxmblxr.backend.entity.Subject;
@@ -15,6 +16,9 @@ import com.assxmblxr.backend.repository.StudentRepository;
 import com.assxmblxr.backend.repository.SubjectRepository;
 import com.assxmblxr.backend.repository.TeacherRepository;
 import jakarta.transaction.Transactional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -68,9 +72,26 @@ public class GradeService {
     return gradeRepository.findById(id).map(g -> { gradeRepository.delete(g); return true; }).orElse(false);
   }
 
-  public List<GradeResponse> getAllGrades() {
-    return gradeRepository.findAll().stream().map(this::toResponse).collect(Collectors.toList());
+  // ── Pageable ──────────────────────────────────────────────────────────────
+
+  public PageResponse<GradeResponse> getAllGradesPaged(int page, int size) {
+    Page<Grade> p = gradeRepository.findAll(PageRequest.of(page, size, Sort.by("id").descending()));
+    return toPageResponse(p);
   }
+
+  public PageResponse<GradeResponse> getGradesByStudentPaged(Long studentId, int page, int size) {
+    Page<Grade> p = gradeRepository.findByStudentId(studentId,
+            PageRequest.of(page, size, Sort.by("gradeDate").descending()));
+    return toPageResponse(p);
+  }
+
+  public PageResponse<GradeResponse> getGradesByStudentAndSubjectPaged(Long studentId, Long subjectId, int page, int size) {
+    Page<Grade> p = gradeRepository.findByStudentIdAndSubjectId(studentId, subjectId,
+            PageRequest.of(page, size, Sort.by("gradeDate").descending()));
+    return toPageResponse(p);
+  }
+
+  // ── Для аналитики и экспорта (без пагинации) ─────────────────────────────
 
   public GradeResponse getGrade(Long id) {
     return gradeRepository.findById(id).map(this::toResponse)
@@ -78,11 +99,25 @@ public class GradeService {
   }
 
   public List<GradeResponse> getGradesByStudent(Long studentId) {
-    return gradeRepository.findByStudentId(studentId).stream().map(this::toResponse).toList();
+    return gradeRepository.findByStudentId(studentId).stream().map(this::toResponse).collect(Collectors.toList());
   }
 
   public List<GradeResponse> getGradesByStudentAndSubject(Long studentId, Long subjectId) {
     return gradeRepository.findByStudentIdAndSubjectId(studentId, subjectId).stream().map(this::toResponse).toList();
+  }
+
+  public List<GradeResponse> getGradesByGroupAndSubject(Long groupId, Long subjectId) {
+    return gradeRepository.findByGroupAndSubject(groupId, subjectId)
+            .stream().map(this::toResponse).collect(Collectors.toList());
+  }
+
+  // ── helpers ───────────────────────────────────────────────────────────────
+
+  private PageResponse<GradeResponse> toPageResponse(Page<Grade> p) {
+    return new PageResponse<>(
+            p.getContent().stream().map(this::toResponse).toList(),
+            p.getNumber(), p.getSize(), p.getTotalElements(), p.getTotalPages(), p.isLast()
+    );
   }
 
   private GradeResponse toResponse(Grade grade) {

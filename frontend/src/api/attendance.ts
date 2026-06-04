@@ -1,18 +1,19 @@
 import api from "./api";
+import { PageResponse } from "./grades";
 
 export type AttendanceStatus = "PRESENT" | "ABSENT" | "LATE" | "EXCUSED";
 
 export const ATTENDANCE_STATUS_LABELS: Record<AttendanceStatus, string> = {
     PRESENT: "Присутствовал",
-    ABSENT: "Отсутствовал",
-    LATE: "Опоздал",
+    ABSENT:  "Отсутствовал",
+    LATE:    "Опоздал",
     EXCUSED: "Уважительная причина",
 };
 
 export const ATTENDANCE_STATUS_COLORS: Record<AttendanceStatus, string> = {
     PRESENT: "green",
-    ABSENT: "red",
-    LATE: "orange",
+    ABSENT:  "red",
+    LATE:    "orange",
     EXCUSED: "blue",
 };
 
@@ -38,20 +39,23 @@ export interface AttendanceResponse {
     note?: string;
 }
 
-export const fetchAttendance = async (params?: {
+export interface FetchAttendanceParams {
     studentId?: number;
     subjectId?: number;
     groupId?: number;
     date?: string;
     from?: string;
     to?: string;
-}): Promise<AttendanceResponse[]> => {
-    try {
-        const res = await api.get("/api/attendance", { params });
-        return Array.isArray(res.data) ? res.data : [];
-    } catch {
-        return [];
-    }
+    page?: number;
+    size?: number;
+}
+
+/** Возвращает PageResponse когда нет специфических фильтров, иначе массив */
+export const fetchAttendance = async (
+    params?: FetchAttendanceParams
+): Promise<PageResponse<AttendanceResponse> | AttendanceResponse[]> => {
+    const res = await api.get("/api/attendance", { params: { page: 0, size: 50, ...params } });
+    return res.data;
 };
 
 export const createAttendance = async (data: AttendanceRequest): Promise<AttendanceResponse> => {
@@ -67,3 +71,6 @@ export const updateAttendance = async (id: number, data: AttendanceRequest): Pro
 export const deleteAttendance = async (id: number): Promise<void> => {
     await api.delete(`/api/attendance/${id}`);
 };
+
+export const isPageResponse = (data: any): data is PageResponse<AttendanceResponse> =>
+    data && typeof data === "object" && "content" in data && "totalElements" in data;

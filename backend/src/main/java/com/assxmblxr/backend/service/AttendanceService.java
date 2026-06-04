@@ -2,6 +2,7 @@ package com.assxmblxr.backend.service;
 
 import com.assxmblxr.backend.dto.AttendanceRequest;
 import com.assxmblxr.backend.dto.AttendanceResponse;
+import com.assxmblxr.backend.dto.PageResponse;
 import com.assxmblxr.backend.entity.*;
 import com.assxmblxr.backend.exceptions.AttendanceException;
 import com.assxmblxr.backend.exceptions.StudentException;
@@ -13,6 +14,9 @@ import com.assxmblxr.backend.repository.SubjectRepository;
 import com.assxmblxr.backend.repository.TeacherRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -63,6 +67,22 @@ public class AttendanceService {
             .orElseThrow(() -> new AttendanceException("Запись не найдена", id));
   }
 
+  // ── Pageable ──────────────────────────────────────────────────────────────
+
+  public PageResponse<AttendanceResponse> getAllPaged(int page, int size) {
+    Page<Attendance> p = attendanceRepository.findAll(
+            PageRequest.of(page, size, Sort.by("attendanceDate").descending()));
+    return toPageResponse(p);
+  }
+
+  public PageResponse<AttendanceResponse> getByStudentPaged(Long studentId, int page, int size) {
+    Page<Attendance> p = attendanceRepository.findByStudentId(studentId,
+            PageRequest.of(page, size, Sort.by("attendanceDate").descending()));
+    return toPageResponse(p);
+  }
+
+  // ── Без пагинации (для аналитики) ─────────────────────────────────────────
+
   public List<AttendanceResponse> getAll() {
     return attendanceRepository.findAll().stream().map(this::toResponse).toList();
   }
@@ -85,10 +105,18 @@ public class AttendanceService {
     return attendanceRepository.findByGroupAndDate(groupId, date).stream().map(this::toResponse).toList();
   }
 
-  /** Количество пропусков студента по предмету */
   public long countAbsences(Long studentId, Long subjectId) {
     return attendanceRepository.countByStudentAndSubjectAndStatus(studentId, subjectId, AttendanceStatus.ABSENT)
             + attendanceRepository.countByStudentAndSubjectAndStatus(studentId, subjectId, AttendanceStatus.EXCUSED);
+  }
+
+  // ── helpers ───────────────────────────────────────────────────────────────
+
+  private PageResponse<AttendanceResponse> toPageResponse(Page<Attendance> p) {
+    return new PageResponse<>(
+            p.getContent().stream().map(this::toResponse).toList(),
+            p.getNumber(), p.getSize(), p.getTotalElements(), p.getTotalPages(), p.isLast()
+    );
   }
 
   private AttendanceResponse toResponse(Attendance a) {

@@ -3,15 +3,16 @@ import axios from "axios";
 const api = axios.create();
 
 const getBaseUrl = () => {
-    const savedUrl = localStorage.getItem("server");
-    if (!savedUrl) return "http://localhost:8080";
-    return savedUrl;
+    const saved = localStorage.getItem("server") || "http://localhost:8080";
+    // BUG FIX: убираем trailing slash чтобы избежать двойного слэша
+    // http://localhost:8080/ + /scheduler/date → http://localhost:8080//scheduler/date → 403
+    return saved.replace(/\/+$/, "");
 };
 
 api.interceptors.request.use(
     (config) => {
         config.baseURL = getBaseUrl();
-        const isAuthRoute = config.url?.startsWith('/auth/');
+        const isAuthRoute = config.url?.startsWith("/auth/");
         if (!isAuthRoute) {
             const token = localStorage.getItem("accessToken");
             if (token) {
@@ -35,7 +36,10 @@ api.interceptors.response.use(
     async (error) => {
         const originalRequest = error.config;
 
-        if (error.response?.status === 403 && !originalRequest._retry) {
+        // BUG FIX: перехватываем только 401 (истёк токен), но НЕ 403 (нет прав).
+        // Раньше 403 тоже уходил на refresh — это маскировало реальные ошибки прав доступа
+        // и создавало двойной 403 в консоли при каждом запросе к /scheduler/date.
+        if (error.response?.status === 401 && !originalRequest._retry) {
             originalRequest._retry = true;
             const rToken = localStorage.getItem("refreshToken");
 
@@ -46,7 +50,7 @@ api.interceptors.response.use(
 
             try {
                 const currentBaseUrl = getBaseUrl();
-                const res = await axios.post(`${currentBaseUrl}auth/refresh`, {
+                const res = await axios.post(`${currentBaseUrl}/auth/refresh`, {
                     refreshToken: rToken,
                 });
 
@@ -57,7 +61,7 @@ api.interceptors.response.use(
                 if (fullname) localStorage.setItem("fullname", fullname);
 
                 window.dispatchEvent(new CustomEvent("token-refreshed", {
-                    detail: accessToken
+                    detail: accessToken,
                 }));
 
                 originalRequest.headers.Authorization = `Bearer ${accessToken}`;
@@ -69,6 +73,7 @@ api.interceptors.response.use(
                 return Promise.reject(refreshError);
             }
         }
+
         return Promise.reject(error);
     }
 );

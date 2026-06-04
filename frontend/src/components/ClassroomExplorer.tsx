@@ -48,12 +48,12 @@ const ClassroomExplorer: React.FC<Props> = ({ searchQuery = "" }) => {
         setLoading(true);
         try {
             const [gData, sData] = await Promise.all([getAllGroups(), fetchStudents()]);
-            setGroups(gData);
-            setStudents(sData.map((s: any) => ({
+            setGroups([...gData].sort((a, b) => a.name.localeCompare(b.name, "ru")));
+            setStudents([...sData].map((s: any) => ({
                 ...s,
                 groupName: s.group?.name || s.groupName || "",
                 groupId: s.group?.id || s.groupId,
-            })));
+            })).sort((a: any, b: any) => a.fullname.localeCompare(b.fullname, "ru")));
         } catch (err: any) {
             message.error(err.message || "Ошибка загрузки");
         } finally {

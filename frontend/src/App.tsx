@@ -18,6 +18,7 @@ import TeachersTable from "./components/TeachersTable";
 import GradesTable from "./components/GradesTable";
 import AttendanceTable from "./components/AttendanceTable";
 import ScheduleTable from "./components/ScheduleTable";
+import ExportPanel from "./components/ExportPanel";
 import AdminPanel from "./components/AdminPanel";
 import AuthPage from "./pages/AuthPage";
 import { useThemeTransition } from "./hooks/useThemeTransition";
@@ -129,7 +130,7 @@ const App: React.FC = () => {
     useEffect(() => {
         const handle = (e: KeyboardEvent) => {
             if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
-            const num = ["1", "2", "3", "4", "5", "6"];
+            const num = ["1", "2", "3", "4", "5", "6", "7"];
             if (num.includes(e.key)) setSelectedKey(e.key);
             if (e.key.toLowerCase() === "g" && e.ctrlKey) { e.preventDefault(); setIsServerModalOpen(true); }
         };
@@ -151,6 +152,7 @@ const App: React.FC = () => {
         "4": "Поиск по ФИО ученика...",
         "5": "Поиск по ФИО...",
         "6": "Поиск по группе / предмету...",
+        "7": "",
     };
 
     const menuItems = [
@@ -160,6 +162,7 @@ const App: React.FC = () => {
         { key: "4", label: <div style={{ display: "flex", justifyContent: "space-between" }}><span>Оценки</span><span style={{ opacity: 0.4, fontSize: "0.8em" }}>4</span></div> },
         { key: "5", label: <div style={{ display: "flex", justifyContent: "space-between" }}><span>Посещаемость</span><span style={{ opacity: 0.4, fontSize: "0.8em" }}>5</span></div> },
         { key: "6", label: <div style={{ display: "flex", justifyContent: "space-between" }}><span>Расписание</span><span style={{ opacity: 0.4, fontSize: "0.8em" }}>6</span></div> },
+        { key: "7", label: <div style={{ display: "flex", justifyContent: "space-between" }}><span>Аналитика</span><span style={{ opacity: 0.4, fontSize: "0.8em" }}>7</span></div> },
     ];
 
     const serverModal = (
@@ -283,37 +286,50 @@ const App: React.FC = () => {
                         </div>
                     </Sider>
 
-                    <Layout style={{ padding: 24 }}>
-                        <Content style={{ background: isDarkMode ? "#141414" : "#fff", padding: 24, borderRadius: 8, minHeight: 280 }}>
+                    <Layout style={{ padding: 24, overflow: "hidden", flex: 1, minHeight: 0 }}>
+                        <Content style={{
+                            background: isDarkMode ? "#141414" : "#fff",
+                            padding: 24,
+                            borderRadius: 8,
+                            height: "100%",
+                            overflow: "hidden",
+                            display: "flex",
+                            flexDirection: "column",
+                        }}>
                             <AnimatePresence mode="wait">
                                 {selectedKey === "1" && (
-                                    <motion.div key="1" {...fade} style={{ height: "100%" }}>
-                                        <ClassroomExplorer searchQuery={searchQuery} role={role} />
+                                    <motion.div key="1" {...fade} style={{ flex: 1, minHeight: 0, overflow: "hidden" }}>
+                                        <ClassroomExplorer searchQuery={searchQuery} />
                                     </motion.div>
                                 )}
                                 {selectedKey === "2" && (
-                                    <motion.div key="2" {...fade} style={{ height: "100%" }}>
+                                    <motion.div key="2" {...fade} style={{ flex: 1, minHeight: 0, overflow: "hidden" }}>
                                         <SubjectsTable highlightId={highlightTable === "2" ? highlightId : null} onHighlightClear={clearHighlight} onTagClick={handleTagClick} searchQuery={searchQuery} />
                                     </motion.div>
                                 )}
                                 {selectedKey === "3" && (
-                                    <motion.div key="3" {...fade} style={{ height: "100%" }}>
+                                    <motion.div key="3" {...fade} style={{ flex: 1, minHeight: 0, overflow: "hidden" }}>
                                         <TeachersTable highlightId={highlightTable === "3" ? highlightId : null} onHighlightClear={clearHighlight} onTagClick={handleTagClick} searchQuery={searchQuery} />
                                     </motion.div>
                                 )}
                                 {selectedKey === "4" && (
-                                    <motion.div key="4" {...fade} style={{ height: "100%" }}>
+                                    <motion.div key="4" {...fade} style={{ flex: 1, minHeight: 0, overflow: "hidden" }}>
                                         <GradesTable highlightId={highlightTable === "4" ? highlightId : null} onHighlightClear={clearHighlight} onTagClick={handleTagClick} searchQuery={searchQuery} />
                                     </motion.div>
                                 )}
                                 {selectedKey === "5" && (
-                                    <motion.div key="5" {...fade} style={{ height: "100%" }}>
+                                    <motion.div key="5" {...fade} style={{ flex: 1, minHeight: 0, overflow: "hidden" }}>
                                         <AttendanceTable searchQuery={searchQuery} onTagClick={handleTagClick} />
                                     </motion.div>
                                 )}
                                 {selectedKey === "6" && (
-                                    <motion.div key="6" {...fade} style={{ height: "100%" }}>
+                                    <motion.div key="6" {...fade} style={{ flex: 1, minHeight: 0, overflow: "hidden" }}>
                                         <ScheduleTable searchQuery={searchQuery} onTagClick={handleTagClick} />
+                                    </motion.div>
+                                )}
+                                {selectedKey === "7" && (
+                                    <motion.div key="7" {...fade} style={{ flex: 1, minHeight: 0, overflow: "hidden" }}>
+                                        <ExportPanel />
                                     </motion.div>
                                 )}
                             </AnimatePresence>
