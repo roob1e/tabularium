@@ -19,6 +19,7 @@ import GradesTable from "./components/GradesTable";
 import AttendanceTable from "./components/AttendanceTable";
 import ScheduleTable from "./components/ScheduleTable";
 import ExportPanel from "./components/ExportPanel";
+import QueryBuilder from "./components/QueryBuilder";
 import AdminPanel from "./components/AdminPanel";
 import AuthPage from "./pages/AuthPage";
 import { useThemeTransition } from "./hooks/useThemeTransition";
@@ -130,7 +131,7 @@ const App: React.FC = () => {
     useEffect(() => {
         const handle = (e: KeyboardEvent) => {
             if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
-            const num = ["1", "2", "3", "4", "5", "6", "7"];
+            const num = ["1", "2", "3", "4", "5", "6", "7", "8"];
             if (num.includes(e.key)) setSelectedKey(e.key);
             if (e.key.toLowerCase() === "g" && e.ctrlKey) { e.preventDefault(); setIsServerModalOpen(true); }
         };
@@ -153,6 +154,7 @@ const App: React.FC = () => {
         "5": "Поиск по ФИО...",
         "6": "Поиск по группе / предмету...",
         "7": "",
+        "8": "",
     };
 
     const menuItems = [
@@ -163,6 +165,7 @@ const App: React.FC = () => {
         { key: "5", label: <div style={{ display: "flex", justifyContent: "space-between" }}><span>Посещаемость</span><span style={{ opacity: 0.4, fontSize: "0.8em" }}>5</span></div> },
         { key: "6", label: <div style={{ display: "flex", justifyContent: "space-between" }}><span>Расписание</span><span style={{ opacity: 0.4, fontSize: "0.8em" }}>6</span></div> },
         { key: "7", label: <div style={{ display: "flex", justifyContent: "space-between" }}><span>Аналитика</span><span style={{ opacity: 0.4, fontSize: "0.8em" }}>7</span></div> },
+        { key: "8", label: <div style={{ display: "flex", justifyContent: "space-between" }}><span>Фильтры</span><span style={{ opacity: 0.4, fontSize: "0.8em" }}>8</span></div> },
     ];
 
     const serverModal = (
@@ -330,6 +333,11 @@ const App: React.FC = () => {
                                 {selectedKey === "7" && (
                                     <motion.div key="7" {...fade} style={{ flex: 1, minHeight: 0, overflow: "hidden" }}>
                                         <ExportPanel />
+                                    </motion.div>
+                                )}
+                                {selectedKey === "8" && (
+                                    <motion.div key="8" {...fade} style={{ flex: 1, minHeight: 0, overflow: "hidden" }}>
+                                        <QueryBuilder username={fullname ?? "default"} />
                                     </motion.div>
                                 )}
                             </AnimatePresence>

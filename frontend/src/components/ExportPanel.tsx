@@ -19,9 +19,6 @@ import dayjs from "dayjs";
 
 const { Title, Text } = Typography;
 
-// ── Высота таблицы через window.innerHeight ───────────────────────────────────
-// Header ~64, Sider padding ~48, Content padding ~48, tab bar ~46, фильтр ~60, stats ~80
-// Вычитаем всё это из высоты окна.
 const useTableHeight = (extraOffset = 0) => {
     const [h, setH] = useState(() => window.innerHeight - 320 - extraOffset);
     useEffect(() => {
@@ -32,8 +29,6 @@ const useTableHeight = (extraOffset = 0) => {
     }, [extraOffset]);
     return h;
 };
-
-// ── helpers ───────────────────────────────────────────────────────────────────
 
 const gradeColor = (g: number) => {
     if (g >= 9) return "green";
@@ -47,8 +42,6 @@ const avgOf = (data: GradeResponse[]) =>
     data.length > 0
         ? (data.reduce((s, g) => s + g.grade, 0) / data.length).toFixed(2)
         : null;
-
-// ── Shared: статистика сверху ─────────────────────────────────────────────────
 
 const StatsRow: React.FC<{ data: GradeResponse[] }> = ({ data }) => {
     const a = avgOf(data);
@@ -67,8 +60,6 @@ const StatsRow: React.FC<{ data: GradeResponse[] }> = ({ data }) => {
         </Row>
     );
 };
-
-// ── Shared: колонки таблицы оценок ────────────────────────────────────────────
 
 const gradeColumns = (showSubject = true, showStudent = true) => [
     ...(showStudent ? [{
@@ -127,17 +118,12 @@ const tableSummary = (pageData: readonly GradeResponse[]) => {
     );
 };
 
-// ── Пустое состояние ──────────────────────────────────────────────────────────
-
 const EmptyHint: React.FC<{ icon: React.ReactNode; text: string }> = ({ icon, text }) => (
-    <div style={{ padding: "60px 0", display: "flex", flexDirection: "column",
-        alignItems: "center", gap: 12, opacity: 0.4 }}>
+    <div style={{ padding: "60px 0", display: "flex", flexDirection: "column", alignItems: "center", gap: 12, opacity: 0.4 }}>
         <span style={{ fontSize: 52 }}>{icon}</span>
         <Text>{text}</Text>
     </div>
 );
-
-// ── Tab 1: по группе + предмету ───────────────────────────────────────────────
 
 const GroupSubjectTab: React.FC<{
     groups: { id: number; name: string }[];
@@ -190,8 +176,7 @@ const GroupSubjectTab: React.FC<{
 
     return (
         <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-            <Card size="small" style={{ borderColor: token.colorBorderSecondary }}
-                  styles={{ body: { padding: "12px 16px" } }}>
+            <Card size="small" style={{ borderColor: token.colorBorderSecondary }} styles={{ body: { padding: "12px 16px" } }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
                     <FilterOutlined style={{ color: token.colorPrimary }} />
                     <Select placeholder="Группа" style={{ width: 160 }} showSearch optionFilterProp="label"
@@ -250,8 +235,6 @@ const GroupSubjectTab: React.FC<{
     );
 };
 
-// ── Tab 2: по учащемуся ───────────────────────────────────────────────────────
-
 const StudentTab: React.FC<{
     students: { id: number; fullname: string; groupName?: string }[];
     subjects: { id: number; name: string }[];
@@ -263,6 +246,8 @@ const StudentTab: React.FC<{
     const [data, setData] = useState<GradeResponse[]>([]);
     const [loading, setLoading] = useState(false);
     const [shown, setShown] = useState(false);
+    const [xlsLoading, setXlsLoading] = useState(false);
+    const [pdfLoading, setPdfLoading] = useState(false);
 
     const load = async () => {
         if (!studentId) return;
@@ -274,6 +259,29 @@ const StudentTab: React.FC<{
             setData(res.data?.content ?? (Array.isArray(res.data) ? res.data : []));
         } catch (e: any) { message.error("Ошибка: " + (e.response?.data || e.message)); }
         finally { setLoading(false); }
+    };
+
+    const download = async (fmt: "excel" | "pdf") => {
+        if (!studentId) return;
+        const setL = fmt === "excel" ? setXlsLoading : setPdfLoading;
+        setL(true);
+        try {
+            const params: any = { studentId };
+            if (subjectId) params.subjectId = subjectId;
+            const res = await api.get(`/api/export/grades/${fmt}`, {
+                params, responseType: "blob",
+            });
+            const ext = fmt === "excel" ? "xlsx" : "pdf";
+            const mime = fmt === "excel"
+                ? "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                : "application/pdf";
+            const url = URL.createObjectURL(new Blob([res.data], { type: mime }));
+            const a = document.createElement("a");
+            a.href = url; a.download = `grades_${sName}.${ext}`; a.click();
+            URL.revokeObjectURL(url);
+            message.success(`${fmt === "excel" ? "Excel" : "PDF"} скачан`);
+        } catch (e: any) { message.error("Ошибка экспорта: " + e.message); }
+        finally { setL(false); }
     };
 
     const sName = students.find(s => s.id === studentId)?.fullname ?? "";
@@ -288,8 +296,7 @@ const StudentTab: React.FC<{
 
     return (
         <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-            <Card size="small" style={{ borderColor: token.colorBorderSecondary }}
-                  styles={{ body: { padding: "12px 16px" } }}>
+            <Card size="small" style={{ borderColor: token.colorBorderSecondary }} styles={{ body: { padding: "12px 16px" } }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
                     <UserOutlined style={{ color: token.colorPrimary }} />
                     <Select placeholder="Учащийся" style={{ width: 220 }} showSearch optionFilterProp="label"
@@ -307,6 +314,17 @@ const StudentTab: React.FC<{
                     <Button type="primary" icon={<EyeOutlined />} disabled={!studentId} loading={loading} onClick={load}>
                         Показать
                     </Button>
+                    <Divider type="vertical" style={{ height: 24, margin: "0 4px" }} />
+                    <Tooltip title={!studentId ? "Выберите учащегося" : undefined}>
+                        <Button icon={<FileExcelOutlined />} disabled={!studentId} loading={xlsLoading}
+                                onClick={() => download("excel")}
+                                style={studentId ? { color: "#217346", borderColor: "#217346" } : {}}>Excel</Button>
+                    </Tooltip>
+                    <Tooltip title={!studentId ? "Выберите учащегося" : undefined}>
+                        <Button icon={<FilePdfOutlined />} disabled={!studentId} loading={pdfLoading}
+                                onClick={() => download("pdf")}
+                                style={studentId ? { color: "#d4380d", borderColor: "#d4380d" } : {}}>PDF</Button>
+                    </Tooltip>
                 </div>
             </Card>
 
@@ -314,10 +332,20 @@ const StudentTab: React.FC<{
             {shown && loading && <div style={{ padding: "60px 0", display: "flex", justifyContent: "center" }}><Spin size="large" /></div>}
             {shown && !loading && (
                 <>
-                    <Space wrap size={6}>
-                        <Title level={5} style={{ margin: 0 }}>{sName}</Title>
-                        {subName && <Tag color="purple">{subName}</Tag>}
-                    </Space>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 8 }}>
+                        <Space wrap size={6}>
+                            <Title level={5} style={{ margin: 0 }}>{sName}</Title>
+                            {subName && <Tag color="purple">{subName}</Tag>}
+                        </Space>
+                        <Space>
+                            <Button size="small" icon={<FileExcelOutlined />} disabled={data.length === 0}
+                                    loading={xlsLoading} onClick={() => download("excel")}
+                                    style={data.length > 0 ? { color: "#217346", borderColor: "#217346" } : {}}>Скачать Excel</Button>
+                            <Button size="small" icon={<FilePdfOutlined />} disabled={data.length === 0}
+                                    loading={pdfLoading} onClick={() => download("pdf")}
+                                    style={data.length > 0 ? { color: "#d4380d", borderColor: "#d4380d" } : {}}>Скачать PDF</Button>
+                        </Space>
+                    </div>
                     <StatsRow data={data} />
                     {!subjectId && Object.keys(bySubject).length > 1 && (
                         <Card size="small" title={<Text strong style={{ fontSize: 13 }}>Средний балл по предметам</Text>}>
@@ -345,8 +373,6 @@ const StudentTab: React.FC<{
         </div>
     );
 };
-
-// ── Tab 3: статистика ─────────────────────────────────────────────────────────
 
 interface StudentStats {
     studentId: number;
@@ -413,6 +439,31 @@ const StatisticsTab: React.FC<{
             setStats(result);
         } catch (e: any) { message.error("Ошибка: " + (e.response?.data || e.message)); }
         finally { setLoading(false); }
+    };
+
+    const downloadCSV = () => {
+        if (stats.length === 0) return;
+        const headers = ["Учащийся", "Группа", "Средний балл", "Плохих оценок", "Всего оценок", "Пропуски", "Всего посещений", "Опозданий", "Статус риска"];
+        const rows = stats.map(s => [
+            s.studentName,
+            s.groupName,
+            s.avgGrade || "0",
+            s.badGrades,
+            s.totalGrades,
+            s.absences,
+            s.totalAttendance,
+            s.lates,
+            riskLevel(s) === "high" ? "Высокий риск" : riskLevel(s) === "medium" ? "Требует внимания" : "Норма"
+        ]);
+        const content = [headers, ...rows].map(e => e.join(";")).join("\n");
+        const blob = new Blob(["\uFEFF" + content], { type: "text/csv;charset=utf-8;" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `analytics_statistics.csv`;
+        a.click();
+        URL.revokeObjectURL(url);
+        message.success("Экспорт в CSV выполнен");
     };
 
     const riskLevel = (s: StudentStats): "high" | "medium" | "low" => {
@@ -490,8 +541,7 @@ const StatisticsTab: React.FC<{
 
     return (
         <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-            <Card size="small" style={{ borderColor: token.colorBorderSecondary }}
-                  styles={{ body: { padding: "12px 16px" } }}>
+            <Card size="small" style={{ borderColor: token.colorBorderSecondary }} styles={{ body: { padding: "12px 16px" } }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
                     <WarningOutlined style={{ color: "#fa8c16" }} />
                     <Text strong>Анализ успеваемости и посещаемости:</Text>
@@ -501,6 +551,9 @@ const StatisticsTab: React.FC<{
                     <Button type="primary" icon={<EyeOutlined />} loading={loading} onClick={load}>
                         Показать
                     </Button>
+                    <Divider type="vertical" style={{ height: 24, margin: "0 4px" }} />
+                    <Button icon={<FileExcelOutlined />} disabled={stats.length === 0} onClick={downloadCSV}
+                            style={stats.length > 0 ? { color: "#217346", borderColor: "#217346" } : {}}>Экспорт CSV</Button>
                 </div>
             </Card>
 
@@ -509,30 +562,32 @@ const StatisticsTab: React.FC<{
             {shown && !loading && (
                 <>
                     {stats.length > 0 && (
-                        <Row gutter={16}>
-                            <Col><Statistic title="Учащихся" value={stats.length} /></Col>
-                            <Col>
-                                <Statistic title="Высокий риск" value={highRisk.length}
-                                           valueStyle={{ color: highRisk.length > 0 ? "#cf1322" : undefined }}
-                                           prefix={highRisk.length > 0 ? <WarningOutlined /> : undefined} />
-                            </Col>
-                            <Col>
-                                <Statistic title="Требуют внимания" value={medRisk.length}
-                                           valueStyle={{ color: medRisk.length > 0 ? "#d46b08" : undefined }} />
-                            </Col>
-                            <Col>
-                                <Statistic title="Средний балл по выборке"
-                                           value={stats.filter(s => s.totalGrades > 0).length > 0
-                                               ? (stats.filter(s => s.totalGrades > 0).reduce((s, r) => s + r.avgGrade, 0) /
-                                                   stats.filter(s => s.totalGrades > 0).length).toFixed(2)
-                                               : "—"} />
-                            </Col>
-                        </Row>
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 8 }}>
+                            <Row gutter={16} style={{ flex: 1 }}>
+                                <Col><Statistic title="Учащихся" value={stats.length} /></Col>
+                                <Col>
+                                    <Statistic title="Высокий риск" value={highRisk.length}
+                                               valueStyle={{ color: highRisk.length > 0 ? "#cf1322" : undefined }}
+                                               prefix={highRisk.length > 0 ? <WarningOutlined /> : undefined} />
+                                </Col>
+                                <Col>
+                                    <Statistic title="Требуют внимания" value={medRisk.length}
+                                               valueStyle={{ color: medRisk.length > 0 ? "#d46b08" : undefined }} />
+                                </Col>
+                                <Col>
+                                    <Statistic title="Средний балл по выборке"
+                                               value={stats.filter(s => s.totalGrades > 0).length > 0
+                                                   ? (stats.filter(s => s.totalGrades > 0).reduce((s, r) => s + r.avgGrade, 0) /
+                                                       stats.filter(s => s.totalGrades > 0).length).toFixed(2)
+                                                   : "—"} />
+                                </Col>
+                            </Row>
+                            <Button size="small" icon={<FileExcelOutlined />} disabled={stats.length === 0} onClick={downloadCSV}
+                                    style={stats.length > 0 ? { color: "#217346", borderColor: "#217346" } : {}}>Скачать CSV (Excel)</Button>
+                        </div>
                     )}
                     {highRisk.length > 0 && (
-                        <Alert type="error" showIcon
-                               message={`${highRisk.length} учащихся в зоне высокого риска`}
-                               description={highRisk.map(s => s.studentName).join(", ")} />
+                        <Alert type="error" showIcon message={`${highRisk.length} учащихся в зоне высокого риска`} description={highRisk.map(s => s.studentName).join(", ")} />
                     )}
                     {stats.length === 0
                         ? <Empty description="Нет данных" />
@@ -547,8 +602,6 @@ const StatisticsTab: React.FC<{
         </div>
     );
 };
-
-// ── Root ──────────────────────────────────────────────────────────────────────
 
 const ExportPanel: React.FC = () => {
     const [groups, setGroups]     = useState<{ id: number; name: string }[]>([]);

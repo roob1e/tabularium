@@ -4,8 +4,6 @@ const api = axios.create();
 
 const getBaseUrl = () => {
     const saved = localStorage.getItem("server") || "http://localhost:8080";
-    // BUG FIX: убираем trailing slash чтобы избежать двойного слэша
-    // http://localhost:8080/ + /scheduler/date → http://localhost:8080//scheduler/date → 403
     return saved.replace(/\/+$/, "");
 };
 
@@ -28,7 +26,44 @@ const handleCriticalAuthError = () => {
     localStorage.removeItem("accessToken");
     localStorage.removeItem("refreshToken");
     localStorage.removeItem("fullname");
-    window.dispatchEvent(new Event("force-logout"));
+    localStorage.removeItem("role");
+    // Диспатчим один раз — дебаунс через флаг
+    if (!(window as any).__loggingOut) {
+        (window as any).__loggingOut = true;
+        window.dispatchEvent(new Event("force-logout"));
+        setTimeout(() => { (window as any).__loggingOut = false; }, 2000);
+    }
+};
+
+// Мьютекс: если refresh уже идёт — все остальные 401 ждут его результата
+let refreshPromise: Promise<string> | null = null;
+
+const doRefresh = async (): Promise<string> => {
+    const rToken = localStorage.getItem("refreshToken");
+    if (!rToken) {
+        handleCriticalAuthError();
+        throw new Error("No refresh token");
+    }
+
+    try {
+        const res = await axios.post(`${getBaseUrl()}/auth/refresh`, {
+            refreshToken: rToken,
+        });
+
+        const { accessToken, refreshToken, fullname } = res.data;
+        localStorage.setItem("accessToken", accessToken);
+        if (refreshToken) localStorage.setItem("refreshToken", refreshToken);
+        if (fullname)     localStorage.setItem("fullname", fullname);
+
+        window.dispatchEvent(new CustomEvent("token-refreshed", { detail: accessToken }));
+        return accessToken;
+    } catch {
+        // Refresh не удался (токен протух или не в БД) — принудительный логаут
+        handleCriticalAuthError();
+        throw new Error("Refresh failed");
+    } finally {
+        refreshPromise = null;
+    }
 };
 
 api.interceptors.response.use(
@@ -36,41 +71,20 @@ api.interceptors.response.use(
     async (error) => {
         const originalRequest = error.config;
 
-        // BUG FIX: перехватываем только 401 (истёк токен), но НЕ 403 (нет прав).
-        // Раньше 403 тоже уходил на refresh — это маскировало реальные ошибки прав доступа
-        // и создавало двойной 403 в консоли при каждом запросе к /scheduler/date.
         if (error.response?.status === 401 && !originalRequest._retry) {
             originalRequest._retry = true;
-            const rToken = localStorage.getItem("refreshToken");
-
-            if (!rToken) {
-                handleCriticalAuthError();
-                return Promise.reject(error);
-            }
 
             try {
-                const currentBaseUrl = getBaseUrl();
-                const res = await axios.post(`${currentBaseUrl}/auth/refresh`, {
-                    refreshToken: rToken,
-                });
-
-                const { accessToken, refreshToken, fullname } = res.data;
-
-                localStorage.setItem("accessToken", accessToken);
-                if (refreshToken) localStorage.setItem("refreshToken", refreshToken);
-                if (fullname) localStorage.setItem("fullname", fullname);
-
-                window.dispatchEvent(new CustomEvent("token-refreshed", {
-                    detail: accessToken,
-                }));
-
-                originalRequest.headers.Authorization = `Bearer ${accessToken}`;
-                originalRequest.baseURL = currentBaseUrl;
-
+                // Если refresh уже выполняется — ждём его, не запускаем новый
+                if (!refreshPromise) {
+                    refreshPromise = doRefresh();
+                }
+                const newToken = await refreshPromise;
+                originalRequest.headers.Authorization = `Bearer ${newToken}`;
+                originalRequest.baseURL = getBaseUrl();
                 return axios(originalRequest);
-            } catch (refreshError) {
-                handleCriticalAuthError();
-                return Promise.reject(refreshError);
+            } catch {
+                return Promise.reject(error);
             }
         }
 
