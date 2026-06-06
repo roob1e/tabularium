@@ -17,66 +17,87 @@ import java.util.List;
 @RequestMapping("/api/export")
 @RequiredArgsConstructor
 public class ExportController {
-  private final ExportService exportService;
-  private final GradeService gradeService;
 
-  /**
-   * GET /api/export/grades/preview?groupId=&subjectId=
-   * Превью данных — те же данные что пойдут в Excel/PDF,
-   * но в виде JSON для отображения на фронте перед экспортом.
-   */
+  private final ExportService exportService;
+  private final GradeService  gradeService;
+
+  // ── Grades: по группе + предмет ──────────────────────────────────────────
+
   @GetMapping("/grades/preview")
   public ResponseEntity<List<GradeResponse>> previewGrades(
-          @RequestParam Long groupId,
-          @RequestParam Long subjectId
-  ) {
-    try {
-      List<GradeResponse> data = gradeService.getGradesByGroupAndSubject(groupId, subjectId);
-      return ResponseEntity.ok(data);
-    } catch (Exception e) {
-      log.error("Preview error: {}", e.getMessage(), e);
-      return ResponseEntity.internalServerError().build();
-    }
+          @RequestParam Long groupId, @RequestParam Long subjectId) {
+    try { return ResponseEntity.ok(gradeService.getGradesByGroupAndSubject(groupId, subjectId)); }
+    catch (Exception e) { log.error("Grades preview error", e); return ResponseEntity.internalServerError().build(); }
   }
 
-  /**
-   * GET /api/export/grades/excel?groupId=&subjectId=
-   */
   @GetMapping("/grades/excel")
   public ResponseEntity<byte[]> exportGradesExcel(
-          @RequestParam Long groupId,
-          @RequestParam Long subjectId
-  ) {
+          @RequestParam Long groupId, @RequestParam Long subjectId) {
     try {
-      byte[] data = exportService.exportGradesToExcel(groupId, subjectId);
-      return ResponseEntity.ok()
-              .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=grades.xlsx")
-              .contentType(MediaType.parseMediaType(
-                      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
-              .body(data);
-    } catch (Exception e) {
-      log.error("Excel export error: {}", e.getMessage(), e);
-      return ResponseEntity.internalServerError().build();
-    }
+      return xlsxResponse(exportService.exportGradesToExcel(groupId, subjectId), "grades.xlsx");
+    } catch (Exception e) { log.error("Grades Excel error", e); return ResponseEntity.internalServerError().build(); }
   }
 
-  /**
-   * GET /api/export/grades/pdf?groupId=&subjectId=
-   */
   @GetMapping("/grades/pdf")
   public ResponseEntity<byte[]> exportGradesPdf(
-          @RequestParam Long groupId,
-          @RequestParam Long subjectId
-  ) {
+          @RequestParam Long groupId, @RequestParam Long subjectId) {
     try {
-      byte[] data = exportService.exportGradesToPdf(groupId, subjectId);
-      return ResponseEntity.ok()
-              .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=grades.pdf")
-              .contentType(MediaType.APPLICATION_PDF)
-              .body(data);
-    } catch (Exception e) {
-      log.error("PDF export error: {}", e.getMessage(), e);
-      return ResponseEntity.internalServerError().build();
-    }
+      return pdfResponse(exportService.exportGradesToPdf(groupId, subjectId), "grades.pdf");
+    } catch (Exception e) { log.error("Grades PDF error", e); return ResponseEntity.internalServerError().build(); }
+  }
+
+  // ── Grades: по учащемуся ─────────────────────────────────────────────────
+
+  @GetMapping("/grades/student/excel")
+  public ResponseEntity<byte[]> exportGradesByStudentExcel(
+          @RequestParam Long studentId,
+          @RequestParam(required = false) Long subjectId) {
+    try {
+      return xlsxResponse(exportService.exportGradesByStudentToExcel(studentId, subjectId), "grades_student.xlsx");
+    } catch (Exception e) { log.error("Student grades Excel error", e); return ResponseEntity.internalServerError().build(); }
+  }
+
+  @GetMapping("/grades/student/pdf")
+  public ResponseEntity<byte[]> exportGradesByStudentPdf(
+          @RequestParam Long studentId,
+          @RequestParam(required = false) Long subjectId) {
+    try {
+      return pdfResponse(exportService.exportGradesByStudentToPdf(studentId, subjectId), "grades_student.pdf");
+    } catch (Exception e) { log.error("Student grades PDF error", e); return ResponseEntity.internalServerError().build(); }
+  }
+
+  // ── Statistics ────────────────────────────────────────────────────────────
+
+  @GetMapping("/statistics/excel")
+  public ResponseEntity<byte[]> exportStatisticsExcel(
+          @RequestParam(required = false) Long groupId) {
+    try {
+      return xlsxResponse(exportService.exportStatisticsToExcel(groupId), "statistics.xlsx");
+    } catch (Exception e) { log.error("Statistics Excel error", e); return ResponseEntity.internalServerError().build(); }
+  }
+
+  @GetMapping("/statistics/pdf")
+  public ResponseEntity<byte[]> exportStatisticsPdf(
+          @RequestParam(required = false) Long groupId) {
+    try {
+      return pdfResponse(exportService.exportStatisticsToPdf(groupId), "statistics.pdf");
+    } catch (Exception e) { log.error("Statistics PDF error", e); return ResponseEntity.internalServerError().build(); }
+  }
+
+  // ── helpers ───────────────────────────────────────────────────────────────
+
+  private ResponseEntity<byte[]> xlsxResponse(byte[] data, String filename) {
+    return ResponseEntity.ok()
+            .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
+            .contentType(MediaType.parseMediaType(
+                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
+            .body(data);
+  }
+
+  private ResponseEntity<byte[]> pdfResponse(byte[] data, String filename) {
+    return ResponseEntity.ok()
+            .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
+            .contentType(MediaType.APPLICATION_PDF)
+            .body(data);
   }
 }

@@ -28,12 +28,28 @@ public class GenericFilterParser {
       switch (b.getType()) {
         case "IF" -> {
           Predicate p = buildPredicate(b);
-          if (pending != null && !current.isEmpty()) {
-            p = applyLogic(pending, flatten(current), p);
-            current.clear();
+
+          if (pending != null) {
+            if ("NOT".equals(pending)) {
+              // NOT применяется к текущему предикату
+              p = cb.not(p);
+              if (!current.isEmpty()) {
+                // AND с предыдущими предикатами
+                current.add(p);
+              } else {
+                current.add(p);
+              }
+            } else if (!current.isEmpty()) {
+              p = applyLogic(pending, flatten(current), p);
+              current.clear();
+              current.add(p);
+            } else {
+              current.add(p);
+            }
+          } else {
+            current.add(p);
           }
           pending = null;
-          current.add(p);
         }
         case "AND" -> pending = "AND";
         case "OR"  -> pending = "OR";
@@ -62,7 +78,7 @@ public class GenericFilterParser {
   }
 
   private Predicate flatten(List<Predicate> list) {
-    if (list.isEmpty())  return cb.conjunction();
+    if (list.isEmpty())   return cb.conjunction();
     if (list.size() == 1) return list.get(0);
     return cb.and(list.toArray(new Predicate[0]));
   }
@@ -97,9 +113,9 @@ public class GenericFilterParser {
 
   private Object castValue(Path<?> path, String val) {
     Class<?> t = path.getJavaType();
-    if (t == Integer.class   || t == int.class)  return Integer.parseInt(val);
-    if (t == Long.class      || t == long.class) return Long.parseLong(val);
-    if (t == LocalDate.class)                    return LocalDate.parse(val);
+    if (t == Integer.class || t == int.class)  return Integer.parseInt(val);
+    if (t == Long.class    || t == long.class) return Long.parseLong(val);
+    if (t == LocalDate.class)                   return LocalDate.parse(val);
     return val;
   }
 }

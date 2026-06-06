@@ -4,21 +4,26 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="073918de-16ad-41dc-a7be-ae3bc4813620" name="Changes" comment="Added attendace, schedule, reworked marks ans so on...">
-      <change afterPath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/controller/FilterController.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/dto/FilterBlockDto.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/dto/FilterExecuteRequest.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/filter/EntityRegistry.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/filter/GenericFilterParser.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/filter/UniversalPathResolver.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/repository/GenericFilterRepository.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/components/QueryBuilder.tsx" afterDir="false" />
+    <list default="true" id="073918de-16ad-41dc-a7be-ae3bc4813620" name="Changes" comment="Added FilterConstructor">
+      <change beforePath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/controller/FilterController.java" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/controller/FilterController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/filter/GenericFilterParser.java" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/filter/GenericFilterParser.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.bin/tauri" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/.bin/tauri" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.bin/tsc" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/.bin/tsc" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.bin/tsserver" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/.bin/tsserver" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.bin/vite" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/.bin/vite" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/@ant-design_icons.js" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/.vite/deps/@ant-design_icons.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/_metadata.json" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/.vite/deps/_metadata.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/antd.js" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/.vite/deps/antd.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/antd.js.map" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/.vite/deps/antd.js.map" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/App.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/App.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/api/api.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/api/api.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pnpm-lock.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/pnpm-lock.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-tauri/Cargo.lock" beforeDir="false" afterPath="$PROJECT_DIR$/src-tauri/Cargo.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-tauri/Cargo.toml" beforeDir="false" afterPath="$PROJECT_DIR$/src-tauri/Cargo.toml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-tauri/capabilities/default.json" beforeDir="false" afterPath="$PROJECT_DIR$/src-tauri/capabilities/default.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-tauri/src/lib.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src-tauri/src/lib.rs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/components/ExportPanel.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/ExportPanel.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../server-manager/application.yml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/QueryBuilder.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/QueryBuilder.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -186,6 +191,7 @@
       <workItem from="1780619830208" duration="608000" />
       <workItem from="1780661390130" duration="371000" />
       <workItem from="1780668857578" duration="4725000" />
+      <workItem from="1780692627312" duration="4404000" />
     </task>
     <task id="LOCAL-00001" summary="test">
       <option name="closed" value="true" />
@@ -299,7 +305,15 @@
       <option name="project" value="LOCAL" />
       <updated>1780505907434</updated>
     </task>
-    <option name="localTasksCounter" value="15" />
+    <task id="LOCAL-00015" summary="Added FilterConstructor">
+      <option name="closed" value="true" />
+      <created>1780692678060</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1780692678060</updated>
+    </task>
+    <option name="localTasksCounter" value="16" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -333,6 +347,7 @@
     <MESSAGE value="Added grades' table" />
     <MESSAGE value="Improved UI" />
     <MESSAGE value="Added attendace, schedule, reworked marks ans so on..." />
-    <option name="LAST_COMMIT_MESSAGE" value="Added attendace, schedule, reworked marks ans so on..." />
+    <MESSAGE value="Added FilterConstructor" />
+    <option name="LAST_COMMIT_MESSAGE" value="Added FilterConstructor" />
   </component>
 </project>
