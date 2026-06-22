@@ -1,5 +1,4 @@
-use std::io::{BufRead, BufReader, Read, Write};
-use std::net::TcpStream;
+use std::io::{BufRead, BufReader};
 use std::process::{Child, Command, Stdio};
 use std::sync::{Arc, Mutex};
 use std::time::Duration;
@@ -43,12 +42,22 @@ pub fn start_spring(
         java, jar.display(), jar_dir.display()
     ));
 
-    let mut child = Command::new(&java)
-        .arg("-jar")
+    let mut cmd = Command::new(&java);
+    cmd.arg("-jar")
         .arg(&jar)
         .current_dir(&jar_dir)
         .stdout(Stdio::piped())
-        .stderr(Stdio::piped())
+        .stderr(Stdio::piped());
+
+    // На Windows скрываем консольное окно
+    #[cfg(target_os = "windows")]
+    {
+        use std::os::windows::process::CommandExt;
+        const CREATE_NO_WINDOW: u32 = 0x08000000;
+        cmd.creation_flags(CREATE_NO_WINDOW);
+    }
+
+    let mut child = cmd
         .spawn()
         .map_err(|e| format!("Не удалось запустить java ({}): {}", java, e))?;
 
@@ -83,89 +92,24 @@ pub fn stop_spring(
     app_handle: AppHandle,
     shared: tauri::State<SharedProcess>,
 ) -> Result<(), String> {
-    let mut guard = shared.0.lock().unwrap();
-    emit(&app_handle, "spring-log", "=== Остановка Spring ===");
+    let child = {
+        let mut guard = shared.0.lock().unwrap();
+        guard.take()
+    };
 
-    match actuator_shutdown() {
-        Ok(_) => {
-            emit(&app_handle, "spring-log", "✅ Actuator принял команду shutdown.");
-            for i in 0..15 {
-                std::thread::sleep(Duration::from_secs(1));
-                if !port_open(8080) {
-                    if let Some(mut c) = guard.take() { let _ = c.wait(); }
-                    emit(&app_handle, "spring-status", "stopped");
-                    emit(&app_handle, "spring-log", "=== Spring остановлен ===");
-                    return Ok(());
-                }
-                emit(&app_handle, "spring-log", &format!("Ожидание... {} сек", i + 1));
-            }
-            emit(&app_handle, "spring-log", "⚠️ Таймаут — принудительное завершение.");
-            kill_process(&mut guard);
-        }
-        Err(e) => {
-            emit(&app_handle, "spring-log", &format!("❌ Actuator недоступен: {}", e));
-            emit(&app_handle, "spring-log", "Принудительное завершение процесса...");
-            kill_process(&mut guard);
-        }
-    }
+    std::thread::spawn(move || {
+        emit(&app_handle, "spring-log", "=== Остановка Spring ===");
 
-    emit(&app_handle, "spring-status", "stopped");
-    emit(&app_handle, "spring-log", "=== Spring остановлен ===");
+        if let Some(mut c) = child {
+            let _ = c.kill();
+            let _ = c.wait();
+        }
+
+        emit(&app_handle, "spring-status", "stopped");
+        emit(&app_handle, "spring-log", "=== Spring остановлен ===");
+    });
+
     Ok(())
-}
-
-// ─── Вспомогательные функции ─────────────────────────────────────────────────
-
-fn kill_process(guard: &mut std::sync::MutexGuard<Option<Child>>) {
-    if let Some(mut c) = guard.take() {
-        let _ = c.kill();
-        let _ = c.wait();
-    }
-}
-
-fn actuator_shutdown() -> Result<(), String> {
-    let req = "POST /actuator/shutdown HTTP/1.1\r\n\
-        Host: localhost:8080\r\n\
-        User-Agent: Tabularium-Manager/1.0\r\n\
-        Accept: application/json\r\n\
-        Content-Type: application/json\r\n\
-        Content-Length: 0\r\n\
-        Connection: close\r\n\r\n";
-
-    let mut stream = TcpStream::connect("localhost:8080")
-        .map_err(|e| format!("Не удалось подключиться к localhost:8080 — {}", e))?;
-    stream.set_read_timeout(Some(Duration::from_secs(5))).ok();
-    stream.set_write_timeout(Some(Duration::from_secs(5))).ok();
-    stream.write_all(req.as_bytes()).map_err(|e| e.to_string())?;
-
-    let mut resp = Vec::new();
-    let mut buf = [0u8; 1024];
-    loop {
-        match stream.read(&mut buf) {
-            Ok(0) => break,
-            Ok(n) => resp.extend_from_slice(&buf[..n]),
-            Err(e) if e.kind() == std::io::ErrorKind::TimedOut => break,
-            Err(e) => return Err(e.to_string()),
-        }
-    }
-
-    let r = String::from_utf8_lossy(&resp);
-    if r.contains("200 OK") || r.contains("204") || r.contains("Shutting down") {
-        Ok(())
-    } else if r.contains("404") {
-        Err("/actuator/shutdown не настроен на сервере".into())
-    } else if r.contains("401") || r.contains("403") {
-        Err("Требуется аутентификация для /actuator/shutdown".into())
-    } else {
-        Err(format!("Неожиданный ответ: {}", &r[..r.len().min(200)]))
-    }
-}
-
-fn port_open(port: u16) -> bool {
-    TcpStream::connect_timeout(
-        &format!("127.0.0.1:{}", port).parse().unwrap(),
-        Duration::from_millis(200),
-    ).is_ok()
 }
 
 fn emit(app_handle: &AppHandle, event: &str, msg: &str) {

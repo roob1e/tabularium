@@ -4,17 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="073918de-16ad-41dc-a7be-ae3bc4813620" name="Changes" comment="Some fixes">
-      <change beforePath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/security/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/security/SecurityConfig.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/App.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/App.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/ClassroomExplorer.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/ClassroomExplorer.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/QueryBuilder.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/QueryBuilder.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/ScheduleTable.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/ScheduleTable.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/SubjectsTable.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/SubjectsTable.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/TeachersTable.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/TeachersTable.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/main.tsx" afterDir="false" />
-    </list>
+    <list default="true" id="073918de-16ad-41dc-a7be-ae3bc4813620" name="Changes" comment="Some fixes" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -195,7 +185,7 @@
       <workItem from="1782063503532" duration="1866000" />
       <workItem from="1782070105073" duration="64000" />
       <workItem from="1782133704970" duration="1496000" />
-      <workItem from="1782140774315" duration="764000" />
+      <workItem from="1782140774315" duration="874000" />
     </task>
     <task id="LOCAL-00001" summary="test">
       <option name="closed" value="true" />
@@ -325,7 +315,15 @@
       <option name="project" value="LOCAL" />
       <updated>1782135846097</updated>
     </task>
-    <option name="localTasksCounter" value="17" />
+    <task id="LOCAL-00017" summary="Some fixes">
+      <option name="closed" value="true" />
+      <created>1782141554567</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1782141554567</updated>
+    </task>
+    <option name="localTasksCounter" value="18" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">

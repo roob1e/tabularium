@@ -6,6 +6,6 @@ spring:
 server:
   port: 8080
 jwt:
-  secret: 95a6ce93f241eb438036b1f1b2c9001f29df83c898e2511c58da059fe7293a3c14ed9c9d5638be72e568e85e48b68c7ba6cf7a3f72fa99e22b0a7f181647be9e
+  secret: 24668ab0519fc621d2becdc48bf93741f41c4e1d3515c8234e3c3540d4fcff23b5ed667b6c4874ad9bfa6e1b53a46cc7e646a4edbdbc9cfd0d50cd160c91f012
   access-token-expiration: 86400000
   refresh-token-expiration: 604800000

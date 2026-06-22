@@ -1,13 +1,4 @@
-/// Linux installer — поддерживает Debian/Ubuntu (apt) и RHEL/Fedora (dnf).
-///
-/// Ключевые улучшения по сравнению с оригиналом:
-///   1. Поддержка dnf (Fedora/RHEL/CentOS) в дополнение к apt.
-///   2. Проверка Java по версии (содержит "17"), а не через `which java`.
-///   3. sudo_run стримит stdout/stderr в UI — пользователь видит реальные ошибки.
-///   4. Перед apt-get update проверяем пароль отдельной командой (`sudo -S true`).
-///   5. PostgreSQL устанавливается с явной версией (postgresql-14 / postgresql).
-///   6. Запуск сервиса с корректным именем для apt и dnf.
-///   7. Пауза/poll после запуска сервиса — в mod.rs::wait_for_postgres.
+#![cfg(target_os = "linux")]
 
 use std::io::{BufRead, BufReader, Write};
 use std::process::{Command, Stdio};
@@ -33,9 +24,7 @@ fn which(cmd: &str) -> bool {
 
 pub fn find_psql() -> String {
     for path in &["/usr/bin/psql", "/usr/lib/postgresql/14/bin/psql"] {
-        if std::path::Path::new(path).exists() {
-            return path.to_string();
-        }
+        if std::path::Path::new(path).exists() { return path.to_string(); }
     }
     "psql".to_string()
 }
@@ -44,11 +33,7 @@ fn java_version_ok() -> bool {
     Command::new("java").arg("-version")
         .output()
         .map(|o| {
-            let s = format!(
-                "{}{}",
-                String::from_utf8_lossy(&o.stderr),
-                String::from_utf8_lossy(&o.stdout)
-            );
+            let s = format!("{}{}", String::from_utf8_lossy(&o.stderr), String::from_utf8_lossy(&o.stdout));
             s.contains("\"17") || s.contains("openjdk 17")
         })
         .unwrap_or(false)
@@ -56,13 +41,7 @@ fn java_version_ok() -> bool {
 
 // ─── sudo с паролем + стриминг ───────────────────────────────────────────────
 
-/// Запускает команду через sudo -S, пробрасывает вывод в UI.
-/// Возвращает Ok(true) при exit code 0, Ok(false) при ненулевом, Err при системной ошибке.
-fn sudo_stream<R: Runtime>(
-    window: &Window<R>,
-    args: &[&str],
-    pwd: &str,
-) -> Result<bool, String> {
+fn sudo_stream<R: Runtime>(window: &Window<R>, args: &[&str], pwd: &str) -> Result<bool, String> {
     let mut child = Command::new("sudo")
         .arg("-S")
         .args(args)
@@ -72,35 +51,30 @@ fn sudo_stream<R: Runtime>(
         .spawn()
         .map_err(|e| format!("Не удалось запустить sudo: {}", e))?;
 
-    // Передаём пароль через stdin
     if let Some(mut stdin) = child.stdin.take() {
         let _ = stdin.write_all(format!("{}\n", pwd).as_bytes());
     }
-
     if let Some(out) = child.stdout.take() {
         let w = window.clone();
         std::thread::spawn(move || {
-            for line in BufReader::new(out).lines().flatten() {
-                let _ = w.emit("install-log", line);
-            }
+            for line in BufReader::new(out).lines().flatten() { let _ = w.emit("install-log", line); }
         });
     }
     if let Some(err) = child.stderr.take() {
         let w = window.clone();
         std::thread::spawn(move || {
             for line in BufReader::new(err).lines().flatten() {
-                // sudo пишет "password:" в stderr — фильтруем, остальное показываем
                 if !line.contains("[sudo]") && !line.trim_start().starts_with("Password") {
                     let _ = w.emit("install-log", line);
                 }
             }
         });
     }
-
-    child.wait().map(|s| s.success()).map_err(|e| e.to_string())
+    child.wait()
+        .map(|s: std::process::ExitStatus| s.success())
+        .map_err(|e: std::io::Error| e.to_string())
 }
 
-/// Проверяет пароль sudo отдельно, чтобы отличить auth-ошибку от ошибки установки.
 fn check_sudo(pwd: &str) -> bool {
     let Ok(mut child) = Command::new("sudo")
         .args(["-S", "true"])
@@ -125,7 +99,7 @@ pub fn install<R: Runtime>(window: &Window<R>, password: &str) -> Result<(), Str
          и dnf (Fedora, RHEL, CentOS).".to_string()
     })?;
 
-    // 1. Проверяем пароль sudo заранее
+    // 1. Проверяем пароль sudo
     let _ = window.emit("install-log", "Проверка прав sudo...");
     if !check_sudo(password) {
         return Err("Неверный пароль администратора или sudo не настроен.".to_string());
@@ -142,7 +116,7 @@ pub fn install<R: Runtime>(window: &Window<R>, password: &str) -> Result<(), Str
 
 fn install_apt<R: Runtime>(window: &Window<R>, password: &str) -> Result<(), String> {
     // 2. apt-get update
-    let _ = window.emit("install-log", "Обновление списка пакетов (apt-get update)...");
+    let _ = window.emit("install-log", "Обновление списка пакетов...");
     if !sudo_stream(window, &["apt-get", "update", "-y"], password)? {
         return Err("Ошибка при обновлении пакетов (apt-get update).".to_string());
     }
@@ -161,12 +135,10 @@ fn install_apt<R: Runtime>(window: &Window<R>, password: &str) -> Result<(), Str
     // 4. PostgreSQL 14
     let pg_installed = find_psql() != "psql"
         || std::path::Path::new("/usr/lib/postgresql").exists();
-
     if pg_installed {
         let _ = window.emit("install-log", "✅ PostgreSQL уже установлен, пропускаем.");
     } else {
         let _ = window.emit("install-log", "Установка PostgreSQL...");
-        // Пробуем сначала postgresql-14, fallback на postgresql
         let ok = sudo_stream(window, &["apt-get", "install", "-y", "postgresql-14"], password)?
             || sudo_stream(window, &["apt-get", "install", "-y", "postgresql"], password)?;
         if !ok {
@@ -194,31 +166,31 @@ fn install_dnf<R: Runtime>(window: &Window<R>, password: &str) -> Result<(), Str
     }
 
     // 4. PostgreSQL
-    let pg_installed = find_psql() != "psql";
-    if pg_installed {
+    if find_psql() != "psql" {
         let _ = window.emit("install-log", "✅ PostgreSQL уже установлен, пропускаем.");
     } else {
         let _ = window.emit("install-log", "Установка PostgreSQL (postgresql-server)...");
         if !sudo_stream(window, &["dnf", "install", "-y", "postgresql-server", "postgresql"], password)? {
             return Err("Не удалось установить PostgreSQL.".to_string());
         }
-        // Инициализация кластера (требуется на RHEL/Fedora)
+        // Инициализация кластера (обязательно на RHEL/Fedora)
         let _ = window.emit("install-log", "Инициализация кластера PostgreSQL...");
         let _ = sudo_stream(window, &["postgresql-setup", "--initdb"], password);
         let _ = window.emit("install-log", "✅ PostgreSQL установлен.");
     }
 
+    // 5. Запуск сервиса
     start_pg_systemd(window, password)
 }
 
 // ── Общий запуск через systemctl ─────────────────────────────────────────────
 
 fn start_pg_systemd<R: Runtime>(window: &Window<R>, password: &str) -> Result<(), String> {
-    // Проверяем, запущен ли уже
     let pg_running = Command::new("pg_isready")
         .output().map(|o| o.status.success()).unwrap_or(false)
         || Command::new(find_psql().as_str())
             .args(["-U", "postgres", "-c", "SELECT 1"])
+            .env("PGPASSWORD", "postgres")
             .stdout(Stdio::null()).stderr(Stdio::null())
             .status().map(|s| s.success()).unwrap_or(false);
 
@@ -229,15 +201,11 @@ fn start_pg_systemd<R: Runtime>(window: &Window<R>, password: &str) -> Result<()
 
     let _ = window.emit("install-log", "Запуск PostgreSQL через systemctl...");
 
-    // Пробуем имена сервисов в порядке приоритета
     let service_names = ["postgresql@14-main", "postgresql-14", "postgresql"];
     let mut started = false;
     for name in &service_names {
-        // enable + start
         let _ = sudo_stream(window, &["systemctl", "enable", name], password);
-        if sudo_stream(window, &["systemctl", "start", name], password)
-            .unwrap_or(false)
-        {
+        if sudo_stream(window, &["systemctl", "start", name], password).unwrap_or(false) {
             let _ = window.emit("install-log", &format!("✅ Сервис {} запущен.", name));
             started = true;
             break;
@@ -245,11 +213,10 @@ fn start_pg_systemd<R: Runtime>(window: &Window<R>, password: &str) -> Result<()
     }
 
     if !started {
-        return Err(
-            "Не удалось запустить PostgreSQL. \
-             Попробуйте вручную: sudo systemctl start postgresql".to_string()
-        );
+        return Err("Не удалось запустить PostgreSQL. \
+                    Попробуйте вручную: sudo systemctl start postgresql".to_string());
     }
 
+    // Ожидание готовности и настройка БД — в mod.rs::setup_database
     Ok(())
 }
