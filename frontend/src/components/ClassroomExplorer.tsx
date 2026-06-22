@@ -1,7 +1,7 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback, useRef } from "react";
 import {
     Button, Modal, Form, Input, Select, DatePicker,
-    message, Tag, Tooltip, Spin, Empty, theme, Popconfirm
+    message, Tag, Tooltip, Spin, Empty, theme, Popconfirm, Space
 } from "antd";
 import {
     FolderOutlined, FolderOpenOutlined, UserOutlined,
@@ -18,9 +18,11 @@ const { Option } = Select;
 
 interface Props {
     searchQuery?: string;
+    highlightStudentId?: number | null;
+    onHighlightClear?: () => void;
 }
 
-const ClassroomExplorer: React.FC<Props> = ({ searchQuery = "" }) => {
+const ClassroomExplorer: React.FC<Props> = ({ searchQuery = "", highlightStudentId, onHighlightClear }) => {
     const { token } = theme.useToken();
     const isDark = token.colorBgContainer === "#141414" || token.colorBgContainer.toLowerCase() === "#1f1f1f";
 
@@ -28,6 +30,8 @@ const ClassroomExplorer: React.FC<Props> = ({ searchQuery = "" }) => {
     const [students, setStudents] = useState<Student[]>([]);
     const [loading, setLoading] = useState(false);
     const [expandedGroups, setExpandedGroups] = useState<Set<number>>(new Set());
+    const [activeHighlightStudentId, setActiveHighlightStudentId] = useState<number | null>(null);
+    const studentRowRefs = useRef<Record<number, HTMLDivElement | null>>({});
 
     const [isGroupModalOpen, setIsGroupModalOpen] = useState(false);
     const [isEditGroupModalOpen, setIsEditGroupModalOpen] = useState(false);
@@ -76,6 +80,26 @@ const ClassroomExplorer: React.FC<Props> = ({ searchQuery = "" }) => {
             setExpandedGroups(prev => new Set([...prev, ...matchingGroupIds]));
         }
     }, [searchQuery, students]);
+
+    // Обработка перехода из оценок — раскрываем папку группы и подсвечиваем строку
+    useEffect(() => {
+        if (!highlightStudentId || students.length === 0) return;
+        const student = students.find(s => s.id === highlightStudentId);
+        if (!student) return;
+        // Раскрываем группу
+        setExpandedGroups(prev => new Set([...prev, student.groupId]));
+        setActiveHighlightStudentId(highlightStudentId);
+        // Скролл к строке студента после рендера
+        setTimeout(() => {
+            const el = studentRowRefs.current[highlightStudentId];
+            if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
+        }, 120);
+        const timer = setTimeout(() => {
+            setActiveHighlightStudentId(null);
+            onHighlightClear?.();
+        }, 2000);
+        return () => clearTimeout(timer);
+    }, [highlightStudentId, students]);
 
     const toggleGroup = (id: number) => {
         setExpandedGroups(prev => {
@@ -242,41 +266,9 @@ const ClassroomExplorer: React.FC<Props> = ({ searchQuery = "" }) => {
         gap: 8,
     };
 
-    const StudentForm = ({ form: f, onFinish: onFin, submitLabel }: { form: any; onFinish: any; submitLabel: string }) => (
-        <Form form={f} onFinish={onFin} layout="vertical" initialValues={{ prefix: "+375" }}>
-            <Form.Item name="fullname" label="ФИО" rules={[{ required: true }]}>
-                <Input autoComplete="off" autoFocus />
-            </Form.Item>
-            <Form.Item label="Телефон" required>
-                <Input.Group compact>
-                    {prefixSelector("prefix")}
-                    <Form.Item name="phone" noStyle rules={[{ required: true }]}>
-                        <MaskedInput
-                            mask="(00) 000-00-00"
-                            className="ant-input"
-                            style={{
-                                width: "calc(100% - 110px)",
-                                backgroundColor: token.colorBgContainer,
-                                color: token.colorText,
-                                borderColor: token.colorBorder,
-                            }}
-                            autoComplete="off"
-                        />
-                    </Form.Item>
-                </Input.Group>
-            </Form.Item>
-            <Form.Item name="birthdate" label="Дата рождения" rules={[{ required: true }]}>
-                <DatePicker format="DD.MM.YYYY" style={{ width: "100%" }} />
-            </Form.Item>
-            <Form.Item name="groupId" label="Группа" rules={[{ required: true }]}>
-                <Select options={groups.map(g => ({ value: g.id, label: g.name }))} showSearch optionFilterProp="label" />
-            </Form.Item>
-            <Button type="primary" htmlType="submit" block style={{ display: "flex", justifyContent: "center", position: "relative" }}>
-                <span>{submitLabel}</span>
-                <span style={{ opacity: 0.45, position: "absolute", right: 14, fontSize: "0.82em" }}>{shortcutSubmit}</span>
-            </Button>
-        </Form>
-    );
+    // StudentForm вынесен за пределы render через useCallback-мемоизацию пропсов,
+    // но сам компонент объявлен ВНЕ ClassroomExplorer (см. ниже файла).
+    // Здесь передаём нужные данные через пропсы, чтобы не создавать замыкание.
 
     return (
         <div style={{ height: "100%", display: "flex", flexDirection: "column", padding: 10 }}>
@@ -362,7 +354,14 @@ const ClassroomExplorer: React.FC<Props> = ({ searchQuery = "" }) => {
                                                 </div>
                                             ) : (
                                                 groupStudents.map(student => (
-                                                    <div key={student.id} className="explorer-student-row" style={studentRowStyle}>
+                                                    <div key={student.id} className="explorer-student-row"
+                                                         ref={el => { studentRowRefs.current[student.id] = el; }}
+                                                         style={{
+                                                             ...studentRowStyle,
+                                                             ...(student.id === activeHighlightStudentId
+                                                                 ? { background: "rgba(22,119,255,0.12)", borderRadius: 6 }
+                                                                 : {}),
+                                                         }}>
                                                         <UserOutlined style={{ color: textSecondary, fontSize: 13, flexShrink: 0 }} />
                                                         <span style={{ fontSize: 13, color: text, flex: 1, minWidth: 0 }}>
                                                             <span style={{ fontWeight: 500 }}>{student.fullname}</span>
@@ -428,16 +427,65 @@ const ClassroomExplorer: React.FC<Props> = ({ searchQuery = "" }) => {
             </Modal>
 
             <Modal title="Добавить учащегося" open={isStudentModalOpen}
-                   onCancel={() => { setIsStudentModalOpen(false); studentForm.resetFields(); }} footer={null} destroyOnClose>
+                   onCancel={() => { setIsStudentModalOpen(false); studentForm.resetFields(); }} footer={null} afterOpenChange={(open) => { if (!open) studentForm.resetFields(); }}>
                 <div style={{ marginTop: 8 }}>
-                    <StudentForm form={studentForm} onFinish={onStudentFinish} submitLabel="Добавить" />
+                    <Form form={studentForm} onFinish={onStudentFinish} layout="vertical" initialValues={{ prefix: "+375" }}>
+                        <Form.Item name="fullname" label="ФИО" rules={[{ required: true }]}>
+                            <Input autoComplete="off" autoFocus />
+                        </Form.Item>
+                        <Form.Item label="Телефон" required>
+                            <Space.Compact style={{ width: "100%" }}>
+                                {prefixSelector("prefix")}
+                                <Form.Item name="phone" noStyle rules={[{ required: true }]}>
+                                    <MaskedInput mask="(00) 000-00-00" className="ant-input"
+                                                 style={{ width: "calc(100% - 110px)", backgroundColor: token.colorBgContainer, color: token.colorText, borderColor: token.colorBorder }}
+                                                 autoComplete="off" />
+                                </Form.Item>
+                            </Space.Compact>
+                        </Form.Item>
+                        <Form.Item name="birthdate" label="Дата рождения" rules={[{ required: true }]}>
+                            <DatePicker format="DD.MM.YYYY" style={{ width: "100%" }} />
+                        </Form.Item>
+                        <Form.Item name="groupId" label="Группа" rules={[{ required: true }]}>
+                            <Select options={groups.map(g => ({ value: g.id, label: g.name }))} showSearch optionFilterProp="label" />
+                        </Form.Item>
+                        <Button type="primary" htmlType="submit" block style={{ display: "flex", justifyContent: "center", position: "relative" }}>
+                            <span>Добавить</span>
+                            <span style={{ opacity: 0.45, position: "absolute", right: 14, fontSize: "0.82em" }}>{shortcutSubmit}</span>
+                        </Button>
+                    </Form>
                 </div>
             </Modal>
 
             <Modal title="Изменить учащегося" open={isEditStudentModalOpen}
-                   onCancel={() => { setIsEditStudentModalOpen(false); editStudentForm.resetFields(); setEditingStudent(null); }} footer={null} destroyOnClose>
+                   onCancel={() => { setIsEditStudentModalOpen(false); editStudentForm.resetFields(); setEditingStudent(null); }} footer={null}
+                   afterOpenChange={(open) => { if (!open) { editStudentForm.resetFields(); } }}>
                 <div style={{ marginTop: 8 }}>
-                    <StudentForm form={editStudentForm} onFinish={onEditStudentFinish} submitLabel="Сохранить изменения" />
+                    <Form form={editStudentForm} onFinish={onEditStudentFinish} layout="vertical" initialValues={{ prefix: "+375" }}>
+                        <Form.Item name="fullname" label="ФИО" rules={[{ required: true }]}>
+                            <Input autoComplete="off" autoFocus />
+                        </Form.Item>
+                        <Form.Item label="Телефон" required>
+                            <Space.Compact style={{ width: "100%" }}>
+                                {prefixSelector("prefix")}
+                                <Form.Item name="phone" noStyle rules={[{ required: true }]}>
+                                    <MaskedInput mask="(00) 000-00-00" className="ant-input"
+                                                 style={{ width: "calc(100% - 110px)", backgroundColor: token.colorBgContainer, color: token.colorText, borderColor: token.colorBorder }}
+                                                 autoComplete="off" />
+                                </Form.Item>
+                            </Space.Compact>
+                        </Form.Item>
+                        <Form.Item name="birthdate" label="Дата рождения" rules={[{ required: true }]}>
+                            <DatePicker format="DD.MM.YYYY" style={{ width: "100%" }} />
+                        </Form.Item>
+                        <Form.Item name="groupId" label="Группа" rules={[{ required: true }]}>
+                            <Select options={groups.map(g => ({ value: g.id, label: g.name }))} showSearch optionFilterProp="label" />
+                        </Form.Item>
+                        <Button type="primary" htmlType="submit" block style={{ display: "flex", justifyContent: "center", position: "relative" }}>
+                            <span>Сохранить изменения</span>
+                            <span style={{ opacity: 0.45, position: "absolute", right: 14, fontSize: "0.82em" }}>{shortcutSubmit}</span>
+                        </Button>
+                    </Form>
                 </div>
             </Modal>
         </div>

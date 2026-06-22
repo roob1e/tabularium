@@ -159,7 +159,15 @@ const TeachersTable: React.FC<Props> = ({ highlightId, onHighlightClear, onTagCl
         for (const p of prefixes) {
             if (cleanPhone.startsWith(p)) { prefix = `+${p}`; phonePart = cleanPhone.slice(p.length); break; }
         }
-        setEditingTeacher({ ...teacher, ui_prefix: prefix, ui_phone: phonePart, ui_subjectIds: teacher.subjectIds || [] });
+        const editData = { ...teacher, ui_prefix: prefix, ui_phone: phonePart, ui_subjectIds: teacher.subjectIds || [] };
+        setEditingTeacher(editData);
+        // Явно проставляем значения — initialValues работают только при первом mount Modal
+        editForm.setFieldsValue({
+            fullname: editData.fullname,
+            prefix: editData.ui_prefix,
+            phone: editData.ui_phone,
+            subjectIds: editData.ui_subjectIds,
+        });
         setIsEditModalOpen(true);
     };
 
@@ -194,7 +202,7 @@ const TeachersTable: React.FC<Props> = ({ highlightId, onHighlightClear, onTagCl
                     if (!s) return null;
                     return (
                         <Tooltip key={id} mouseEnterDelay={0.6} title={<div style={{ fontSize: 13 }}><div><b>Предмет:</b> {s.name}</div></div>}>
-                            <Tag style={{ margin: 0, cursor: "pointer" }} onClick={() => onTagClick?.("3", id)}>{s.name}</Tag>
+                            <Tag style={{ margin: 0, cursor: "pointer" }} onClick={() => onTagClick?.("2", id)}>{s.name}</Tag>
                         </Tooltip>
                     );
                 })}
@@ -265,7 +273,18 @@ const TeachersTable: React.FC<Props> = ({ highlightId, onHighlightClear, onTagCl
                 </Form>
             </Modal>
 
-            <Modal title="Изменить учителя" open={isEditModalOpen} onCancel={closeEditModal} footer={null} destroyOnClose afterOpenChange={(open) => open && editFirstInputRef.current?.focus()}>
+            <Modal title="Изменить учителя" open={isEditModalOpen} onCancel={closeEditModal} footer={null}
+                   afterOpenChange={(open) => {
+                       if (open && editingTeacher) {
+                           editForm.setFieldsValue({
+                               fullname: editingTeacher.fullname,
+                               prefix: editingTeacher.ui_prefix,
+                               phone: editingTeacher.ui_phone,
+                               subjectIds: editingTeacher.ui_subjectIds,
+                           });
+                           editFirstInputRef.current?.focus();
+                       }
+                   }}>
                 {editingTeacher && (
                     <Form key={editingTeacher.id} form={editForm} onFinish={onEditFinish} layout="vertical" onKeyDown={handleFormKeyDown}
                           initialValues={{ fullname: editingTeacher.fullname, prefix: editingTeacher.ui_prefix, phone: editingTeacher.ui_phone, subjectIds: editingTeacher.ui_subjectIds }}>

@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useRef } from "react";
+import React, { useState, useCallback } from "react";
 import { DragDropContext, Droppable, Draggable, DropResult } from "@hello-pangea/dnd";
 import { theme, message } from "antd";
 import api from "../api/api";
@@ -39,20 +39,10 @@ const ENTITY_FIELDS: Record<string, FieldDef[]> = {
         { label: "Возраст",               value: "age",                            kind: "number" },
         { label: "Дата рождения",         value: "birthdate",                      kind: "date"   },
         { label: "Название группы",       value: "group.name",                     kind: "string" },
-        { label: "Оценка",                value: "grades.grade",                   kind: "number" },
-        { label: "Тип работы",            value: "grades.workType",                kind: "enum",  enumValues: WORK_TYPES },
-        { label: "Дата оценки",           value: "grades.gradeDate",               kind: "date"   },
-        { label: "Статус посещения",      value: "attendances.status",             kind: "enum",  enumValues: ATT_STATUSES },
-        { label: "Дата посещения",        value: "attendances.attendanceDate",     kind: "date"   },
     ],
     Group: [
         { label: "Название группы",       value: "name",                           kind: "string" },
         { label: "Кол-во учащихся",       value: "amount",                         kind: "number" },
-        { label: "ФИО учащегося",         value: "students.fullname",              kind: "string" },
-        { label: "Оценка учащегося",      value: "students.grades.grade",          kind: "number" },
-        { label: "Кабинет (расписание)",  value: "schedules.classroom",            kind: "string" },
-        { label: "День недели",           value: "schedules.dayOfWeek",            kind: "enum",  enumValues: DAYS },
-        { label: "Номер урока",           value: "schedules.lessonNumber",         kind: "number" },
     ],
     Grade: [
         { label: "Оценка",                value: "grade",                          kind: "number" },

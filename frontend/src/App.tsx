@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
     Layout, Menu, Spin, Switch, ConfigProvider, theme,
     Button, Input, Modal, Form
@@ -60,11 +60,11 @@ const App: React.FC = () => {
         document.documentElement.setAttribute("data-theme", t);
     }, []);
 
-    const handleLogout = (expired = false) => {
+    const handleLogout = useCallback((expired = false) => {
         ["accessToken", "refreshToken", "fullname", "role"].forEach(k => localStorage.removeItem(k));
         setToken(null); setFullname(null); setRole(null);
         if (expired) toast.warning("Сессия истекла. Войдите снова.");
-    };
+    }, []);
 
     const handleServerSubmit = async (values: { url: string }) => {
         let url = values.url.trim();
@@ -93,11 +93,19 @@ const App: React.FC = () => {
         }
     };
 
+    // Отдельный эффект для глобальных auth-событий — не зависит от serverUrl
     useEffect(() => {
         const onLogout = () => handleLogout(true);
         const onRefresh = (e: any) => setToken(e.detail);
         window.addEventListener("force-logout", onLogout);
         window.addEventListener("token-refreshed", onRefresh as EventListener);
+        return () => {
+            window.removeEventListener("force-logout", onLogout);
+            window.removeEventListener("token-refreshed", onRefresh as EventListener);
+        };
+    }, [handleLogout]);
+
+    useEffect(() => {
         if (!isStarted.current) {
             isStarted.current = true;
             (async () => {
@@ -114,10 +122,6 @@ const App: React.FC = () => {
                 } finally { setInitializing(false); }
             })();
         }
-        return () => {
-            window.removeEventListener("force-logout", onLogout);
-            window.removeEventListener("token-refreshed", onRefresh as EventListener);
-        };
     }, [serverUrl]);
 
     const handleLoginSuccess = (data: { accessToken: string; fullname: string; role: string }) => {
@@ -269,7 +273,7 @@ const App: React.FC = () => {
                                 Админ
                             </Button>
                         )}
-                        <Button type="text" icon={<LogoutOutlined />} onClick={handleLogout}
+                        <Button type="text" icon={<LogoutOutlined />} onClick={() => handleLogout()}
                                 style={{ color: "white", background: "rgba(255,255,255,0.15)" }}>
                             Выйти
                         </Button>
@@ -303,7 +307,7 @@ const App: React.FC = () => {
                             <AnimatePresence mode="wait">
                                 {selectedKey === "1" && (
                                     <motion.div key="1" {...fade} style={{ flex: 1, minHeight: 0, overflow: "hidden" }}>
-                                        <ClassroomExplorer searchQuery={searchQuery} />
+                                        <ClassroomExplorer searchQuery={searchQuery} highlightStudentId={highlightTable === "1" ? highlightId : null} onHighlightClear={clearHighlight} />
                                     </motion.div>
                                 )}
                                 {selectedKey === "2" && (

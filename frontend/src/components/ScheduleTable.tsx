@@ -25,6 +25,7 @@ const ScheduleTable: React.FC<Props> = ({ searchQuery = "", onTagClick }) => {
     const [teachers, setTeachers] = useState<Teacher[]>([]);
     const [groups, setGroups] = useState<{ id: number; name: string }[]>([]);
     const [loading, setLoading] = useState(false);
+    const [selectedGroupId, setSelectedGroupId] = useState<number | null>(null);
 
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -101,6 +102,7 @@ const ScheduleTable: React.FC<Props> = ({ searchQuery = "", onTagClick }) => {
         const q = searchQuery.toLowerCase();
         return entries
             .filter(e => e.dayOfWeek === day)
+            .filter(e => !selectedGroupId || e.groupId === selectedGroupId)
             .filter(e => !q
                 || (e.groupName || "").toLowerCase().includes(q)
                 || (e.subjectName || "").toLowerCase().includes(q)
@@ -194,10 +196,20 @@ const ScheduleTable: React.FC<Props> = ({ searchQuery = "", onTagClick }) => {
 
     return (
         <div ref={containerRef} style={{ height: "100%", display: "flex", flexDirection: "column", padding: 10 }}>
-            <div style={{ marginBottom: 10 }}>
+            <div style={{ marginBottom: 10, display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
                 <Button type="primary" onClick={() => { form.resetFields(); setIsModalOpen(true); }}>
                     Добавить запись
                 </Button>
+                <Select
+                    allowClear
+                    placeholder="Фильтр по группе"
+                    style={{ width: 200 }}
+                    value={selectedGroupId}
+                    onChange={val => setSelectedGroupId(val ?? null)}
+                    options={groups.map(g => ({ value: g.id, label: g.name }))}
+                    showSearch
+                    optionFilterProp="label"
+                />
             </div>
             <Tabs activeKey={activeDay} onChange={k => setActiveDay(k as DayOfWeek)} items={tabItems} style={{ flex: 1 }} />
             <Modal title="Добавить запись расписания" open={isModalOpen} onCancel={closeAdd} footer={null} destroyOnClose width={520}>

@@ -151,7 +151,7 @@ const SubjectsTable: React.FC<Props> = ({ highlightId, onHighlightClear, onTagCl
                     if (!t) return null;
                     return (
                         <Tooltip key={id} mouseEnterDelay={0.6} title={<div style={{ fontSize: 13 }}><div><b>ФИО:</b> {t.fullname}</div><div><b>Телефон:</b> {t.phone}</div></div>}>
-                            <Tag style={{ margin: 0, cursor: "pointer" }} onClick={() => onTagClick?.("4", id)}>{t.fullname}</Tag>
+                            <Tag style={{ margin: 0, cursor: "pointer" }} onClick={() => onTagClick?.("3", id)}>{t.fullname}</Tag>
                         </Tooltip>
                     );
                 })}

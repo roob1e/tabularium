@@ -59,6 +59,10 @@ public class SecurityConfig {
                     .requestMatchers("/api/admin/**").hasRole("ADMIN")
                     // Все остальные — любой аутентифицированный
                     .anyRequest().authenticated()
+            )
+            .exceptionHandling(ex -> ex
+                    .authenticationEntryPoint((req, res, e) ->
+                            res.sendError(jakarta.servlet.http.HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized"))
             );
 
     http.authenticationProvider(authenticationProvider(userService));

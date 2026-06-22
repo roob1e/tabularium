@@ -4,41 +4,16 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="073918de-16ad-41dc-a7be-ae3bc4813620" name="Changes" comment="Added FilterConstructor">
-      <change beforePath="$PROJECT_DIR$/../backend/server.jar" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/controller/UserController.java" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/controller/UserController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/entity/Attendance.java" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/entity/Attendance.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/entity/Grade.java" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/entity/Grade.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/service/GroupService.java" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/service/GroupService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../backend/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/src/main/resources/application.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../backend/target/classes/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/target/classes/application.properties" afterDir="false" />
+    <list default="true" id="073918de-16ad-41dc-a7be-ae3bc4813620" name="Changes" comment="Some fixes">
+      <change beforePath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/security/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/../backend/src/main/java/com/assxmblxr/backend/security/SecurityConfig.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/App.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/App.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/api/api.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/api/api.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/AttendanceTable.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/AttendanceTable.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/GradesTable.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/GradesTable.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/ClassroomExplorer.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/ClassroomExplorer.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/QueryBuilder.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/QueryBuilder.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/components/ScheduleTable.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/ScheduleTable.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/components/SubjectsTable.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/SubjectsTable.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/components/TeachersTable.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/TeachersTable.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/pages/AuthPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/pages/AuthPage.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../server-manager/emulate_clean.sh" beforeDir="false" afterPath="$PROJECT_DIR$/../server-manager/emulate_clean.sh" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../server-manager/server.jar" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../server-manager/src-tauri/Cargo.toml" beforeDir="false" afterPath="$PROJECT_DIR$/../server-manager/src-tauri/Cargo.toml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../server-manager/src-tauri/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/../server-manager/application.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../server-manager/src-tauri/src/commands/config.rs" beforeDir="false" afterPath="$PROJECT_DIR$/../server-manager/src-tauri/src/commands/config.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../server-manager/src-tauri/src/commands/fs.rs" beforeDir="false" afterPath="$PROJECT_DIR$/../server-manager/src-tauri/src/commands/fs.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../server-manager/src-tauri/src/commands/spring.rs" beforeDir="false" afterPath="$PROJECT_DIR$/../server-manager/src-tauri/src/commands/spring.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../server-manager/src-tauri/src/installer/linux.rs" beforeDir="false" afterPath="$PROJECT_DIR$/../server-manager/src-tauri/src/installer/linux.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../server-manager/src-tauri/src/installer/macos.rs" beforeDir="false" afterPath="$PROJECT_DIR$/../server-manager/src-tauri/src/installer/macos.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../server-manager/src-tauri/src/installer/mod.rs" beforeDir="false" afterPath="$PROJECT_DIR$/../server-manager/src-tauri/src/installer/mod.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../server-manager/src-tauri/src/installer/windows.rs" beforeDir="false" afterPath="$PROJECT_DIR$/../server-manager/src-tauri/src/installer/windows.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../server-manager/src-tauri/src/lib.rs" beforeDir="false" afterPath="$PROJECT_DIR$/../server-manager/src-tauri/src/lib.rs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../server-manager/src/App.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../server-manager/src/App.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../server-manager/src/components/InstallWizard.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../server-manager/src/components/InstallWizard.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../server-manager/src/hooks/useAppInit.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../server-manager/src/hooks/useAppInit.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../server-manager/src/hooks/useConfig.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../server-manager/src/hooks/useConfig.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../server-manager/src/hooks/useSpring.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../server-manager/src/hooks/useSpring.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../server-manager/src/types.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../server-manager/src/types.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/main.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -219,7 +194,8 @@
       <workItem from="1782060718453" duration="612000" />
       <workItem from="1782063503532" duration="1866000" />
       <workItem from="1782070105073" duration="64000" />
-      <workItem from="1782133704970" duration="652000" />
+      <workItem from="1782133704970" duration="1496000" />
+      <workItem from="1782140774315" duration="764000" />
     </task>
     <task id="LOCAL-00001" summary="test">
       <option name="closed" value="true" />
@@ -341,7 +317,15 @@
       <option name="project" value="LOCAL" />
       <updated>1780692678060</updated>
     </task>
-    <option name="localTasksCounter" value="16" />
+    <task id="LOCAL-00016" summary="Some fixes">
+      <option name="closed" value="true" />
+      <created>1782135846097</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1782135846097</updated>
+    </task>
+    <option name="localTasksCounter" value="17" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -376,6 +360,7 @@
     <MESSAGE value="Improved UI" />
     <MESSAGE value="Added attendace, schedule, reworked marks ans so on..." />
     <MESSAGE value="Added FilterConstructor" />
-    <option name="LAST_COMMIT_MESSAGE" value="Added FilterConstructor" />
+    <MESSAGE value="Some fixes" />
+    <option name="LAST_COMMIT_MESSAGE" value="Some fixes" />
   </component>
 </project>
