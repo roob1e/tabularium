@@ -1,22 +1,15 @@
 use std::io::{BufRead, BufReader, Read, Write};
 use std::net::TcpStream;
-use std::process::{Command, Stdio};
+use std::process::{Child, Command, Stdio};
 use std::sync::{Arc, Mutex};
-use std::process::Child;
 use std::time::Duration;
 use tauri::{AppHandle, Emitter, Manager};
 
 pub struct SharedProcess(pub Arc<Mutex<Option<Child>>>);
 
-fn find_java() -> &'static str {
-    if std::path::Path::new("/opt/homebrew/opt/openjdk@17/bin/java").exists() {
-        "/opt/homebrew/opt/openjdk@17/bin/java"
-    } else if std::path::Path::new("/opt/homebrew/Cellar/openjdk@17/17.0.18/bin/java").exists() {
-        "/opt/homebrew/Cellar/openjdk@17/17.0.18/bin/java"
-    } else {
-        "java"
-    }
-}
+use crate::installer::find_java;
+
+// ─── Tauri-команды ───────────────────────────────────────────────────────────
 
 #[tauri::command]
 pub fn start_spring(
@@ -25,28 +18,48 @@ pub fn start_spring(
     jar_path: String,
 ) -> Result<(), String> {
     let mut guard = shared.0.lock().unwrap();
-    if guard.is_some() { return Err("Spring уже запущен".into()); }
+    if guard.is_some() {
+        return Err("Spring уже запущен.".into());
+    }
 
     let jar = std::path::PathBuf::from(&jar_path);
-    if !jar.exists() { return Err(format!("Файл {} не найден", jar.display())); }
+    if !jar.exists() {
+        return Err(format!("Файл не найден: {}", jar.display()));
+    }
 
-    let java = if cfg!(target_os = "macos") { find_java() } else { "java" };
+    // Рабочая директория = папка с jar, там же лежит application.yml
+    let jar_dir = jar
+        .parent()
+        .unwrap_or_else(|| std::path::Path::new("."))
+        .to_path_buf();
 
-    let mut child = Command::new(java)
-        .arg("-jar").arg(&jar)
-        .stdout(Stdio::piped()).stderr(Stdio::piped())
-        .spawn().map_err(|e| e.to_string())?;
+    let java = find_java();
+    let window = app_handle
+        .get_webview_window("main")
+        .ok_or("Окно приложения не найдено")?;
 
-    let window = app_handle.get_webview_window("main").ok_or("Window not found")?;
+    let _ = window.emit("spring-log", &format!(
+        "Запуск: {} -jar {} (cwd: {})",
+        java, jar.display(), jar_dir.display()
+    ));
+
+    let mut child = Command::new(&java)
+        .arg("-jar")
+        .arg(&jar)
+        .current_dir(&jar_dir)
+        .stdout(Stdio::piped())
+        .stderr(Stdio::piped())
+        .spawn()
+        .map_err(|e| format!("Не удалось запустить java ({}): {}", java, e))?;
 
     if let Some(out) = child.stdout.take() {
         let w = window.clone();
         std::thread::spawn(move || {
             for line in BufReader::new(out).lines().flatten() {
-                if line.contains("Application started, application.yml is connected") {
+                if line.contains("Application started") || line.contains("Started") {
                     let _ = w.emit("spring-status", "running");
                 }
-                let _ = w.emit("spring-log", line);
+                let _ = w.emit("spring-log", &line);
             }
         });
     }
@@ -55,7 +68,7 @@ pub fn start_spring(
         let w = window.clone();
         std::thread::spawn(move || {
             for line in BufReader::new(err).lines().flatten() {
-                let _ = w.emit("spring-log", line);
+                let _ = w.emit("spring-log", &line);
             }
         });
     }
@@ -73,9 +86,9 @@ pub fn stop_spring(
     let mut guard = shared.0.lock().unwrap();
     emit(&app_handle, "spring-log", "=== Остановка Spring ===");
 
-    match actuator_shutdown(&app_handle) {
+    match actuator_shutdown() {
         Ok(_) => {
-            emit(&app_handle, "spring-log", "✅ Actuator принял команду shutdown");
+            emit(&app_handle, "spring-log", "✅ Actuator принял команду shutdown.");
             for i in 0..15 {
                 std::thread::sleep(Duration::from_secs(1));
                 if !port_open(8080) {
@@ -86,12 +99,13 @@ pub fn stop_spring(
                 }
                 emit(&app_handle, "spring-log", &format!("Ожидание... {} сек", i + 1));
             }
-            emit(&app_handle, "spring-log", "⚠️ Таймаут, принудительное завершение");
-            if let Some(mut c) = guard.take() { let _ = c.kill(); let _ = c.wait(); }
+            emit(&app_handle, "spring-log", "⚠️ Таймаут — принудительное завершение.");
+            kill_process(&mut guard);
         }
         Err(e) => {
-            emit(&app_handle, "spring-log", &format!("❌ Ошибка Actuator: {}", e));
-            if let Some(mut c) = guard.take() { let _ = c.kill(); let _ = c.wait(); }
+            emit(&app_handle, "spring-log", &format!("❌ Actuator недоступен: {}", e));
+            emit(&app_handle, "spring-log", "Принудительное завершение процесса...");
+            kill_process(&mut guard);
         }
     }
 
@@ -100,14 +114,26 @@ pub fn stop_spring(
     Ok(())
 }
 
-fn actuator_shutdown(app_handle: &AppHandle) -> Result<(), String> {
+// ─── Вспомогательные функции ─────────────────────────────────────────────────
+
+fn kill_process(guard: &mut std::sync::MutexGuard<Option<Child>>) {
+    if let Some(mut c) = guard.take() {
+        let _ = c.kill();
+        let _ = c.wait();
+    }
+}
+
+fn actuator_shutdown() -> Result<(), String> {
     let req = "POST /actuator/shutdown HTTP/1.1\r\n\
-        Host: localhost:8080\r\nUser-Agent: Tauri-App/1.0\r\n\
-        Accept: application/json\r\nContent-Type: application/json\r\n\
-        Content-Length: 0\r\nConnection: close\r\n\r\n";
+        Host: localhost:8080\r\n\
+        User-Agent: Tabularium-Manager/1.0\r\n\
+        Accept: application/json\r\n\
+        Content-Type: application/json\r\n\
+        Content-Length: 0\r\n\
+        Connection: close\r\n\r\n";
 
     let mut stream = TcpStream::connect("localhost:8080")
-        .map_err(|e| format!("Не удалось подключиться: {}", e))?;
+        .map_err(|e| format!("Не удалось подключиться к localhost:8080 — {}", e))?;
     stream.set_read_timeout(Some(Duration::from_secs(5))).ok();
     stream.set_write_timeout(Some(Duration::from_secs(5))).ok();
     stream.write_all(req.as_bytes()).map_err(|e| e.to_string())?;
@@ -118,22 +144,28 @@ fn actuator_shutdown(app_handle: &AppHandle) -> Result<(), String> {
         match stream.read(&mut buf) {
             Ok(0) => break,
             Ok(n) => resp.extend_from_slice(&buf[..n]),
-            Err(e) => { if e.kind() == std::io::ErrorKind::TimedOut { break; } return Err(e.to_string()); }
+            Err(e) if e.kind() == std::io::ErrorKind::TimedOut => break,
+            Err(e) => return Err(e.to_string()),
         }
     }
 
     let r = String::from_utf8_lossy(&resp);
-    emit(app_handle, "spring-log", &format!("Ответ сервера: {}", &r[..r.len().min(200)]));
-
-    if r.contains("200 OK") || r.contains("204 No Content") || r.contains("Shutting down") { Ok(()) }
-    else if r.contains("404 Not Found") { Err("Endpoint /actuator/shutdown не найден".into()) }
-    else if r.contains("405 Method Not Allowed") { Err("Метод POST не разрешен".into()) }
-    else if r.contains("401") || r.contains("403") { Err("Требуется аутентификация".into()) }
-    else { Err(format!("Неожиданный ответ: {}", &r[..r.len().min(200)])) }
+    if r.contains("200 OK") || r.contains("204") || r.contains("Shutting down") {
+        Ok(())
+    } else if r.contains("404") {
+        Err("/actuator/shutdown не настроен на сервере".into())
+    } else if r.contains("401") || r.contains("403") {
+        Err("Требуется аутентификация для /actuator/shutdown".into())
+    } else {
+        Err(format!("Неожиданный ответ: {}", &r[..r.len().min(200)]))
+    }
 }
 
 fn port_open(port: u16) -> bool {
-    TcpStream::connect(format!("localhost:{}", port)).is_ok()
+    TcpStream::connect_timeout(
+        &format!("127.0.0.1:{}", port).parse().unwrap(),
+        Duration::from_millis(200),
+    ).is_ok()
 }
 
 fn emit(app_handle: &AppHandle, event: &str, msg: &str) {

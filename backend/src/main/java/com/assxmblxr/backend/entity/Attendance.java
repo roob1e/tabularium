@@ -7,9 +7,6 @@ import org.hibernate.annotations.OnDeleteAction;
 
 import java.time.LocalDate;
 
-/**
- * Посещаемость — требование ТЗ: «учёт посещаемости»
- */
 @Entity
 @Table(name = "attendance",
         uniqueConstraints = @UniqueConstraint(columnNames = {"student_id", "subject_id", "attendance_date"}))

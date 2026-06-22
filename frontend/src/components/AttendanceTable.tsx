@@ -176,7 +176,7 @@ const AttendanceTable: React.FC<Props> = ({ searchQuery = "", onTagClick }) => {
             render: (_: any, r: AttendanceResponse) => (
                 <Space>
                     <Button className="edit-btn" onClick={() => openEdit(r)}>Изменить</Button>
-                    <Button className="delete-btn" danger onClick={() => deleteAttendance(r.id).then(() => loadPage(currentPage))}>Удалить</Button>
+                    <Button className="delete-btn" danger onClick={() => deleteAttendance(r.id).then(() => { message.success("Запись удалена"); loadPage(currentPage); }).catch((e: any) => message.error(e.message || "Ошибка удаления"))}>Удалить</Button>
                 </Space>
             ),
         },

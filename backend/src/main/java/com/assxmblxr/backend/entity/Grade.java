@@ -44,16 +44,13 @@ public class Grade {
   @Column(name = "grade")
   private int grade;
 
-  /** Тип работы (контрольная, самостоятельная, итоговая и т.д.) — требование ТЗ */
   @Enumerated(EnumType.STRING)
   @Column(name = "work_type")
   private WorkType workType;
 
-  /** Дата выставления оценки */
   @Column(name = "grade_date")
   private LocalDate gradeDate;
 
-  /** Произвольный комментарий учителя */
   @Column(name = "comment", length = 500)
   private String comment;
 }

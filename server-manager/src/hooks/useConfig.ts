@@ -1,6 +1,6 @@
-import { core } from "@tauri-apps/api";
+import { invoke } from "@tauri-apps/api/core";
 import { message } from "antd";
-import type {SpringConfig} from "../types";
+import type { SpringConfig } from "../types";
 
 export function useConfig(
     form: any,
@@ -10,7 +10,7 @@ export function useConfig(
     const saveConfig = async () => {
         try {
             const values = await form.validateFields();
-            await core.invoke("save_config_to_yml", { config: values });
+            await invoke("save_config_to_yml", { config: values });
             setConfig(values);
             setYmlDetected(true);
             message.success("Конфигурация сохранена");
@@ -21,7 +21,8 @@ export function useConfig(
 
     const loadConfig = async () => {
         try {
-            const cfg = await core.invoke<SpringConfig>("load_config_from_yml");
+            const jarPath = form.getFieldValue("jar_path") ?? "";
+            const cfg = await invoke<SpringConfig>("load_config_from_yml", { jarPath });
             setConfig(cfg);
             form.setFieldsValue(cfg);
             message.success("Конфигурация загружена");

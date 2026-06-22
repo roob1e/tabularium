@@ -217,7 +217,7 @@ const TeachersTable: React.FC<Props> = ({ highlightId, onHighlightClear, onTagCl
             render: (_: any, record: Teacher) => (
                 <Space>
                     <Button className="edit-btn" onClick={() => openEditModal(record)}>Изменить</Button>
-                    <Button className="delete-btn" danger onClick={() => deleteTeacher(record.id).then(loadTeachers)}>Удалить</Button>
+                    <Button className="delete-btn" danger onClick={() => deleteTeacher(record.id).then(() => { message.success("Учитель удалён"); loadTeachers(); }).catch((e: any) => message.error(e.message || "Ошибка удаления"))}>Удалить</Button>
                 </Space>
             ),
         }

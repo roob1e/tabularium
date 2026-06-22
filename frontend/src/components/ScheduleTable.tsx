@@ -163,7 +163,7 @@ const ScheduleTable: React.FC<Props> = ({ searchQuery = "", onTagClick }) => {
             render: (_: any, r: ScheduleResponse) => (
                 <Space>
                     <Button className="edit-btn" onClick={() => openEdit(r)}>Изменить</Button>
-                    <Button className="delete-btn" danger onClick={() => deleteScheduleEntry(r.id).then(loadAll)}>Удалить</Button>
+                    <Button className="delete-btn" danger onClick={() => deleteScheduleEntry(r.id).then(() => { message.success("Запись расписания удалена"); loadAll(); }).catch((e: any) => message.error(e.message || "Ошибка удаления"))}>Удалить</Button>
                 </Space>
             ),
         },

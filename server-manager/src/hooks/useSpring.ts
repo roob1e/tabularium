@@ -1,6 +1,6 @@
-import { core } from "@tauri-apps/api";
+import { invoke } from "@tauri-apps/api/core";
 import { message } from "antd";
-import type {SpringStatus} from "../types";
+import type { SpringStatus } from "../types";
 
 export function useSpring(
     form: any,
@@ -9,8 +9,11 @@ export function useSpring(
     const startSpring = async () => {
         try {
             const values = await form.validateFields();
-            if (!values.jar_path) { message.error("Укажите путь к server.jar"); return; }
-            await core.invoke("start_spring", { jarPath: values.jar_path });
+            if (!values.jar_path) {
+                message.error("Укажите путь к server.jar");
+                return;
+            }
+            await invoke("start_spring", { jarPath: values.jar_path });
             setStatus("starting");
         } catch (e) {
             message.error("Не удалось запустить Spring: " + e);
@@ -19,7 +22,7 @@ export function useSpring(
 
     const stopSpring = async () => {
         try {
-            await core.invoke("stop_spring");
+            await invoke("stop_spring");
         } catch (e) {
             message.error("Не удалось остановить Spring: " + e);
         }

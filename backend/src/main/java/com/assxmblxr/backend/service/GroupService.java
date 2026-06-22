@@ -32,7 +32,6 @@ public class GroupService {
     return groupRepository.save(group);
   }
 
-  /** Обновление названия группы — нужно для ТЗ (управление учебными группами) */
   public Group updateGroup(Long id, Group updated) {
     Group existing = groupRepository.findById(id)
             .orElseThrow(() -> new GroupException("Группа не найдена", id));

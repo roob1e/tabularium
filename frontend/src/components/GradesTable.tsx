@@ -137,8 +137,11 @@ const GradesTable: React.FC<Props> = ({ highlightId, onHighlightClear, onTagClic
     };
 
     const handleDelete = async (id: number) => {
-        await deleteGrade(id);
-        loadPage(currentPage);
+        try {
+            await deleteGrade(id);
+            message.success("Оценка удалена");
+            loadPage(currentPage);
+        } catch (e: any) { message.error(e.message || "Ошибка удаления"); }
     };
 
     const getRowClassName = (r: GradeResponse) => r.id === activeHighlightId ? "row-highlighted" : "";

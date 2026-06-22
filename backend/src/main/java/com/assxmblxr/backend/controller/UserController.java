@@ -22,22 +22,15 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/auth")
 public class UserController {
-  @Autowired
-  private UserService userService;
-
-  @Autowired
-  private TokenService tokenService;
-
-  @Autowired
-  private JwtUtils jwtUtils;
+  @Autowired private UserService userService;
+  @Autowired private TokenService tokenService;
+  @Autowired private JwtUtils jwtUtils;
 
   @PostMapping("/register")
   public HttpEntity<?> register(@RequestBody UserRegister request) {
     try {
       User user = userService.register(
-              request.getUsername(),
-              request.getFullname(),
-              request.getPassword()
+              request.getUsername(), request.getFullname(), request.getPassword()
       );
       if (!user.isApproved()) {
         return ResponseEntity.status(HttpStatus.ACCEPTED).body("Ожидайте одобрения администратора");
@@ -45,11 +38,8 @@ public class UserController {
       String accessToken = jwtUtils.generateTokenFromUsername(user.getUsername());
       RefreshToken refreshToken = tokenService.createRefreshToken(user);
       return ResponseEntity.ok(new AuthResponse(
-              user.getUsername(),
-              user.getFullname(),
-              accessToken,
-              refreshToken.getToken(),
-              user.getRole().name()));
+              user.getUsername(), user.getFullname(),
+              accessToken, refreshToken.getToken(), user.getRole().name()));
     } catch (UserException e) {
       return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
     }
@@ -68,7 +58,8 @@ public class UserController {
                 accessToken, refreshToken.getToken(), user.getRole().name()
         ));
       }
-      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+      // Явно возвращаем строку — фронт её прочитает
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Неверный логин или пароль");
     } catch (UserException e) {
       return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
     }

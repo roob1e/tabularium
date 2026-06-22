@@ -172,7 +172,7 @@ const SubjectsTable: React.FC<Props> = ({ highlightId, onHighlightClear, onTagCl
             render: (_: any, record: Subject) => (
                 <Space>
                     <Button className="edit-btn" onClick={() => openEditModal(record)}>Изменить</Button>
-                    <Button className="delete-btn" danger onClick={() => deleteSubject(record.id).then(loadSubjects)}>Удалить</Button>
+                    <Button className="delete-btn" danger onClick={() => deleteSubject(record.id).then(() => { message.success("Предмет удалён"); loadSubjects(); }).catch((e: any) => message.error(e.message || "Ошибка удаления"))}>Удалить</Button>
                 </Space>
             ),
         }

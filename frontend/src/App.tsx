@@ -60,9 +60,10 @@ const App: React.FC = () => {
         document.documentElement.setAttribute("data-theme", t);
     }, []);
 
-    const handleLogout = () => {
+    const handleLogout = (expired = false) => {
         ["accessToken", "refreshToken", "fullname", "role"].forEach(k => localStorage.removeItem(k));
         setToken(null); setFullname(null); setRole(null);
+        if (expired) toast.warning("Сессия истекла. Войдите снова.");
     };
 
     const handleServerSubmit = async (values: { url: string }) => {
@@ -93,7 +94,7 @@ const App: React.FC = () => {
     };
 
     useEffect(() => {
-        const onLogout = () => handleLogout();
+        const onLogout = () => handleLogout(true);
         const onRefresh = (e: any) => setToken(e.detail);
         window.addEventListener("force-logout", onLogout);
         window.addEventListener("token-refreshed", onRefresh as EventListener);
