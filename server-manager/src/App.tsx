@@ -16,7 +16,7 @@ const { useBreakpoint } = Grid;
 const MAX_LOGS = 2000;
 
 const App: React.FC = () => {
-    const [config, setConfig] = useState<SpringConfig>({ host: "", user: "", password: "", jar_path: "" });
+    const [, setConfig] = useState<SpringConfig>({ host: "", user: "", password: "", jar_path: "" });
     const [needsInstall, setNeedsInstall] = useState<boolean | null>(null);
     const [logs, setLogs] = useState<string[]>([]);
     const [status, setStatus] = useState<SpringStatus>("stopped");

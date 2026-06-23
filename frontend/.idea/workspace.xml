@@ -4,7 +4,70 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="073918de-16ad-41dc-a7be-ae3bc4813620" name="Changes" comment="Some fixes" />
+    <list default="true" id="073918de-16ad-41dc-a7be-ae3bc4813620" name="Changes" comment="Some fixes">
+      <change afterPath="$PROJECT_DIR$/../server-manager/src-tauri/application.yml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../server-manager/src-tauri/server.jar" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.bin/tauri" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/.bin/tauri" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.bin/tsc" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/.bin/tsc" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.bin/tsserver" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/.bin/tsserver" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.bin/vite" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/.bin/vite" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/@ant-design_icons.js" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/.vite/deps/@ant-design_icons.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/@ant-design_icons.js.map" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/.vite/deps/@ant-design_icons.js.map" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/_metadata.json" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/.vite/deps/_metadata.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/antd.js" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/.vite/deps/antd.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/antd.js.map" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/.vite/deps/antd.js.map" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/.vite/deps/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/react-dom.js" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/.vite/deps/react-dom.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/react-dom.js.map" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/.vite/deps/react-dom.js.map" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/react-dom_client.js" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/.vite/deps/react-dom_client.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/react-dom_client.js.map" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/.vite/deps/react-dom_client.js.map" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/react.js" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/.vite/deps/react.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/react.js.map" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/.vite/deps/react.js.map" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/react_jsx-dev-runtime.js" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/.vite/deps/react_jsx-dev-runtime.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/react_jsx-dev-runtime.js.map" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/.vite/deps/react_jsx-dev-runtime.js.map" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/react_jsx-runtime.js" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/.vite/deps/react_jsx-runtime.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/node_modules/.vite/deps/react_jsx-runtime.js.map" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/.vite/deps/react_jsx-runtime.js.map" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-tauri/Cargo.toml" beforeDir="false" afterPath="$PROJECT_DIR$/src-tauri/Cargo.toml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-tauri/icons/128x128.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-tauri/icons/128x128@2x.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-tauri/icons/32x32.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-tauri/icons/Square107x107Logo.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-tauri/icons/Square142x142Logo.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-tauri/icons/Square150x150Logo.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-tauri/icons/Square284x284Logo.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-tauri/icons/Square30x30Logo.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-tauri/icons/Square310x310Logo.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-tauri/icons/Square44x44Logo.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-tauri/icons/Square71x71Logo.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-tauri/icons/Square89x89Logo.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-tauri/icons/StoreLogo.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-tauri/icons/icon.icns" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-tauri/icons/icon.ico" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-tauri/icons/icon.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src-tauri/tauri.conf.json" beforeDir="false" afterPath="$PROJECT_DIR$/src-tauri/tauri.conf.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../server-manager/src-tauri/Cargo.lock" beforeDir="false" afterPath="$PROJECT_DIR$/../server-manager/src-tauri/Cargo.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../server-manager/src-tauri/Cargo.toml" beforeDir="false" afterPath="$PROJECT_DIR$/../server-manager/src-tauri/Cargo.toml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../server-manager/src-tauri/build.rs" beforeDir="false" afterPath="$PROJECT_DIR$/../server-manager/src-tauri/build.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../server-manager/src-tauri/icons/Square107x107Logo.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../server-manager/src-tauri/icons/Square142x142Logo.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../server-manager/src-tauri/icons/Square150x150Logo.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../server-manager/src-tauri/icons/Square284x284Logo.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../server-manager/src-tauri/icons/Square30x30Logo.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../server-manager/src-tauri/icons/Square310x310Logo.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../server-manager/src-tauri/icons/Square44x44Logo.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../server-manager/src-tauri/icons/Square71x71Logo.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../server-manager/src-tauri/icons/Square89x89Logo.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../server-manager/src-tauri/icons/StoreLogo.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../server-manager/src-tauri/icons/icon.png" beforeDir="false" afterPath="$PROJECT_DIR$/../server-manager/icon.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../server-manager/src-tauri/src/commands/spring.rs" beforeDir="false" afterPath="$PROJECT_DIR$/../server-manager/src-tauri/src/commands/spring.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../server-manager/src-tauri/src/installer/windows.rs" beforeDir="false" afterPath="$PROJECT_DIR$/../server-manager/src-tauri/src/installer/windows.rs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../server-manager/src-tauri/tauri.conf.json" beforeDir="false" afterPath="$PROJECT_DIR$/../server-manager/src-tauri/tauri.conf.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../server-manager/src/App.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/../server-manager/src/App.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../server-manager/src/hooks/useSpring.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../server-manager/src/hooks/useSpring.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../server-manager/vite.config.ts" beforeDir="false" afterPath="$PROJECT_DIR$/../server-manager/vite.config.ts" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -28,14 +91,17 @@
   }
 }</component>
   <component name="GithubDefaultAccount">
-    <option name="defaultAccountId" value="2802dd4e-d136-4846-b245-ae63e9b3af4f" />
+    <option name="defaultAccountId" value="d5a10708-668d-45a5-8080-876ffde33e60" />
   </component>
   <component name="GithubPullRequestsUISettings">{
   &quot;selectedUrlAndAccountId&quot;: {
-    &quot;url&quot;: &quot;https://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@github.com/roob1e/tabularium.git&quot;,
-    &quot;accountId&quot;: &quot;2802dd4e-d136-4846-b245-ae63e9b3af4f&quot;
+    &quot;url&quot;: &quot;https://github.com/roob1e/tabularium.git&quot;,
+    &quot;accountId&quot;: &quot;d5a10708-668d-45a5-8080-876ffde33e60&quot;
   }
 }</component>
+  <component name="PackageJsonUpdateNotifier">
+    <dismissed value="$PROJECT_DIR$/package.json" />
+  </component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 6
 }</component>
@@ -44,34 +110,36 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;ASKED_MARK_IGNORED_FILES_AS_EXCLUDED&quot;: &quot;true&quot;,
-    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
-    &quot;javascript.preferred.runtime.type.id&quot;: &quot;node&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/Users/assxmblxr/tabularium/frontend/src-tauri/icons&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_interpreter_path&quot;: &quot;/Users/assxmblxr/Library/Application Support/JetBrains/WebStorm2025.3/node/versions/24.13.1/bin/node&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;pnpm&quot;,
-    &quot;npm.application.executor&quot;: &quot;Run&quot;,
-    &quot;npm.browser.executor&quot;: &quot;Run&quot;,
-    &quot;npm.dev.executor&quot;: &quot;Run&quot;,
-    &quot;npm.tauri dev.executor&quot;: &quot;Run&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;editor.stickyLines&quot;,
-    &quot;ts.external.directory.path&quot;: &quot;/Users/assxmblxr/tabularium/frontend/node_modules/typescript/lib&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ASKED_MARK_IGNORED_FILES_AS_EXCLUDED": "true",
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
+    "codeWithMe.voiceChat.enabledByDefault": "false",
+    "git-widget-placeholder": "master",
+    "javascript.preferred.runtime.type.id": "node",
+    "last_opened_file_path": "E:/projects/tabularium/frontend",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_interpreter_path": "node",
+    "nodejs_package_manager_path": "npm",
+    "npm.application.executor": "Run",
+    "npm.browser.executor": "Run",
+    "npm.dev.executor": "Run",
+    "npm.tauri dev.executor": "Run",
+    "settings.editor.selected.configurable": "vcs.Git",
+    "ts.external.directory.path": "/Users/assxmblxr/tabularium/frontend/node_modules/typescript/lib",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="E:\projects\tabularium\frontend" />
       <recent name="$PROJECT_DIR$/src-tauri/icons" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
@@ -89,6 +157,7 @@
         <script value="dev" />
       </scripts>
       <node-interpreter value="project" />
+      <package-manager value="npm" />
       <envs />
       <EXTENSION ID="com.intellij.javascript.debugger.execution.StartBrowserRunConfigurationExtension">
         <browser with-js-debugger="true" />
@@ -102,6 +171,7 @@
         <script value="dev" />
       </scripts>
       <node-interpreter value="project" />
+      <package-manager value="npm" />
       <envs />
       <EXTENSION ID="com.intellij.javascript.debugger.execution.StartBrowserRunConfigurationExtension">
         <browser with-js-debugger="true" />
@@ -116,7 +186,7 @@
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-js-predefined-d6986cc7102b-9b0f141eb926-JavaScript-WS-253.30387.83" />
+        <option value="bundled-js-predefined-d6986cc7102b-31caf2ab9e3c-JavaScript-WS-261.25134.101" />
       </set>
     </attachedChunks>
   </component>
@@ -186,6 +256,8 @@
       <workItem from="1782070105073" duration="64000" />
       <workItem from="1782133704970" duration="1496000" />
       <workItem from="1782140774315" duration="874000" />
+      <workItem from="1782218240079" duration="1613000" />
+      <workItem from="1782242425994" duration="50000" />
     </task>
     <task id="LOCAL-00001" summary="test">
       <option name="closed" value="true" />

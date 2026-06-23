@@ -13,10 +13,11 @@ export function useSpring(
                 message.error("Укажите путь к server.jar");
                 return;
             }
-            await invoke("start_spring", { jarPath: values.jar_path });
             setStatus("starting");
+            await invoke("start_spring", { jarPath: values.jar_path });
         } catch (e) {
             message.error("Не удалось запустить Spring: " + e);
+            setStatus("stopped");
         }
     };
 

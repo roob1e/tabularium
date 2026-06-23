@@ -1,0 +1,11 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/students_db
+    username: admin
+    password: 1234
+server:
+  port: 8080
+jwt:
+  secret: 24668ab0519fc621d2becdc48bf93741f41c4e1d3515c8234e3c3540d4fcff23b5ed667b6c4874ad9bfa6e1b53a46cc7e646a4edbdbc9cfd0d50cd160c91f012
+  access-token-expiration: 86400000
+  refresh-token-expiration: 604800000
